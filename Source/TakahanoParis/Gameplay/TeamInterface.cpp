@@ -4,13 +4,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/CustomGameMode.h"
 
-int ITeamInterface::I_GetTeamBP()
+int ITeamInterface::I_GetTeam_BP()
 {
 	return I_GetTeam();
 }
 
 
-void ITeamInterface::I_SetTeamBP(uint8 NewTeam)
+void ITeamInterface::I_SetTeam_BP(uint8 NewTeam)
 {
 	I_SetTeam(NewTeam);
 }

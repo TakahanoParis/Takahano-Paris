@@ -1,6 +1,7 @@
 
 #include "CustomGameMode.h"
 #include "Actors/Characters/Hero.h"
+#include "Gameplay/CustomPlayerController.h"
 //#include "UObject/ConstructorHelpers.h"
 #include "TimerManager.h"
 
@@ -8,6 +9,7 @@ ACustomGameMode::ACustomGameMode()
 {
 
 		DefaultPawnClass = AHero::StaticClass();
+		PlayerControllerClass = ACustomPlayerController::StaticClass();
 		PlayerControllerNum = 0;
 		MaxPlayerNumber = 10;
 		bCanStartMatch = false;

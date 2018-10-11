@@ -77,7 +77,7 @@ public:
 	* @note  for Blueprint, no need to implement it in your classes
 	*/
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="GetTeam"))
-		virtual int I_GetTeamBP();
+		virtual int I_GetTeam_BP();
 
 
 	/**
@@ -87,7 +87,7 @@ public:
 	* @note  for Blueprint, no need to implement it in your classes
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SetTeam"))
-		virtual void I_SetTeamBP(uint8 NewTeam);
+		virtual void I_SetTeam_BP(uint8 NewTeam);
 
 	/**
 	* @brief  I_ValidateTeam function.
