@@ -65,7 +65,7 @@ AActor* ACustomPlayerController::GetActorUnderCursor()
 	return nullptr;
 }
 
-bool ACustomPlayerController::GetActorInCylinderScreen(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel)
+bool ACustomPlayerController::GetActorInCylinderScreenByChannel(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel)
 {
 	TArray < FHitResult> HitResult;
 	FVector ViewLocation;
@@ -88,11 +88,51 @@ bool ACustomPlayerController::GetActorInCylinderScreen(TArray<AActor *> &ActorsI
 		for(auto it : HitResult)
 		{
 			if (it.Actor.IsValid())
-			{
 				ActorsInCylinder.Add(it.Actor.Get());
-				UE_LOG(LogTemp, Warning, TEXT("it = &s"), *it.Actor.Get()->GetName())
-			}
 
+		}
+		return true;
+	}
+	return false;
+}
+
+bool ACustomPlayerController::GetActorInCylinderScreenForObjects(TArray<AActor*>& ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes , const TArray<AActor*>& ActorstoIgnore)
+{
+	TArray < FHitResult> HitResult;
+	FVector ViewLocation;
+	FVector ViewDirection;
+
+	FCollisionObjectQueryParams ObjectQueryParam(ObjectTypes);
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActors(ActorstoIgnore);
+
+	bool result = DeprojectScreenPositionToWorld(ScreenTraceLocation.X, ScreenTraceLocation.Y, ViewLocation, ViewDirection);
+	ViewDirection = GetTransformComponent()->GetComponentToWorld().Rotator().Vector();
+
+	if (!result)
+		return false;
+
+	FCollisionShape Shape;
+	Shape.MakeSphere(Radius);
+
+	result = GetWorld()->SweepMultiByObjectType
+	(
+		HitResult,
+		ViewLocation,
+		ViewLocation + Range * ViewDirection,
+		FQuat(),
+		ObjectQueryParam,
+		Shape,
+		CollisionQueryParams
+	);
+
+	if (result)
+	{
+		ActorsInCylinder.Empty();
+		for (auto it : HitResult)
+		{
+			if (it.Actor.IsValid())
+				ActorsInCylinder.Add(it.Actor.Get());
 		}
 		return true;
 	}

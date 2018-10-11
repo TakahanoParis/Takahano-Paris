@@ -121,28 +121,50 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Mouse", meta = (DisplayName = "Get Actor Under Cursor"))
 		FORCEINLINE AActor * GetActorUnderCursor_BP() { return GetActorUnderCursor(); }
 
-
-
 	/**
-	 *	@fn GetActorInConeScreen()
+	 *	@fn GetActorInCylinderScreenByChannel()
 	 *	@brief Slow method but gets the Actor in a radius in screen.
 	 *	@param FVector2D ScreenTraceLocation : the screen position at which you want to look for actors
 	 *	@param float Radius : the radius from the screen position 
 	 *	@return bool true if found something, False otherwise
 	 */
 	UFUNCTION()
-		bool GetActorInCylinderScreen(TArray<AActor *> &ActorsInCylinder , FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel);
+		bool GetActorInCylinderScreenByChannel(TArray<AActor *> &ActorsInCylinder , FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel);
 
 	/**
-	 *	@fn GetActorInConeScreen_BP()
+	 *	@fn GetActorInCylinderScreenByChannel_BP()
 	 *	@brief Slow method but gets the Actor in a radius in screen.
 	 *	@param FVector2D ScreenTraceLocation : the screen position at which you want to look for actors
 	 *	@param float Radius : the radius from the screen position
 	 *	@return bool true if found something, False otherwise
 	 *	@note : For Blueprints.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Mouse", meta = (DisplayName = "Get Actor in circle area "))
-		bool GetActorInCylinderScreen_BP(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel) { return GetActorInCylinderScreen(ActorsInCylinder, ScreenTraceLocation, Radius, Range, TraceChannel); }
+	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in circle area by Channel"))
+		FORCEINLINE bool GetActorInCylinderScreenByChannel_BP(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel) { return GetActorInCylinderScreenByChannel(ActorsInCylinder, ScreenTraceLocation, Radius, Range, TraceChannel); }
+
+
+	/**
+	 *	@fn GetActorInCylinderScreenByChannel()
+	 *	@brief Slow method but gets the Actor in a radius in screen.
+	 *	@param FVector2D ScreenTraceLocation : the screen position at which you want to look for actors
+	 *	@param float Radius : the radius from the screen position
+	 *	@param Array<EObjectTypeQuery> ObjectTypes : Object types you're searching for
+	 *	@param Array<AActor *> ActorstoIgnore : Actors you don't Care about
+	 *	@return bool true if found something, False otherwise
+	 */
+	UFUNCTION()
+		bool GetActorInCylinderScreenForObjects(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes, const TArray<AActor *> &ActorstoIgnore);
+
+	/**
+	 *	@fn GetActorInCylinderScreenByChannel_BP()
+	 *	@brief Slow method but gets the Actor in a radius in screen.
+	 *	@param FVector2D ScreenTraceLocation : the screen position at which you want to look for actors
+	 *	@param float Radius : the radius from the screen position
+	 *	@return bool true if found something, False otherwise
+	 *	@note : For Blueprints.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in circle area by objects "))
+		FORCEINLINE bool GetActorInCylinderScreenForObjects_BP(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes, const TArray<AActor *> &ActorstoIgnore) { return GetActorInCylinderScreenForObjects(ActorsInCylinder, ScreenTraceLocation, Radius, Range, ObjectTypes, ActorstoIgnore); }
 
 
 	/**
@@ -163,8 +185,8 @@ public:
 	 *	@return bool : true if something was found
 	 *	@note For Blueprints
 	 */
-	UFUNCTION(BlueprintPure, Category = "Mouse", meta = (DisplayName = "Get Rendered Actors"))
-		bool GetRenderedActors_BP(TArray<AActor*>& CurrentlyRenderedActors, const float MinRecentTime) { return GetRenderedActors(CurrentlyRenderedActors, MinRecentTime); }
+	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Rendered Actors"))
+		FORCEINLINE bool GetRenderedActors_BP(TArray<AActor*>& CurrentlyRenderedActors, const float MinRecentTime) { return GetRenderedActors(CurrentlyRenderedActors, MinRecentTime); }
 	
 	
 };
