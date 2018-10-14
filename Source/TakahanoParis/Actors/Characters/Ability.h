@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Ability.generated.h"
+#include "TimerManager.h"
 
 /**
  * @enum ECoolDownState
@@ -32,29 +33,40 @@ public:
 // Sets default values for this component's properties
 UAbility();
 
-    ///// Default Properties for Ability
-
-    /** Cooldown time for the ability - used to setup the timer */
+protected:
+    /** 
+     *	@property CoolDown
+     *	@brief Cooldown time for the ability used to setup the timer 
+     */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category = "Cooldown", meta = (DisplayName = "Cooldown"))
     float CoolDown;
 
-    /** Rate for the timer - defines how fast the cooldown gets removed **/
+    /** 
+     *	@property Rate
+     *	@brief Rate for the timer`, defines how fast the cooldown gets removed 
+     */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, category= "Cooldown", meta = (DisplayName = "Cooldown Rate"))
     float Rate;
 
-    /** Boolean Flag to set the ability as passive - ie. will act on it's own and does not require the user to trigger it*/
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (DisplayName = "Is Passive ?"))
+    /**
+     *	@property bIsPassive 
+     *	@brief Boolean Flag to set the ability as passive - ie. will act on it's own and does not require the user to trigger it
+     */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "Is Passive ?"))
     bool bIsPassive = false;
 
-    /** Rate for the timer - defines how fast the cooldown gets removed **/
+    /** 
+     *	@property Level 
+     *	@brief int value describing the level of the ability (if it can be upgraded)
+     */
     UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, category= "Cooldown", meta = (DisplayName = "Cooldown Rate"))
     int Level;
 
     UFUNCTION(BlueprintCallable)
             void IncrementLevel();
-
+	
     /**
-     * @brief SetTimer Function
+     * @fn SetTimer()
      * Allow for setting the timer to start with rate and time set to the class variables
      * @param Default - set to false to use the other parameters
      * @param NewCoolDown - Replacement CoolDown time to use instead of class property
@@ -87,17 +99,17 @@ UAbility();
 public:
 
     /**
-    * @brief GetCoolDown function
+    * @fn GetCoolDown()
     * @return the amount of time left before the ability can be used, returns -2.f on Clients
     */
     UFUNCTION(BlueprintPure, Category = "Use")
     float GetCoolDown();
 
     /**
-    * @brief TryUse function
-    * Check if the Ability can be used and if so use it.
-    * @return true if Use() has been called
-    */
+     *	@fn TryUse()
+     *	@brief Check if the Ability can be used and if so use it.
+     *	@return true if Use() has been called
+     */
     UFUNCTION(BlueprintCallable , Category = "Use")
     bool TryUse();
 
@@ -132,13 +144,23 @@ protected:
 
 
 
-    /** @brief Callback Function for the CoolDownState - Set to CDS_Ready*/
+    /** 
+     *	@fn SetReady()
+     *	@brief Callback Function for the CoolDownState - Set to CDS_Ready
+     */
     UFUNCTION()
     virtual void SetReady();
-    /** @brief Callback Function for the CoolDownState - Set to CDS_Paused*/
+
+    /** 
+     *	@fn SetPaused()
+     *	@brief Callback Function for the CoolDownState - Set to CDS_Paused
+     */
     UFUNCTION()
     virtual void SetPaused();
-    /** @brief Callback Function for the CoolDownState - Set to CDS_Running*/
+    /** 
+     *	@fn SetRunning()
+     *	@brief Callback Function for the CoolDownState - Set to CDS_Running
+     */
     UFUNCTION()
     virtual void SetRunning();
 
@@ -146,17 +168,24 @@ protected:
 
 private:
 
-    /** Boolean flag to allow the use of the ability */
+    /**
+     *	@property bCanUse
+     *	@brief Boolean flag to allow the use of the ability 
+     */
     UPROPERTY(ReplicatedUsing = OnRep_CanUse)
     bool bCanUse;
 
 
-    /** This represents the current state of the Timer	 */
+    /** 
+     *	@property CDState
+     *	@brief This represents the current state of the Timer
+     */
     UPROPERTY(ReplicatedUsing = OnRep_CoolDownState)
     ECoolDownState CDState;
 
     /**
-     * Handle and delegate to manage the timer
+     * @property CoolDownDelegate
+     * @brief property to access the Timer function for the cooldown
      * This could be replicated, but since there are 5 abilities,
      * and at as much as 10 players this could lead to network stress
      * instead we just synchronise  with Server authority when trying to use.
@@ -165,39 +194,60 @@ private:
      * @See Use();
      */
     FTimerDelegate	CoolDownDelegate;
+	/**
+	 * @property CoolDownHandle
+	 * @See CoolDownDelegate;
+	 */
     FTimerHandle	CoolDownHandle;
 
     /**
-     * @brief Resets the CoolDown timer on Server.
-     * @see ResetCoolDown()
+     *	@fn Server_ResetCoolDown()
+     *	@brief Resets the CoolDown timer on Server.
+     *	@see ResetCoolDown()
      */
     UFUNCTION(Server, Reliable, WithValidation)
     void Server_ResetCoolDown();
 
+	/**
+	 *	@fn OnRep_CanUse()
+	 *	@brief Called when bCanUse Changes
+	 */
     UFUNCTION()
     void OnRep_CanUse();
 
+	/**
+	 *	@fn OnRep_CoolDownState()
+	 *	@brief Called when CoolDownState Changes
+	 */
     UFUNCTION()
     void OnRep_CoolDownState();
 
     /**
-    * @brief EndPlay function
-    * Get rid of the timer and some other cleanups
+    * @fn EndPlay()
+    * @brief Get rid of the timer and some other cleanups
     */
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 
+	/**
+	 *	@fn Server_IncrementLevel()
+	 *	@brief add 1 to the level of the ability. will then be replicated to all other players
+	 */
     UFUNCTION(Server, Reliable, WithValidation)
         void Server_IncrementLevel();
 
 protected:
 
+	/**
+	 *	@fn Server_IncrementLevel()
+	 *	@brief add 1 to the level of the ability. will then be replicated to all other players
+	 */
     UFUNCTION(Server, Reliable, WithValidation)
     void Server_Use();
     virtual void Server_Use_Implementation();
 
     /**
-     * @brief Effect Blueprint event
+     * @fn Effect Blueprint event
      * @deprecated for development Test purposes. Will probably gets removed later on.
      */
     UFUNCTION(BlueprintImplementableEvent, Category="Effect")

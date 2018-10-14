@@ -58,14 +58,6 @@ ECoolDownState UAbility::GetTimerState() const
 
 FTimerManager *  UAbility::GetTimerManager()
 {
-    // this would try to use GameMode Timer
-    /*
-    AGameModeBase * GameMode = GetOwner()->GetWorld()->GetAuthGameMode();
-    ACustomGameMode * AnimaGameMode = Cast<ACustomGameMode>(GameMode);
-    if(AnimaGameMode)
-        return AnimaGameMode->GetTimerManager();
-    return nullptr;
-     */
     return &(GetOwner()->GetWorld()->GetTimerManager());
 }
 

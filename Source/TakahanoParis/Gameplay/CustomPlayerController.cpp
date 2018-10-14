@@ -2,6 +2,7 @@
 
 #include "CustomPlayerController.h"
 #include "GameFramework/PlayerInput.h"
+#include "GameFramework/HUD.h"
 #include "Engine/World.h"
 #include "UObject/UObjectIterator.h"
 //#include "Components/PrimitiveComponent.h"
@@ -65,7 +66,7 @@ AActor* ACustomPlayerController::GetActorUnderCursor()
 	return nullptr;
 }
 
-bool ACustomPlayerController::GetActorInCylinderScreenByChannel(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel)
+bool ACustomPlayerController::GetActorInCylinderScreenByChannel(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel, bool bDrawDebug)
 {
 	TArray < FHitResult> HitResult;
 	FVector ViewLocation;
@@ -77,11 +78,19 @@ bool ACustomPlayerController::GetActorInCylinderScreenByChannel(TArray<AActor *>
 
 	if (!result)
 		return false;
-	
+
+	FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams::DefaultQueryParam;
+	if (bDrawDebug)
+	{
+		const FName TraceTag("MyTraceTag");
+		GetWorld()->DebugDrawTraceTag = TraceTag;
+		CollisionQueryParams.TraceTag = TraceTag;
+	}
+
 	FCollisionShape Shape;
 	Shape.MakeSphere(Radius);
 
-	result = GetWorld()->SweepMultiByChannel(HitResult, ViewLocation, ViewLocation + Range * ViewDirection, FQuat(), TraceChannel, Shape);
+	result = GetWorld()->SweepMultiByChannel(HitResult, ViewLocation, ViewLocation + Range * ViewDirection, FQuat(), TraceChannel, Shape, CollisionQueryParams);
 	//result = GetWorld()->SweepMultiByObjectType()
 	if(result)
 	{
@@ -96,15 +105,23 @@ bool ACustomPlayerController::GetActorInCylinderScreenByChannel(TArray<AActor *>
 	return false;
 }
 
-bool ACustomPlayerController::GetActorInCylinderScreenForObjects(TArray<AActor*>& ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes , const TArray<AActor*>& ActorstoIgnore)
+bool ACustomPlayerController::GetActorInCylinderScreenForObjects(TArray<AActor*>& ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes , const TArray<AActor*>& ActorstoIgnore, bool bDrawDebug)
 {
 	TArray < FHitResult> HitResult;
 	FVector ViewLocation;
 	FVector ViewDirection;
 
 	FCollisionObjectQueryParams ObjectQueryParam(ObjectTypes);
-	FCollisionQueryParams CollisionQueryParams;
+
+	FCollisionQueryParams CollisionQueryParams = FCollisionQueryParams::DefaultQueryParam;
+	if(bDrawDebug)
+	{
+		const FName TraceTag("MyTraceTag");
+		GetWorld()->DebugDrawTraceTag = TraceTag;
+		CollisionQueryParams.TraceTag = TraceTag;
+	}
 	CollisionQueryParams.AddIgnoredActors(ActorstoIgnore);
+
 
 	bool result = DeprojectScreenPositionToWorld(ScreenTraceLocation.X, ScreenTraceLocation.Y, ViewLocation, ViewDirection);
 	ViewDirection = GetTransformComponent()->GetComponentToWorld().Rotator().Vector();
@@ -159,5 +176,13 @@ bool ACustomPlayerController::GetRenderedActors(TArray<AActor*>& CurrentlyRender
 		return true;
 	}
 	return false;
+}
+
+bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<AActor*>& OutActors, const float XMargin, const float YMargin)
+{
+	const FVector2D ScreenCenter = GetScreenCenterCoordinates();
+	const FVector2D  FirstPoint = FVector2D(ScreenCenter.X - XMargin, ScreenCenter.Y - YMargin);
+	const FVector2D  SecondPoint = FVector2D(ScreenCenter.X + XMargin, ScreenCenter.Y + YMargin);
+	return GetHUD()->GetActorsInSelectionRectangle(FirstPoint, SecondPoint, OutActors, false, false);
 }
 

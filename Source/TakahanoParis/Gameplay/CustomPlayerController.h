@@ -129,7 +129,7 @@ public:
 	 *	@return bool true if found something, False otherwise
 	 */
 	UFUNCTION()
-		bool GetActorInCylinderScreenByChannel(TArray<AActor *> &ActorsInCylinder , FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel);
+		bool GetActorInCylinderScreenByChannel(TArray<AActor *> &ActorsInCylinder , FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel, bool bDrawDebug = false);
 
 	/**
 	 *	@fn GetActorInCylinderScreenByChannel_BP()
@@ -139,8 +139,8 @@ public:
 	 *	@return bool true if found something, False otherwise
 	 *	@note : For Blueprints.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in circle area by Channel"))
-		FORCEINLINE bool GetActorInCylinderScreenByChannel_BP(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel) { return GetActorInCylinderScreenByChannel(ActorsInCylinder, ScreenTraceLocation, Radius, Range, TraceChannel); }
+	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in cylinder from camera by objects "))
+		FORCEINLINE bool GetActorInCylinderScreenByChannel_BP(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel, bool bDrawDebug = false) { return GetActorInCylinderScreenByChannel(ActorsInCylinder, ScreenTraceLocation, Radius, Range, TraceChannel, bDrawDebug); }
 
 
 	/**
@@ -153,7 +153,7 @@ public:
 	 *	@return bool true if found something, False otherwise
 	 */
 	UFUNCTION()
-		bool GetActorInCylinderScreenForObjects(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes, const TArray<AActor *> &ActorstoIgnore);
+		bool GetActorInCylinderScreenForObjects(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes, const TArray<AActor *> &ActorstoIgnore, bool bDrawDebug = false);
 
 	/**
 	 *	@fn GetActorInCylinderScreenByChannel_BP()
@@ -163,8 +163,8 @@ public:
 	 *	@return bool true if found something, False otherwise
 	 *	@note : For Blueprints.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in circle area by objects "))
-		FORCEINLINE bool GetActorInCylinderScreenForObjects_BP(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes, const TArray<AActor *> &ActorstoIgnore) { return GetActorInCylinderScreenForObjects(ActorsInCylinder, ScreenTraceLocation, Radius, Range, ObjectTypes, ActorstoIgnore); }
+	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in cylinder from camera by objects "))
+		FORCEINLINE bool GetActorInCylinderScreenForObjects_BP(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, const TArray < TEnumAsByte < EObjectTypeQuery > > & ObjectTypes, const TArray<AActor *> &ActorstoIgnore, bool bDrawDebug = false) { return GetActorInCylinderScreenForObjects(ActorsInCylinder, ScreenTraceLocation, Radius, Range, ObjectTypes, ActorstoIgnore, bDrawDebug); }
 
 
 	/**
@@ -187,6 +187,30 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Rendered Actors"))
 		FORCEINLINE bool GetRenderedActors_BP(TArray<AActor*>& CurrentlyRenderedActors, const float MinRecentTime) { return GetRenderedActors(CurrentlyRenderedActors, MinRecentTime); }
+
+
+	/**
+	 *	@fn GetActorsInCenterOfScreen()
+	 *	@brief Get Actors in the middle of the screen in a XMargin, Y Margin rectangle.
+	 *	@param OutActors : The List of Actors found
+	 *	@param float XMargin : The X dimension of the rectangle
+	 *	@param float YMargin : The Y dimension of the rectangle
+	 *	@return bool : true if something was found
+	 */
+	UFUNCTION()
+		bool GetActorsInCenterOfScreen(TArray<AActor*>& OutActors, const float XMargin = 100.0, const float YMargin = 100.0);
+
+	/**
+	 *	@fn GetActorsInCenterOfScreen()
+	 *	@brief Get Actors in the middle of the screen in a XMargin, Y Margin rectangle.
+	 *	@param OutActors : The List of Actors found
+	 *	@param float XMargin : The X dimension of the rectangle
+	 *	@param float YMargin : The Y dimension of the rectangle
+	 *	@return bool : true if something was found
+	 *	@note For Blueprints
+	 */
+	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actors in Center of Screen"))
+		FORCEINLINE bool GetActorsInCenterOfScreen_BP(TArray<AActor*>& OutActors, const float XMargin = 100.0, const float YMargin = 100.0) { return GetActorsInCenterOfScreen(OutActors, XMargin, YMargin); }
 	
 	
 };
