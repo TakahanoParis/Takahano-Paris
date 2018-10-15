@@ -2,6 +2,8 @@
 
 #include "CameraPawn.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/PlayerController.h"
+#include "UnrealNetwork.h"
 
 
 // Sets default values
@@ -35,7 +37,11 @@ void ACameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 bool ACameraPawn::I_Use(AController * User)
 {
-	return false;
+	if(!User)
+		return false;
+	auto PC = Cast<APlayerController>(User);
+	SetAsViewTarget(PC);
+	return true;
 }
 
 EInteractableState ACameraPawn::I_GetInteractState()
@@ -43,3 +49,17 @@ EInteractableState ACameraPawn::I_GetInteractState()
 	return State;
 }
 
+void ACameraPawn::SetAsViewTarget(APlayerController* PlayerController)
+{
+	FViewTargetTransitionParams VTParams;
+	VTParams.BlendTime = CameraBlendTime;
+	VTParams.BlendExp = 2.0;
+	VTParams.BlendFunction = EViewTargetBlendFunction::VTBlend_EaseInOut;
+	PlayerController->ClientSetViewTarget(this, VTParams);
+}
+
+void ACameraPawn::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACameraPawn, State);
+}

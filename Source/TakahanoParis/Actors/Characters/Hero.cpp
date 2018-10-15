@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Hero.h"
-#include "Ability.h"
 #include "UnrealNetwork.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -30,31 +29,12 @@ AHero::AHero() : Super()
 
 void AHero::OnConstruction( const FTransform & Transform){
     Super::OnConstruction(Transform);
-    if(Role == ROLE_Authority)
-        for(auto it : AbilityClasses)
-        {
-            if(!it)
-                return;
-            UAbility* NewAbility = NewObject<UAbility>(this, it);
-            if(!NewAbility)
-                return;
-            NewAbility->RegisterComponent();
-            Abilities.Add(NewAbility);
-        }
+  }
 
-}
-
-#if 0 // this code directly inherit from ANIMA and needs to be adapted to TakahanoParis naming scheme
-void AHero::AerAbility()
-{
-	if (Abilities.IsValidIndex(0))
-		Abilities[0]->TryUse();
-}
-#endif
-
-
+#if 0
+// nothing is replicated in AHero
 void AHero::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME(AHero, Abilities);
 }
+#endif 

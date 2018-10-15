@@ -43,14 +43,18 @@ public:
 	UFUNCTION()
 		virtual EInteractableState I_GetInteractState() = 0;
 
+
 	/**
-		* @brief I_GetInteractState_BP function.
-		* @return a EInteractableState describing the object interaction possibilities.
-		* @param NewTeam the index of the team you want to be in
-		* @note  for Blueprint, no need to implement it in your classes
-		*/
-	UFUNCTION(BlueprintCallable,  meta = (DisplayName = "Get Interactable State"))
+	* @brief I_GetInteractState_BP function.
+	* @return a EInteractableState describing the object interaction possibilities.
+	* @param NewTeam the index of the team you want to be in
+	* @note  for Blueprint, no need to implement it in your classes
+	*/
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Interactable State"))
 		virtual EInteractableState I_GetInteractState_BP() { return I_GetInteractState(); }
+
+
+
 
 	/**
 	 *	@fn I_Use function
@@ -59,13 +63,29 @@ public:
 	UFUNCTION()
 		virtual bool I_Use(class AController * User ) = 0;
 
+
+
 	/** 
 	 *	@fn I_Use
-	 *	@brief Return true if it was activated.
+	 *	@brief Use the Actor in that implements this interface
+	 *	@param User : the controller that want to use the UObject that implement this interface
+	 *	@return true if it was activated. false otherwise
 	 *	@note  for Blueprint, no need to implement it in your classes
 	 */
 	UFUNCTION(BlueprintCallable,  meta = (DisplayName = "Use"))
 		virtual bool I_Use_BP(class AController * User) { return I_Use(User); }
+
+
+	/**
+	 *	@fn I_Server_Use()
+	 *	@brief Use the Actor in that implements this interface
+	 *	@param User : the controller that want to use the UObject that implement this interface
+	 *	@return true if it was activated. false otherwise
+	 *	@note replicated, run on server
+	 */
+	UFUNCTION(Server, Reliable, WithValidation)
+		virtual void I_Server_Use(class AController * User);
+		virtual void I_Server_Use_Implementation(class AController * User);
 
 
 	

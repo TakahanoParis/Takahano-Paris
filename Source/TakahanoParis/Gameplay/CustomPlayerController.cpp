@@ -178,11 +178,11 @@ bool ACustomPlayerController::GetRenderedActors(TArray<AActor*>& CurrentlyRender
 	return false;
 }
 
-bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<AActor*>& OutActors, const float XMargin, const float YMargin)
+bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<AActor*>& OutActors)
 {
 	const FVector2D ScreenCenter = GetScreenCenterCoordinates();
-	const FVector2D  FirstPoint = FVector2D(ScreenCenter.X - XMargin, ScreenCenter.Y - YMargin);
-	const FVector2D  SecondPoint = FVector2D(ScreenCenter.X + XMargin, ScreenCenter.Y + YMargin);
+	const FVector2D  FirstPoint = ScreenCenter - CenterOfScreenSpan;
+	const FVector2D  SecondPoint = ScreenCenter + CenterOfScreenSpan;
 	return GetHUD()->GetActorsInSelectionRectangle(FirstPoint, SecondPoint, OutActors, false, false);
 }
 

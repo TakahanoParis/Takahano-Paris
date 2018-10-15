@@ -198,7 +198,7 @@ public:
 	 *	@return bool : true if something was found
 	 */
 	UFUNCTION()
-		bool GetActorsInCenterOfScreen(TArray<AActor*>& OutActors, const float XMargin = 100.0, const float YMargin = 100.0);
+		bool GetActorsInCenterOfScreen(TArray<AActor*>& OutActors);
 
 	/**
 	 *	@fn GetActorsInCenterOfScreen()
@@ -210,7 +210,13 @@ public:
 	 *	@note For Blueprints
 	 */
 	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actors in Center of Screen"))
-		FORCEINLINE bool GetActorsInCenterOfScreen_BP(TArray<AActor*>& OutActors, const float XMargin = 100.0, const float YMargin = 100.0) { return GetActorsInCenterOfScreen(OutActors, XMargin, YMargin); }
+		FORCEINLINE bool GetActorsInCenterOfScreen_BP(TArray<AActor*>& OutActors) { return GetActorsInCenterOfScreen(OutActors); }
+
+
+protected :
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Screen", meta = (DisplayName = "Span for Get Actor in center of Screen"))
+		FVector2D CenterOfScreenSpan;
 	
 	
 };

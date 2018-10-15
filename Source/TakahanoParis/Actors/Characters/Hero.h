@@ -33,22 +33,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
-protected:
-
-    /**
-     *      List of abilities
-     */
-	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Ability", meta = (DisplayName = "Abilities"))
-	    TArray<class UAbility*> Abilities;
-
-	/**
-	 *      List of ability classes
-	 */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability", meta = (DisplayName = "Ability List"))
-        TArray< TSubclassOf<class UAbility>> AbilityClasses;
-
-
-
 
 protected :
 
