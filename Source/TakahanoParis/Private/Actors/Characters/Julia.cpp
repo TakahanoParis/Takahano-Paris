@@ -34,8 +34,13 @@ bool AJulia::TryUseElectronic(AActor * Target)
 	}
 }
 
+void AJulia::Tick(float DeltaSeconds)
+{
+
+}
+
 bool AJulia::GetLookedAtActor(TArray<AActor*>& OutActors)
 {
 	auto PC = Cast<ACustomPlayerController>(GetController());
-	return PC->GetActorsInCenterOfScreen(OutActors); 
+	return PC->GetActorsInCenterOfScreen(OutActors, AActor::StaticClass()); 
 }

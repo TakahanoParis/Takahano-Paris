@@ -7,6 +7,9 @@
 #include "Engine/EngineTypes.h"
 #include "CustomPlayerController.generated.h"
 
+// Forward Declaration
+class UCustomWidget;
+
 /**
  *	@brief ACustomPlayerController Class
  *	the base class for every player controller in Project centauri.
@@ -193,30 +196,62 @@ public:
 	 *	@fn GetActorsInCenterOfScreen()
 	 *	@brief Get Actors in the middle of the screen in a XMargin, Y Margin rectangle.
 	 *	@param OutActors : The List of Actors found
-	 *	@param float XMargin : The X dimension of the rectangle
-	 *	@param float YMargin : The Y dimension of the rectangle
 	 *	@return bool : true if something was found
 	 */
 	UFUNCTION()
-		bool GetActorsInCenterOfScreen(TArray<AActor*>& OutActors);
+		bool GetActorsInCenterOfScreen(TArray<AActor*>& OutActors, TSubclassOf<AActor> ClassFilter);
 
 	/**
 	 *	@fn GetActorsInCenterOfScreen()
 	 *	@brief Get Actors in the middle of the screen in a XMargin, Y Margin rectangle.
 	 *	@param OutActors : The List of Actors found
-	 *	@param float XMargin : The X dimension of the rectangle
-	 *	@param float YMargin : The Y dimension of the rectangle
+	 *	@param  ClassFilter : A class delimiter to only find actors we're interested in
 	 *	@return bool : true if something was found
 	 *	@note For Blueprints
 	 */
 	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actors in Center of Screen"))
-		FORCEINLINE bool GetActorsInCenterOfScreen_BP(TArray<AActor*>& OutActors) { return GetActorsInCenterOfScreen(OutActors); }
+		FORCEINLINE bool GetActorsInCenterOfScreen_BP(TArray<AActor*>& OutActors, TSubclassOf<AActor> ClassFilter) { return GetActorsInCenterOfScreen(OutActors, ClassFilter); }
 
 
 protected :
 
+	/**
+	 *	@property CenterOfScreenSpan
+	 *	@brief Span for the GetActorsInCenterOfScreen() function
+	 *	@see GetActorsInCenterOfScreen()
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Screen", meta = (DisplayName = "Span for Get Actor in center of Screen"))
 		FVector2D CenterOfScreenSpan;
-	
-	
+
+
+	// Widgets functions
+public:
+
+	/**
+	 *	@fn AddWidgetToScreen()
+	 *	@param ClassToSpawn : The class of the Custom Widget
+	 *	@param AnchorPoint	: The @D position on screen at which we should add it to viewport
+	 *	@return UCustomWidget * , a pointer to the newly created Widget 
+	 */
+	UFUNCTION()
+		UCustomWidget * AddWidgetToScreen(TSubclassOf<UCustomWidget> ClassToSpawn, FVector2D AnchorPoint = FVector2D(), int ZOrder = 0);
+
+	/**
+	 *	@fn AddWidgetToScreen_BP()
+	 *	@param ClassToSpawn : The class of the Custom Widget
+	 *	@param AnchorPoint	: The @D position on screen at which we should add it to viewport
+	 *	@return UCustomWidget * , a pointer to the newly created Widget
+	 */
+	UFUNCTION()
+		UCustomWidget * AddWidgetToScreen_BP(TSubclassOf<UCustomWidget> ClassToSpawn, FVector2D AnchorPoint = FVector2D(), int ZOrder = 0) {return AddWidgetToScreen(ClassToSpawn, AnchorPoint, ZOrder); }
+
+protected:
+
+	/**
+	 *	@property ActiveWidgetList
+	 *	@brief Array containing all the Widget still on screen.
+	 */
+	UPROPERTY()
+		TArray<UCustomWidget *> ActiveWidgetList;
+		
 };

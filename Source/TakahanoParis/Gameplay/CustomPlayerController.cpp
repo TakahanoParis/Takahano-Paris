@@ -2,9 +2,10 @@
 
 #include "CustomPlayerController.h"
 #include "GameFramework/PlayerInput.h"
-#include "GameFramework/HUD.h"
+#include "Gameplay/CustomHUD.h"
 #include "Engine/World.h"
 #include "UObject/UObjectIterator.h"
+#include "UserInterface/CustomWidget.h"
 //#include "Components/PrimitiveComponent.h"
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
@@ -178,11 +179,28 @@ bool ACustomPlayerController::GetRenderedActors(TArray<AActor*>& CurrentlyRender
 	return false;
 }
 
-bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<AActor*>& OutActors)
+bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<AActor*>& OutActors, TSubclassOf<AActor> ClassFilter)
 {
+	OutActors.Empty();
 	const FVector2D ScreenCenter = GetScreenCenterCoordinates();
 	const FVector2D  FirstPoint = ScreenCenter - CenterOfScreenSpan;
 	const FVector2D  SecondPoint = ScreenCenter + CenterOfScreenSpan;
-	return GetHUD()->GetActorsInSelectionRectangle(FirstPoint, SecondPoint, OutActors, false, false);
+	const auto HUD = Cast<ACustomHUD>(GetHUD());
+	if (HUD)
+	{
+		HUD->GetActorsInCenterofScreen(OutActors, AActor::StaticClass(), CenterOfScreenSpan);
+		return OutActors.Num() > 0;
+	}
+	return false;
+}
+
+UCustomWidget* ACustomPlayerController::AddWidgetToScreen(TSubclassOf<UCustomWidget> ClassToSpawn,FVector2D AnchorPoint, int ZOrder)
+{
+	if (!IsValid(ClassToSpawn))
+		return nullptr;
+	auto NewWidget = CreateWidget<UCustomWidget>(this, ClassToSpawn);
+	NewWidget->SetPositionInViewport(AnchorPoint, true);
+	NewWidget->AddToPlayerScreen(ZOrder);
+	return NewWidget;
 }
 
