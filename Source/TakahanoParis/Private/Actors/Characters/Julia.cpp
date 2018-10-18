@@ -4,7 +4,6 @@
 //#include "GameFramework/Controller.h"
 #include "Gameplay/CustomPlayerController.h"
 #include "Actors/Interfaces/HackInterface.h"
-#include "../../../../../../../../../../Program Files/Epic Games/UE_4.20/Engine/Plugins/Compositing/OpenCVLensDistortion/Source/ThirdParty/OpenCV/include/opencv2/dnn/dnn.hpp"
 
 AJulia::AJulia() : Super()
 {
@@ -68,7 +67,7 @@ bool AJulia::TryHack(AActor* target) const
 
 }
 
-void AJulia::Hack(AActor * target) const
+void AJulia::Hack(AActor * target)
 {
 	const auto AsInterface = Cast<IHackInterface>(target);
 	AsInterface->I_Server_Hack(GetController());

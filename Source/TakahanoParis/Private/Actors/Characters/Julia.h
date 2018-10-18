@@ -68,7 +68,7 @@ private:
 	 *	@see IHackInterface
 	 */
 	UFUNCTION()
-		void Hack(AActor * target) const;
+		void Hack(AActor * target);
 
 	
 	
