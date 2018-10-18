@@ -5,6 +5,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Gameplay/CustomPlayerController.h"
+#include "Actors/Interfaces/InteractInterface.h"
 
 
 AHero::AHero() : Super()
@@ -27,9 +29,45 @@ AHero::AHero() : Super()
 	// are set in the derived blueprint asset (to avoid direct content references in C++)
 }
 
+bool AHero::GetLookedAtActor(TArray<AActor*>& OutActors)
+{
+	auto PC = Cast<ACustomPlayerController>(GetController());
+	return PC->GetActorsInCenterOfScreen<AActor>(OutActors); 
+}
+
 void AHero::OnConstruction( const FTransform & Transform){
     Super::OnConstruction(Transform);
   }
+
+bool AHero::TryUse(AActor * Target)
+{
+	auto AsInterface = Cast<IInteractInterface>(Target);
+	if(!AsInterface)
+		return false;
+	switch(AsInterface->I_GetInteractState()) 
+	{ 
+	case EInteractableState::ISE_Off: 
+		return false;
+	case EInteractableState::ISE_Locked: 
+		return false;
+	case EInteractableState::ISE_Used: 	
+		return false;
+	case EInteractableState::ISE_Useable:
+		if (GetController()->Role == ROLE_AutonomousProxy)
+		{
+			AsInterface->I_Server_Use(GetController());
+			return true;
+		}
+		if (GetController()->Role == ROLE_Authority)
+		{
+			AsInterface->I_Server_Use_Implementation(GetController()); // We're already server, no need for confirmation
+			return true;
+		}
+	default: 
+		return false;
+	}
+}
+
 
 #if 0
 // nothing is replicated in AHero

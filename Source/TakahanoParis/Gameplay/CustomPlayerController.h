@@ -198,19 +198,27 @@ public:
 	 *	@param OutActors : The List of Actors found
 	 *	@return bool : true if something was found
 	 */
-	UFUNCTION()
-		bool GetActorsInCenterOfScreen(TArray<AActor*>& OutActors, TSubclassOf<AActor> ClassFilter);
+	template<typename ClassFilter>
+		bool GetActorsInCenterOfScreen(TArray<ClassFilter *>& OutActors);
 
-	/**
+		/**
 	 *	@fn GetActorsInCenterOfScreen()
 	 *	@brief Get Actors in the middle of the screen in a XMargin, Y Margin rectangle.
 	 *	@param OutActors : The List of Actors found
-	 *	@param  ClassFilter : A class delimiter to only find actors we're interested in
+	 *	@param ClassFilter : Class you want to limit the search to
 	 *	@return bool : true if something was found
-	 *	@note For Blueprints
+	 *	@note : this function will be slower than the template version
 	 */
-	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actors in Center of Screen"))
-		FORCEINLINE bool GetActorsInCenterOfScreen_BP(TArray<AActor*>& OutActors, TSubclassOf<AActor> ClassFilter) { return GetActorsInCenterOfScreen(OutActors, ClassFilter); }
+	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in center of Screen"))
+		bool GetActorsInCenterOfScreen_BP(TArray<AActor *>& OutActors, TSubclassOf<AActor> ClassFilter)
+	{
+		OutActors.Empty();
+		const bool R = GetActorsInCenterOfScreen<AActor>(OutActors);
+		for(auto EachActor : OutActors)
+			if (!EachActor->IsA(ClassFilter))
+				OutActors.Remove(EachActor);
+		return R;
+	}
 
 
 protected :

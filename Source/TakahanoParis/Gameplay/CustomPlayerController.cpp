@@ -6,11 +6,19 @@
 #include "Engine/World.h"
 #include "UObject/UObjectIterator.h"
 #include "UserInterface/CustomWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "Gameplay/CustomGameMode.h"
 //#include "Components/PrimitiveComponent.h"
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
 {
-
+	if(!GetHUD())
+	{
+		auto GM = UGameplayStatics::GetGameMode(GetWorld());
+		//if(GM)
+			//ClientSetHUD(GM->)
+	}
+		
 }
 
 void ACustomPlayerController::SetupInputComponent()
@@ -179,19 +187,17 @@ bool ACustomPlayerController::GetRenderedActors(TArray<AActor*>& CurrentlyRender
 	return false;
 }
 
-bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<AActor*>& OutActors, TSubclassOf<AActor> ClassFilter)
+template<typename ClassFilter>
+bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<ClassFilter *>& OutActors)
 {
 	OutActors.Empty();
-	const FVector2D ScreenCenter = GetScreenCenterCoordinates();
-	const FVector2D  FirstPoint = ScreenCenter - CenterOfScreenSpan;
-	const FVector2D  SecondPoint = ScreenCenter + CenterOfScreenSpan;
+	//const FVector2D ScreenCenter = GetScreenCenterCoordinates();
 	const auto HUD = Cast<ACustomHUD>(GetHUD());
 	if (HUD)
 	{
-		HUD->GetActorsInCenterofScreen(OutActors, AActor::StaticClass(), CenterOfScreenSpan);
-		return OutActors.Num() > 0;
+		HUD->GetActorsInCenterofScreen<ClassFilter>(OutActors, CenterOfScreenSpan);
 	}
-	return false;
+	return OutActors.Num() > 0 ;
 }
 
 UCustomWidget* ACustomPlayerController::AddWidgetToScreen(TSubclassOf<UCustomWidget> ClassToSpawn,FVector2D AnchorPoint, int ZOrder)

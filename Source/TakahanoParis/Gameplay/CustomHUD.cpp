@@ -4,22 +4,27 @@
 #include "Engine/Canvas.h"
 
 
-void ACustomHUD::DrawHUD()
+ACustomHUD::ACustomHUD() :Super()
 {
-	Super::DrawHUD();
-	GetActorsInCenterofScreen_Backend(ActorsInCenterofScreen);
+
 }
 
-void ACustomHUD::GetActorsInCenterofScreen(TArray<AActor *> &OutActors, TSubclassOf<AActor> NewClassFilter, FVector2D NewCenterSpan)
+void ACustomHUD::DrawHUD()
+{
+    FVector2D ScreenDimensions = FVector2D(Canvas->SizeX, Canvas->SizeY);
+	GetActorsInCenterofScreen_Backend(ActorsInCenterofScreen);
+	Super::DrawHUD();
+}
+
+void ACustomHUD::SetClassFilter(TSubclassOf<AActor> NewClassFilter)
 {
 	ClassFilter = NewClassFilter;
-	CenterSpan = NewCenterSpan;
-	OutActors = ActorsInCenterofScreen;
 }
 
 bool ACustomHUD::GetActorsInCenterofScreen_Backend(TArray<AActor*>& OutActors)
 {
 	FVector2D CenterOfScreen(Canvas->SizeX/2.f, Canvas->SizeY/2.f);
-	GetActorsInSelectionRectangle(ClassFilter, CenterOfScreen - CenterSpan, CenterOfScreen + CenterSpan, OutActors); // Using default values for the rest
+	GetActorsInSelectionRectangle<AActor>(CenterOfScreen - CenterSpan, CenterOfScreen + CenterSpan, OutActors, true, false); // Using default values for the rest
+	UE_LOG(LogTemp, Warning, TEXT("There are : %d actors under middle of cursor"), OutActors.Num());
 	return OutActors.Num() > 0;
 }

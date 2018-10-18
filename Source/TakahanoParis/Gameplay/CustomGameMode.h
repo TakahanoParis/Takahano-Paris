@@ -23,13 +23,13 @@ enum class EPlayStateEnum : uint8
  * @class This is the Base GameMode for all TakahanoParis Game.
  * @note GameMode Only exists on Server.
  */
-UCLASS(minimalapi)
+UCLASS()
 class ACustomGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
 public:
-	ACustomGameMode();
+	ACustomGameMode(const FObjectInitializer& ObjectInitializer);
 
 public:
 

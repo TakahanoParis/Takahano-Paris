@@ -16,6 +16,8 @@ class TAKAHANOPARIS_API ACustomHUD : public AHUD
 
 
 public:
+	/**	Default constructor - Set default variables	*/
+	ACustomHUD();
 
 	/** 
 	 *	@fn DrawHUD()
@@ -28,14 +30,32 @@ public:
 
 	/**
 	 *	@fn FindActorsInCenterOfScreen()
+	 *	@template ClassFilter the filter to limit Actors
 	 *	@brief Get The actors in rectangle in the middle of screen
 	 *	@param OutActors The array of Actors found at last redraw
-	 *	@param ClassFilter the filter to limit Actors
 	 *	@param CenterSpan The span of the rectangle from center of screen
 	 *	@note You will only retrieve the actors from last draw
 	 *	@todo Improve that logic, because it is highly inefficient to retrieve the last draw's found actors
 	 */
-	void GetActorsInCenterofScreen(TArray<AActor *> &OutActors, TSubclassOf<AActor> NewClassFilter, FVector2D NewCenterSpan);
+	template <typename ClassFilter>
+	bool GetActorsInCenterofScreen(TArray<ClassFilter *> &OutActors, FVector2D NewCenterSpan)
+	{
+		CenterSpan = NewCenterSpan;
+		if (!ClassFilter::StaticClass()->IsChildOf(AActor::StaticClass()))
+			return false;
+		for (AActor* EachActor : ActorsInCenterofScreen)
+			OutActors.Add(CastChecked<ClassFilter>(EachActor));
+		return true;
+	}
+
+	/**
+	 *	@fn SetClassFilter()
+	 *	@brief Set the Class filter for the actors to grab in the center of screen
+	 *	@param NewClassFilter the class filter to use
+	 */
+	UFUNCTION()
+	void SetClassFilter(TSubclassOf<AActor> NewClassFilter);
+
 
 private:
 
