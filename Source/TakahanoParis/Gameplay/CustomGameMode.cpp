@@ -2,14 +2,16 @@
 #include "CustomGameMode.h"
 #include "Actors/Characters/Hero.h"
 #include "Gameplay/CustomPlayerController.h"
+#include "Gameplay/CustomHUD.h"
 //#include "UObject/ConstructorHelpers.h"
 #include "TimerManager.h"
 
-ACustomGameMode::ACustomGameMode()
+ACustomGameMode::ACustomGameMode(const FObjectInitializer& ObjectInitializer)	: Super(ObjectInitializer)
 {
 
 		DefaultPawnClass = AHero::StaticClass();
 		PlayerControllerClass = ACustomPlayerController::StaticClass();
+		HUDClass = ACustomHUD::StaticClass();
 		PlayerControllerNum = 0;
 		MaxPlayerNumber = 10;
 		bCanStartMatch = false;
@@ -32,7 +34,8 @@ bool ACustomGameMode::TeamExists(int TeamNumber)
 
 void ACustomGameMode::PostLogin(APlayerController * NewPlayer)
 {
-
+	Super::PostLogin(NewPlayer);
+	//InitializeHUDForPlayer(NewPlayer);
 }
 
 void ACustomGameMode::PreLogin(const FString & Options, const FString & Address, const FUniqueNetIdRepl & UniqueId, FString & ErrorMessage)
@@ -59,7 +62,7 @@ bool ACustomGameMode::ReadyToStartMatch_Implementation()
 	if (bCanStartMatch)
 	{
 		ResumeGame();
-		return  true; // Super::ReadyToStartMatch_Implementation();
+		return  Super::ReadyToStartMatch_Implementation(); // Super::ReadyToStartMatch_Implementation();
 	}
 	else
 	{

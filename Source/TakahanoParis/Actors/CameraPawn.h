@@ -78,13 +78,23 @@ protected:
 	 *	@property State
 	 *	@brief State of this Actor
 	 */
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Player")
 	EInteractableState State;
 
 
-	
+	/**
+	 *	@property State
+	 *	@brief State of this Actor
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player")
+		float CameraBlendTime;
 
-	 
+	/**
+	 * @fn SetAsViewTarget()
+	 * @brief Adapt the view of the player controller to this camera
+	 */
+	UFUNCTION()
+		void SetAsViewTarget(class APlayerController * PlayerController);
 	
 	
 };

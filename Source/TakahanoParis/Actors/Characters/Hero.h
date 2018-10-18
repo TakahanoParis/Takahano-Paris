@@ -24,6 +24,16 @@ public:
 	 */
 	AHero();
 
+	/**
+	 * @fn GetLookedAtActor()
+	 * @brief Find all actors in center of screen provided by the player controller
+	 * @param OutActors : the array that will be filled with the actors given by the player controller
+	 * @return true if found something, false otherwise.
+	 * @see ACustomPlayerController
+	 */
+	UFUNCTION()
+		bool GetLookedAtActor(TArray<AActor*> &OutActors);
+
 private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -33,33 +43,23 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
-protected:
-
-    /**
-     *      List of abilities
-     */
-	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Ability", meta = (DisplayName = "Abilities"))
-	    TArray<class UAbility*> Abilities;
-
-	/**
-	 *      List of ability classes
-	 */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability", meta = (DisplayName = "Ability List"))
-        TArray< TSubclassOf<class UAbility>> AbilityClasses;
-
-
-
 
 protected :
 
     virtual void OnConstruction(const FTransform & Transform) override;
 
 
-private:
+protected:
 
-//	FORCEINLINE virtual void Attack()			override { AraAbility(); }
+	/**
+	 * @fn TryUse()
+	 * @brief Julia can control certain electronic objects
+	 * @param Target : An Actor that implements InteractInterface
+	 * @return true if it succeed
+	 */
+	UFUNCTION()
+		bool TryUse(AActor * Target);
 
-public:
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
