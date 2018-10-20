@@ -60,6 +60,19 @@ protected:
 	UFUNCTION()
 		bool TryHack(AActor * target)const ;
 
+		/**
+	 *	@fn TryHack_BP()
+	 *	@brief Attempt to hack an actor ( must implement IHackInterface)
+ 	 *	@param target : the object you want to hack
+	 *	@return true if target is hackable and hacking tried, false otherwise
+	 *	@see IHackInterface
+	 *	@note For blueprint
+	 */
+	UFUNCTION(BlueprintCallable, Category="Julia")
+		bool TryHack_BP(AActor * target)const {return TryHack(target);}
+
+
+
 private:
 	/**
 	 *	@fn Hack()

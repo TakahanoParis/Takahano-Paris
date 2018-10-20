@@ -41,7 +41,7 @@ public:
 	 *	Return a EInteractableState describing the object interaction possibilities.
 	 */
 	UFUNCTION()
-		virtual EInteractableState I_GetInteractState() = 0;
+		virtual EInteractableState I_GetInteractState() const = 0;
 
 
 	/**
