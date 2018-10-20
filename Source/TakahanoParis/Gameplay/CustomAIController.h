@@ -82,14 +82,14 @@ private:
 	 *	@brief the delta on the path it is supposed to follow
 	 */
 	UPROPERTY(Replicated)
-		float PathDistanceDelta;
+		float PathDistanceDelta = 0.5;
 
 	/**
 	 *	@property PathAcceptanceRadius
 	 *	@brief The radius of near target we're considering
 	 */
 	UPROPERTY(Replicated)
-		float PathAcceptanceRadius;
+		float PathAcceptanceRadius = 0.5;
 
 
 	/**
