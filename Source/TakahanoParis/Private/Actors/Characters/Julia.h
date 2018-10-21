@@ -35,7 +35,7 @@ public :
 	 * @see ACustomPlayerController
 	 */
 	UFUNCTION()
-		bool GetLookedAtHackable(TArray<class AActor*> &OutActors);
+		bool GetLookedAtHackable(TArray<class AActor*> &OutActors) const;
 
 	/**
 	 * @fn GetLookedAtElectronic()
@@ -45,7 +45,7 @@ public :
 	 * @see ACustomPlayerController
 	 */
 	UFUNCTION(BlueprintCallable, Category ="Julia", meta = (DisplayName = "Get lokked at Electronic"))
-		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) {return  GetLookedAtHackable(OutActors);}
+		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const {return  GetLookedAtHackable(OutActors);}
 
 	/**
 	 *	@property HackDelegate
