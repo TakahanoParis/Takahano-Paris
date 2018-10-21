@@ -16,12 +16,12 @@ AJulia::AJulia() : Super()
 void AJulia::Tick(float DeltaSeconds)
 {
 	TArray<AActor*> ElectronicActors;
-	GetLookedAtElectronic(ElectronicActors);
+	GetLookedAtHackable(ElectronicActors);
 
 }
 
 
-bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors)
+bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors) const
 {
 
 	auto PC = Cast<ACustomPlayerController>(GetController());
