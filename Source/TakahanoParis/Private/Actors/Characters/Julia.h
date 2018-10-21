@@ -35,7 +35,7 @@ public :
 	 * @see ACustomPlayerController
 	 */
 	UFUNCTION()
-		bool GetLookedAtHackable(TArray<class AActor*> &OutActors);
+		bool GetLookedAtHackable(TArray<class AActor*> &OutActors) const;
 
 	/**
 	 * @fn GetLookedAtElectronic()
@@ -44,8 +44,10 @@ public :
 	 * @return true if found something, false otherwise.
 	 * @see ACustomPlayerController
 	 */
-	UFUNCTION(BlueprintCallable, Category ="Julia", meta = (DisplayName = "Get lokked at Electronic"))
-		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) {return  GetLookedAtHackable(OutActors);}
+	UFUNCTION(BlueprintCallable, Category ="Julia", meta = (DisplayName = "Get looked at Electronic"))
+		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const {return  GetLookedAtHackable(OutActors);}
+
+
 
 	/**
 	 *	@property HackDelegate
@@ -74,7 +76,7 @@ protected:
 	 *	@see IHackInterface
 	 *	@note For blueprint
 	 */
-	UFUNCTION(BlueprintCallable, Category="Julia")
+	UFUNCTION(BlueprintCallable, Category="Julia", meta = (DisplayName = "Try Hack"))
 		bool TryHack_BP(AActor * target)const {return TryHack(target);}
 
 
