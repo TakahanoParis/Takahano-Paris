@@ -44,7 +44,7 @@ public :
 	 * @return true if found something, false otherwise.
 	 * @see ACustomPlayerController
 	 */
-	UFUNCTION(BlueprintCallable, Category ="Julia", meta = (DisplayName = "Get lokked at Electronic"))
+	UFUNCTION(BlueprintCallable, Category ="Julia", meta = (DisplayName = "Get looked at Electronic"))
 		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const {return  GetLookedAtHackable(OutActors);}
 
 	/**
