@@ -23,10 +23,6 @@ public :
 	
 	AJulia();
 
-
-
-
-
 	/* Tick function - called each frame*/
 	void Tick(float DeltaSeconds) override;
 
@@ -38,8 +34,18 @@ public :
 	 * @return true if found something, false otherwise.
 	 * @see ACustomPlayerController
 	 */
-	UFUNCTION(BlueprintPure)
-		bool GetLookedAtElectronic(TArray<class AActor*> &OutActors);
+	UFUNCTION()
+		bool GetLookedAtHackable(TArray<class AActor*> &OutActors);
+
+	/**
+	 * @fn GetLookedAtElectronic()
+	 * @brief Find all actors in center of screen provided by the player controller
+	 * @param OutActors : the array that will be filled with the actors given by the player controller
+	 * @return true if found something, false otherwise.
+	 * @see ACustomPlayerController
+	 */
+	UFUNCTION(BlueprintCallable, Category ="Julia", meta = (DisplayName = "Get lokked at Electronic"))
+		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) {return  GetLookedAtHackable(OutActors);}
 
 	/**
 	 *	@property HackDelegate

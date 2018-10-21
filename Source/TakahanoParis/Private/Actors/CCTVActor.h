@@ -38,8 +38,11 @@ private:
 
 
 protected:
-	
-	UPROPERTY(Replicated)
+	/**
+	 *	@property InteractableState
+	 *	@brief The state of its interaction abilities
+	 */
+	UPROPERTY(Replicated, EditAnywhere)
 	EInteractableState InteractableState;
 
 private:

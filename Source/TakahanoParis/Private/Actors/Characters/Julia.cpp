@@ -21,13 +21,15 @@ void AJulia::Tick(float DeltaSeconds)
 }
 
 
-bool AJulia::GetLookedAtElectronic(TArray<AActor*>& OutActors)
+bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors)
 {
+
 	auto PC = Cast<ACustomPlayerController>(GetController());
 	const bool R = PC->GetActorsInCenterOfScreen<AActor>(OutActors);
-	for (auto EachActor : OutActors)
-		if(!Cast<IHackInterface>(EachActor))
-			OutActors.Remove(EachActor);
+	for (int32 id = OutActors.Num()-1; id >= 0; --id)
+		if(!Cast<IHackInterface>(OutActors[id]))
+			OutActors.RemoveAt(id,1,false);
+	OutActors.Shrink();
 	return R;
 }
 

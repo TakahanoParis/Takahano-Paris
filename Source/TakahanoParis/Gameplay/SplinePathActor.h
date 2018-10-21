@@ -45,6 +45,13 @@ public:
 	UFUNCTION()
 	FORCEINLINE USplineComponent * GetSpline() const {return Spline;}
 
+	/**
+	 * @fn GetPathPoints()
+	 * @brief Getter for the Spline component
+	 */
+	UFUNCTION()
+	FORCEINLINE int GetPathPoints() const {return PathSteps;}
+
 
 protected:
 	/**
@@ -53,6 +60,13 @@ protected:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
 	USplineComponent * Spline;
+
+	/**
+	 * @property PathSteps
+	 * @brief number of steps in the path
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spline")
+	int PathSteps;
 		
 	
 	
