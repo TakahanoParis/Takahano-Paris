@@ -31,7 +31,7 @@ public:
 	 *	@note the variable is ideally stored in PlayerState and/or replicated
 	 */
 	UFUNCTION()
-		float I_GetLifePoints() const = 0;
+		virtual float I_GetLifePoints() const = 0;
 
 
 	/**
@@ -41,8 +41,8 @@ public:
 	 *	@note the variable is ideally stored in PlayerState and/or replicated
 	 *	@note For Blueprints
 	 */
-	UFUNCTION()
-		float I_GetLifePoints_BP() const {return I_GetLifePoints();}
+	UFUNCTION(BlueprintCallable, Category ="Life", meta= (DisplayName = "Get Life Points") )
+		virtual float I_GetLifePoints_BP() const {return I_GetLifePoints();}
 
 
 	/**
@@ -53,7 +53,7 @@ public:
 	 *	@return true if damage were taken 
 	 */
 	UFUNCTION()
-		bool I_takeDamage(float DamageAmount, class AActor * Instigator) = 0;
+		virtual bool I_takeDamage(float DamageAmount, class AActor * Instigator) = 0;
 
 	/**
 	 *	@fn I_takeDamage_BP()
@@ -64,7 +64,7 @@ public:
 	 *	@note For Blueprints
 	 */
 	UFUNCTION(BlueprintCallable, Category ="Life", meta= (DisplayName = "Take damage") )
-		bool I_takeDamage_BP(float DamageAmount, class AActor * Instigator){return I_takeDamage(DamageAmount, Instigator);}
+		virtual bool I_takeDamage_BP(float DamageAmount, class AActor * Instigator){return I_takeDamage(DamageAmount, Instigator);}
 
 
 
