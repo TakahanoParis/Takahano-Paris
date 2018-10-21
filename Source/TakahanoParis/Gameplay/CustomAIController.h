@@ -20,6 +20,10 @@ class TAKAHANOPARIS_API ACustomAIController : public AAIController
 
 public:
 
+	// Default Constructor
+	ACustomAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+
 	/**
 	 *	@fn GetPathActor()
 	 *	@return the path used for this controller
@@ -34,6 +38,47 @@ public:
 	UFUNCTION()
 	void SetPathActor(ASplinePathActor * NewPath) {PatrolPath = NewPath;}
 
+	/**
+	 *	@fn StartPatrol()
+	 *	@brief Start the Patrol timer to launch Patrol
+	 */
+	UFUNCTION()
+	virtual void StartPatrol();
+	
+	
+	/**
+	 *	@fn StartPatrol_BP()
+	 *	@brief Start the Patrol timer to launch Patrol
+	 *	@note for blueprints
+	 */
+	UFUNCTION(BlueprintCallable, Category="AI", meta = (DisplayName = "Start Patrol"))
+		void StartPatrol_BP() {StartPatrol();}
+
+
+
+
+	/**
+	 *	@fn PausePatrol()
+	 *	@brief pause the Patrol timer to launch Patrol
+	 */
+	UFUNCTION()
+	void PausePatrol();
+
+	/**
+	 *	@fn PausePatrol()
+	 *	@brief pause the Patrol timer to launch Patrol
+	 */
+	UFUNCTION()
+	void EndPatrol();
+
+protected:
+	/**
+	 *	@fn Patrol()
+	 *	@brief Order the controlled pawn that moves
+	 */
+	UFUNCTION()
+		void Patrol();
+
 	
 private:
 	
@@ -44,6 +89,35 @@ private:
 	UPROPERTY(Replicated, EditAnywhere, Category ="Path")
 		ASplinePathActor * PatrolPath;
 
+	/**
+	 *	@property PathDistanceDelta
+	 *	@brief the delta on the path it is supposed to follow
+	 */
+	UPROPERTY(Replicated)
+		float PathDistanceDelta = 0;
+
+	/**
+	 *	@property PathAcceptanceRadius
+	 *	@brief The radius of near target we're considering
+	 */
+	UPROPERTY(Replicated)
+		float PathAcceptanceRadius = 200;
+
+
+	/**
+	 *	@property PatrolTimerHandle
+	 *	@brief timer handle for the patrol 
+	 */
+	UPROPERTY()
+	FTimerHandle PatrolTimerHandle;
+
+
+	/**
+	 *	@property PatrolTimerHandle
+	 *	@brief timer handle for the patrol 
+	 */
+	UPROPERTY(Replicated, EditAnywhere)
+	float TimerDelay = 0.2f;
 	
 	
 	

@@ -40,6 +40,7 @@ public:
 	template <typename ClassFilter>
 	bool GetActorsInCenterofScreen(TArray<ClassFilter *> &OutActors, FVector2D NewCenterSpan)
 	{
+		OutActors.Empty();
 		CenterSpan = NewCenterSpan;
 		if (!ClassFilter::StaticClass()->IsChildOf(AActor::StaticClass()))
 			return false;

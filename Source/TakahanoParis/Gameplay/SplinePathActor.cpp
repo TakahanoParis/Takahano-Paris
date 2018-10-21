@@ -10,6 +10,7 @@ ASplinePathActor::ASplinePathActor()
 	PrimaryActorTick.bCanEverTick = false;
 	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline Component"));
 	RootComponent = Spline;
+	PathSteps = Spline->GetNumberOfSplinePoints();
 }
 
 // Called when the game starts or when spawned
