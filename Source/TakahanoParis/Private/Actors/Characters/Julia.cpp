@@ -21,7 +21,7 @@ void AJulia::Tick(float DeltaSeconds)
 }
 
 
-bool AJulia::GetLookedAtElectronic(TArray<AActor*>& OutActors)
+bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors)
 {
 
 	auto PC = Cast<ACustomPlayerController>(GetController());
