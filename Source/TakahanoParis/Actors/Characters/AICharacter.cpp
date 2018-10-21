@@ -15,7 +15,8 @@ void AAICharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutL
 
 void AAICharacter::BeginPlay()
 {
-	const auto AI = GetAIController();
+	Super::BeginPlay();
+	const auto AI = GetCustomAIController();
 	if(AI && PatrolPath)
 	{
 		AI->SetPathActor(PatrolPath);

@@ -33,7 +33,16 @@ public:
 	 *	@return The CustomAIController for that actor
 	 */
 	UFUNCTION()
-		ACustomAIController * GetAIController() const {return Cast<ACustomAIController>(GetController());}
+		ACustomAIController * GetCustomAIController() const {return Cast<ACustomAIController>(GetController());}
+
+	/**
+	 *	@fn	GetAIController_BP()
+	 *	@return The CustomAIController for that actor
+	 *	@note For blueprints
+	 */
+	UFUNCTION(BlueprintPure, Category="AI", meta = (DisplayName = "Get Custom AI Controller"))
+		ACustomAIController * GetCustomAIController_BP() const {return GetCustomAIController();}
+
 
 
 	
