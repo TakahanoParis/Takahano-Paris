@@ -18,6 +18,7 @@ ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& Objec
 		//if(GM)
 			//ClientSetHUD(GM->)
 	}
+
 		
 }
 
@@ -195,7 +196,7 @@ bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<ClassFilter *>& O
 {
 	OutActors.Empty();
 	//const FVector2D ScreenCenter = GetScreenCenterCoordinates();
-	const auto HUD = Cast<ACustomHUD>(GetHUD());
+	auto HUD = Cast<ACustomHUD>(GetHUD());
 	if (HUD)
 	{
 		HUD->GetActorsInCenterofScreen<ClassFilter>(OutActors, CenterOfScreenSpan);

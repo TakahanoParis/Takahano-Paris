@@ -47,6 +47,8 @@ public :
 	UFUNCTION(BlueprintCallable, Category ="Julia", meta = (DisplayName = "Get looked at Electronic"))
 		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const {return  GetLookedAtHackable(OutActors);}
 
+
+
 	/**
 	 *	@property HackDelegate
 	 *	@brief Delegate that gets fired when you want to hack an object
@@ -74,7 +76,7 @@ protected:
 	 *	@see IHackInterface
 	 *	@note For blueprint
 	 */
-	UFUNCTION(BlueprintCallable, Category="Julia")
+	UFUNCTION(BlueprintCallable, Category="Julia", meta = (DisplayName = "Try Hack"))
 		bool TryHack_BP(AActor * target)const {return TryHack(target);}
 
 

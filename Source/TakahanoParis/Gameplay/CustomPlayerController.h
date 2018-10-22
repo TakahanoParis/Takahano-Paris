@@ -142,7 +142,7 @@ public:
 	 *	@return bool true if found something, False otherwise
 	 *	@note : For Blueprints.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in cylinder from camera by objects "))
+	UFUNCTION(BlueprintPure, Category = "Screen", meta = (DisplayName = "Get Actor in cylinder from camera by channel "))
 		FORCEINLINE bool GetActorInCylinderScreenByChannel_BP(TArray<AActor *> &ActorsInCylinder, FVector2D ScreenTraceLocation, float Radius, float Range, ECollisionChannel TraceChannel, bool bDrawDebug = false) { return GetActorInCylinderScreenByChannel(ActorsInCylinder, ScreenTraceLocation, Radius, Range, TraceChannel, bDrawDebug); }
 
 	/**

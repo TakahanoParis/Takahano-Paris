@@ -8,6 +8,7 @@
 AJulia::AJulia() : Super()
 {
 	HackDelegate.AddDynamic(this, &AJulia::Hack);
+	//bCanEverTick = true;
 }
 
 
@@ -15,6 +16,7 @@ AJulia::AJulia() : Super()
 
 void AJulia::Tick(float DeltaSeconds)
 {
+	Super::Tick(DeltaSeconds);
 	TArray<AActor*> ElectronicActors;
 	GetLookedAtHackable(ElectronicActors);
 
