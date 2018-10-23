@@ -77,7 +77,7 @@ protected:
 	 *	@note For blueprint
 	 */
 	UFUNCTION(BlueprintCallable, Category="Julia", meta = (DisplayName = "Try Hack"))
-		bool TryHack_BP(AActor * target)const {return TryHack(target);}
+		bool TryHack_BP(AActor * target) {return TryHack(target);}
 
 
 

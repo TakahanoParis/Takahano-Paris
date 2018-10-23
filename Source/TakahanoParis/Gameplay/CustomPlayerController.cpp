@@ -12,6 +12,8 @@
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
 {
+	bAttachToPawn = true;
+	bFindCameraComponentWhenViewTarget = true;
 	if(!GetHUD())
 	{
 		auto GM = UGameplayStatics::GetGameMode(GetWorld());
@@ -196,10 +198,12 @@ bool ACustomPlayerController::GetActorsInCenterOfScreen(TArray<ClassFilter *>& O
 {
 	OutActors.Empty();
 	//const FVector2D ScreenCenter = GetScreenCenterCoordinates();
-	auto HUD = Cast<ACustomHUD>(GetHUD());
-	if (HUD)
+	if (!GetHUD())
+		return false;
+	auto CustomHUD = Cast<ACustomHUD>(GetHUD());
+	if (CustomHUD)
 	{
-		HUD->GetActorsInCenterofScreen<ClassFilter>(OutActors, CenterOfScreenSpan);
+		CustomHUD->GetActorsInCenterofScreen<ClassFilter>(OutActors, CenterOfScreenSpan);
 	}
 	return OutActors.Num() > 0 ;
 }
