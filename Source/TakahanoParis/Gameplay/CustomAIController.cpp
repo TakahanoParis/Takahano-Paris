@@ -44,7 +44,6 @@ void ACustomAIController::Patrol()
 	{
 		// we need to move further up the spline
 		PathDistanceDelta += PatrolPath->GetSpline()->GetSplineLength()/PatrolPath->GetPathPoints();
-		UE_LOG(LogTemp, Warning, TEXT("PathDistanceDelta : %f"), PathDistanceDelta);
 	
 	}
 	if(FMath::IsNearlyEqual( PatrolPath->GetSpline()->GetSplineLength(), PathDistanceDelta, PathAcceptanceRadius))
@@ -55,8 +54,7 @@ void ACustomAIController::Patrol()
 	}
 	const auto result  = MoveToLocation(GoalLocation, PathAcceptanceRadius/2); // "/2" is a Quick and dirty fix to have a value smaller than our confirmation value
 	const FString resultstring = (result != EPathFollowingRequestResult::Type::Failed)?TEXT("Success"):TEXT("Failed");
-	UE_LOG(LogTemp, Warning, TEXT("Patrol : %s, spline distance target :%f"),*resultstring, FVector::Distance(PatrolPath->GetWorldLocationAlongSpline(PathDistanceDelta), GetPawn()->GetActorLocation()));
-
+	
 }
 
 
