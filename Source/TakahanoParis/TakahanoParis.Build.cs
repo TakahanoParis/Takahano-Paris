@@ -8,7 +8,7 @@ public class TakahanoParis : ModuleRules
 	{
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "StreamingPauseRendering", "OnlineSubsystem", "OnlineSubsystemUtils" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "StreamingPauseRendering", "OnlineSubsystem", "OnlineSubsystemUtils", "AIModule" });
 
 
 

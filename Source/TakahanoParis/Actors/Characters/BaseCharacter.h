@@ -17,7 +17,7 @@ class TAKAHANOPARIS_API ABaseCharacter : public ACharacter
 
 
     public:
-    ABaseCharacter();
+	ABaseCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 
     /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)

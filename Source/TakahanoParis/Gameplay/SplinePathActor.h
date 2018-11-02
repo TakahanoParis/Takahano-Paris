@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/SplineComponent.h"
 #include "SplinePathActor.generated.h"
 
-class USplineComponent;
 
 /**
  * @class ASplinePathActor
@@ -44,6 +44,13 @@ public:
 	 */
 	UFUNCTION()
 	FORCEINLINE USplineComponent * GetSpline() const {return Spline;}
+
+	/**
+	 * @fn GetLength()
+	 * @brief directly return the length of the spline
+	 */
+	UFUNCTION()
+		FORCEINLINE float GetLength() const { return Spline->GetSplineLength(); }
 
 	/**
 	 * @fn GetPathPoints()

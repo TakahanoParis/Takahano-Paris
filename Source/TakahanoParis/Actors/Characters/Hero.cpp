@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/CustomPlayerController.h"
 #include "Actors/Interfaces/InteractInterface.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 AHero::AHero() : Super()
@@ -27,6 +28,8 @@ AHero::AHero() : Super()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset (to avoid direct content references in C++)
+
+	GetCharacterMovement()->bCanWalkOffLedges = false;
 }
 
 bool AHero::GetLookedAtActor(TArray<AActor*>& OutActors)

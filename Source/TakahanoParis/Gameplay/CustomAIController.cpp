@@ -2,15 +2,60 @@
 
 #include "CustomAIController.h"
 #include "Actors/CCTVActor.h"
+#include "Actors/Characters/AICharacter.h"
 #include "UnrealNetwork.h"
 #include "NavigationSystem.h"
 #include "SplinePathActor.h"
 #include "GameFramework/Pawn.h"
 #include "Components/SplineComponent.h"
 #include "TimerManager.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 
 
 ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+
+	// Basic setup :
+	PrimaryActorTick.bCanEverTick = true;
+	bAttachToPawn = true;
+
+
+
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
+	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
+
+	SightConfig->SightRadius = AISightRadius;
+	SightConfig->LoseSightRadius = AILoseSightRadius;
+	SightConfig->PeripheralVisionAngleDegrees = AIFieldOfView;
+	SightConfig->SetMaxAge(AISightAge);
+
+	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+
+	GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
+	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &ACustomAIController::OnPerceptionReceived);
+	GetPerceptionComponent()->ConfigureSense(*SightConfig);
+
+
+}
+
+void ACustomAIController::BeginPlay()
+{
+	// call super begin play to have this function to work properly
+	Super::BeginPlay();
+	
+	// Setup blackboard
+	const bool IsBlackboardValid =  UseBlackboard(AIBlackboard, Blackboard);
+	InitializeBlackboardValues(); // Anything could happen here, as blueprint can override this function
+
+	// run the behavior tree
+	if (BehaviourTreeAsset)
+		RunBehaviorTree(BehaviourTreeAsset);
+}
+
+void ACustomAIController::OnPossess_Implementation(APawn* PossessedPawn)
 {
 
 }
@@ -37,9 +82,10 @@ void ACustomAIController::Patrol()
 {
 	if(!GetPawn())
 		return;
-	UE_LOG(LogTemp, Error, TEXT("Pawn : %s"),  *GetPawn()->GetActorLocation().ToString())
+
 	// Check were are we compared to target
 	const FVector GoalLocation = PatrolPath->GetWorldLocationAlongSpline(PathDistanceDelta);
+	
 	if(GetPawn()->GetActorLocation().Equals(GoalLocation,PathAcceptanceRadius))
 	{
 		// we need to move further up the spline
@@ -50,11 +96,41 @@ void ACustomAIController::Patrol()
 	{
 		// we need to move further up the spline
 		PathDistanceDelta = 0;
-		UE_LOG(LogTemp, Warning, TEXT("reset spline progress"));
 	}
 	const auto result  = MoveToLocation(GoalLocation, PathAcceptanceRadius/2); // "/2" is a Quick and dirty fix to have a value smaller than our confirmation value
 	const FString resultstring = (result != EPathFollowingRequestResult::Type::Failed)?TEXT("Success"):TEXT("Failed");
+
+
+
+#if 0
+	// setting static variables for patrol
+	static float distance;
+	const auto pawn= Cast<ACharacter>(GetPawn());
+	if (!pawn)
+		return;
+	static const float patrolSpeed = pawn->GetCharacterMovement()->MaxWalkSpeed / TimerDelay;
 	
+	distance += patrolSpeed;
+	if (distance > PatrolPath->GetLength())
+		distance -= PatrolPath->GetLength();
+	// do the patrolling 
+	const auto result = MoveToLocation(PatrolPath->GetWorldLocationAlongSpline(distance), PathAcceptanceRadius);
+	UE_LOG(LogTemp, Warning, TEXT("distance : %f"), distance);
+
+#endif // 0
+	
+	
+}
+
+void ACustomAIController::InitializeBlackboardValues_Implementation()
+{
+
+}
+
+void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAIStimulus Stimulus)
+{
+	const auto T = GetGenericTeamId().GetAttitude(Actor, this);
+	UE_LOG(LogTemp, Warning, TEXT("%s sees %s as %d"), *this->GetName(), *Actor->GetName(), T);
 }
 
 

@@ -16,7 +16,7 @@ void UCustomWidget::OnWidgetRebuilt()
 void UCustomWidget::PostLoad()
 {
 	Super::PostLoad();
-	BindDelegates();
+	//BindDelegates();
 }
 
 void UCustomWidget::BindDelegates()

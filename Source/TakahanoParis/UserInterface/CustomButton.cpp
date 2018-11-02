@@ -3,7 +3,8 @@
 #include "CustomButton.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
-#include "Styling/SlateWidgetStyleAsset.h"
+#include "UserInterface/CustomButtonWidgetStyle.h"
+#include "SlateWidgetStyleAsset.h"
 
 
 UCustomButton::UCustomButton(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -14,35 +15,20 @@ UCustomButton::UCustomButton(const FObjectInitializer& ObjectInitializer) : Supe
 void UCustomButton::OnWidgetRebuilt()
 {
 	Super::OnWidgetRebuilt();
-	//@TODO: Check this frequently qs it is subject to change
-	UE_LOG(LogSlate, Display, TEXT("WidgetRebuilt"));
-									
-	if (!ButtonStyle) // This make no sens to do anything if nothing is set properly
+	if (!ButtonWidget || !LabelWidget)
 	{
-		Super::PostLoad();
-		UE_LOG(LogSlate, Error, TEXT("Button Style not set."));
-		return;
-	}
-	if(!ButtonWidget)
-	{
-		Super::PostLoad();
-		UE_LOG(LogSlate, Error, TEXT("Button Widget not set."));
-		return;
-	}
-	ButtonWidget->Style_DEPRECATED = ButtonStyle; // Maybe this won't work in future UE4 version
-
-	const FButtonStyle* StylePtr = ButtonStyle->GetStyle<FButtonStyle>();
-	if (StylePtr != nullptr)
-	{
-		ButtonWidget->WidgetStyle = *StylePtr;
-	}
-	if (!LabelWidget)
-	{
-		Super::PostLoad();
-		UE_LOG(LogSlate, Error, TEXT("Label Widget not set."));
-		return;
+		UE_LOG(LogSlate, Error, TEXT("Custom button not set."));
+		return;	// do not do anything if there's no button or no Label
 	}
 	LabelWidget->SetText(Label);
+
+	if (!CustomButtonStyle)
+	return;
+
+	const auto Style = CustomButtonStyle->GetStyle<FCustomButtonStyle>();
+	if (Style)
+		UCustomButtonWidgetStyle::SetStyle(this, *Style);
+
 }
 
 

@@ -9,7 +9,7 @@
 
 /**
  * @class UCustomButton
- * A button with an automatically added text Label
+ * A button with an automatically added text Label and styling to go with it.
  */
 UCLASS()
 class TAKAHANOPARIS_API UCustomButton : public UCustomWidget
@@ -28,6 +28,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Text")
 		FText Label;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Style" )
+		class USlateWidgetStyleAsset* CustomButtonStyle; // DEPRECATED
+	//class UCustomButtonWidgetStyle* CustomButtonStyle;
 protected:
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock * LabelWidget;
@@ -35,9 +38,10 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		class UButton * ButtonWidget;
 
-	/**	This is just a wrapper for a struct allowing to set the styles separately in a different Asset ( for reusability) */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
-		class USlateWidgetStyleAsset* ButtonStyle;
+public:
+	FORCEINLINE class UTextBlock *	GetLabelWidget()	const	{ return LabelWidget; }
+	FORCEINLINE class UButton *		GetButtonWidget()	const	{ return ButtonWidget;}
+	
 
 	UFUNCTION(BlueprintCallable, Category = "Button|Event")
 		virtual void OnClicked();

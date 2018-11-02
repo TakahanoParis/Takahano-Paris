@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
-#include "TeamInterface.h"
 #include "CustomGameMode.generated.h"
 
 /**
@@ -83,7 +82,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 		bool TeamExists(int TeamNumber);
-#endif
+
 
 protected:
 	UPROPERTY()
@@ -91,7 +90,7 @@ protected:
 
 	UPROPERTY()
 		int NumOfTeam;
-
+#endif
 
 public:
 	FORCEINLINE class FTimerManager * GetTimerManager() { return  &MultiPlayerTimerManager; }

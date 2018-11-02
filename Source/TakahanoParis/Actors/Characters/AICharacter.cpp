@@ -2,7 +2,7 @@
 
 #include "AICharacter.h"
 #include "UnrealNetwork.h"
-
+#include "Perception/AIPerceptionComponent.h"
 
 
 void AAICharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
@@ -11,6 +11,10 @@ void AAICharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutL
 	DOREPLIFETIME(AAICharacter, PatrolPath);
 
 
+}
+
+AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
+{
 }
 
 void AAICharacter::BeginPlay()
