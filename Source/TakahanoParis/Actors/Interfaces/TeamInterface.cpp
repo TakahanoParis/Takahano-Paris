@@ -4,36 +4,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/CustomGameMode.h"
 
-int ITeamInterface::I_GetTeam_BP()
+
+
+ETeamAttitudeEnum DefaultTeamAttitudeSolver(FTeam A, FTeam B)
 {
-	return I_GetTeam();
+		return A != B ? ETeamAttitudeEnum::TAE_Hostile : ETeamAttitudeEnum::TAE_Friendly;
 }
 
-
-void ITeamInterface::I_SetTeam_BP(uint8 NewTeam)
-{
-	I_SetTeam(NewTeam);
-}
-
-bool ITeamInterface::I_ValidateTeam(FTeam Team, const UObject * WorldContextObject)
-{
-
-	return false;
-	/*
-	AGameModeBase * GM = UGameplayStatics::GetGameMode(WorldContextObject);
-	if (!GM)
-		return false;
-	AAnimaGameMode * AnimaGM = Cast<AAnimaGameMode>(GM);
-	if(!AnimaGM)
-		return false;
-	if (AnimaGM->TeamExists(Team.TeamNumber))
-	{
-		// Correct the Name and the Color from GameMode
-		Team.TeamName = AnimaGM->GetTeam(Team.TeamNumber).TeamName;
-		Team.TeamColor = AnimaGM->GetTeam(Team.TeamNumber).TeamColor;
-		return true;
-	}
-	//Can implement default behaviour here.
-	return false;
-	*/
-}
+FTeam::FTeamAttitudeSolverFunction* FTeam::AttitudeSolverImpl = &DefaultTeamAttitudeSolver;

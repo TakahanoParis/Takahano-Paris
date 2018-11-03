@@ -5,29 +5,72 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "TeamInterface.generated.h"
+
+class AActor;
+
 /**
- *  @struct Team
+ *	@enum ETeamAttitudeEnum
+ *	@brief describe how the team interacts with 
+ */
+UENUM()
+enum class ETeamAttitudeEnum  : int32
+{
+    TAE_Hostile 	UMETA(DisplayName="Hostile"),
+    TAE_Friendly 	UMETA(DisplayName="Friendly"),
+    TAE_Neutral 	UMETA(DisplayName="Neutral")
+}; 
+
+
+/**
+ *  @struct FTeam
  *  This Struct contains all relevant data about a Team
  */
-USTRUCT(Blueprintable)
-struct FTeam
+USTRUCT(BlueprintType)
+struct TAKAHANOPARIS_API FTeam
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere)
-		int8 TeamNumber;
-
-	UPROPERTY(EditAnywhere)
-		FName TeamName;
-
-	UPROPERTY(EditAnywhere)
-		FColor TeamColor;
-
-	FTeam()
+private:
+	enum EPredefinedId
 	{
-		TeamNumber = 0;
-		TeamName = "";
+		PlayersCoopCharacter = 0,
+		NoTeamId = 255	// if you want to change NoTeam's ID update FGenericTeamId::NoTeam
+	};
+
+protected:
+	UPROPERTY(Category = "TeamID", EditAnywhere, BlueprintReadWrite)
+	uint8 TeamID;
+
+public:
+	FTeam(uint8 InTeamID = NoTeamId) : TeamID(InTeamID)
+	{}
+
+	FORCEINLINE operator uint8() const { return TeamID; }
+
+	FORCEINLINE uint8 GetId() const { return TeamID; }
+
+	FORCEINLINE void SetId(uint8 NewId) { TeamID = NewId; }
+	
+	static FTeam GetTeamIdentifier(const AActor* TeamMember);
+	static ETeamAttitudeEnum GetAttitude(const AActor* A, const AActor* B);
+	static ETeamAttitudeEnum GetAttitude(FTeam TeamA, FTeam TeamB)
+	{
+		return AttitudeSolverImpl ? (*AttitudeSolverImpl)(TeamA, TeamB) : ETeamAttitudeEnum::TAE_Neutral;
 	}
+
+	typedef ETeamAttitudeEnum FTeamAttitudeSolverFunction(FTeam, FTeam);
+	
+	static void SetAttitudeSolver(FTeamAttitudeSolverFunction* Solver)	{AttitudeSolverImpl = Solver;}
+
+
+protected:
+	// the default implementation makes all teams hostile
+	// @note that for consistency IGenericTeamAgentInterface should be using the same function 
+	//	(by default it does)
+	static FTeamAttitudeSolverFunction* AttitudeSolverImpl;
+
+public:
+	static const FTeam NoTeam;
 };
 
 
@@ -77,7 +120,7 @@ public:
 	* @note  for Blueprint, no need to implement it in your classes
 	*/
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="GetTeam"))
-		virtual int I_GetTeam_BP();
+		virtual int I_GetTeam_BP() {return I_GetTeam();}
 
 
 	/**
@@ -87,16 +130,7 @@ public:
 	* @note  for Blueprint, no need to implement it in your classes
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SetTeam"))
-		virtual void I_SetTeam_BP(uint8 NewTeam);
+		virtual void I_SetTeam_BP(int NewTeam){I_SetTeam(static_cast<uint8>(NewTeam)); }
 
-	/**
-	* @brief  I_ValidateTeam function.
-	* check if the FTeam you give is valid
-	* @param Team The team you want checked
-	* @param WorldContextObject a Valid UWorld will be fine
-	* @return true if your team exist in the Game Mode
-	* @note Cannot be a UFunction ( due to Static keyword)
-	*/
-	static bool I_ValidateTeam(FTeam Team, const UObject * WorldContextObject);
-		
+
 };
