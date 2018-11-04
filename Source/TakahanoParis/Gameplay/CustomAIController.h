@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Actors/Interfaces/TeamInterface.h"
 #include "CustomAIController.generated.h"
 
 
@@ -15,7 +16,7 @@ class ASplinePathActor;
  *	@brief Base class for AI Controller. Adds a patrol action
  */
 UCLASS()
-class TAKAHANOPARIS_API ACustomAIController : public AAIController
+class TAKAHANOPARIS_API ACustomAIController : public AAIController, public ITeamInterface
 {
 	GENERATED_BODY()
 
@@ -218,5 +219,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI|Perception", meta = (DisplayName = "Field Of View"))
 		float AIFieldOfView = 90.0f;
 
+
+
+	// inherited via @see ITeamInterface
+	virtual void I_SetTeam(FTeam NewTeam) override;
+	virtual FTeam I_GetTeam() const;
 
 };

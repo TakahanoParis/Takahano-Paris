@@ -45,7 +45,9 @@ public:
 		if (!ClassFilter::StaticClass()->IsChildOf(AActor::StaticClass()))
 			return false;
 		for (AActor* EachActor : ActorsInCenterofScreen)
-			OutActors.Add(CastChecked<ClassFilter>(EachActor));
+			if(Cast<ClassFilter>(EachActor))
+				OutActors.Add(Cast<ClassFilter>(EachActor));
+			//OutActors.Add(CastChecked<ClassFilter>(EachActor));
 		return true;
 	}
 

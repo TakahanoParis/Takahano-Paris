@@ -4,10 +4,11 @@
 //#include "GameFramework/Controller.h"
 #include "Gameplay/CustomPlayerController.h"
 #include "Actors/Interfaces/HackInterface.h"
+#include "UnrealNetwork.h"
 
 AJulia::AJulia() : Super()
 {
-	HackDelegate.AddDynamic(this, &AJulia::Hack);
+	//HackDelegate.AddDynamic(this, &AJulia::Hack);
 	//bCanEverTick = true;
 }
 
@@ -22,11 +23,33 @@ void AJulia::Tick(float DeltaSeconds)
 
 }
 
+void AJulia::MoveForward(float Value)
+{
+	if(bIsUsingObject)
+	{
+		return;
+	}
+	Super::MoveForward(Value);
+}
+
+void AJulia::MoveRight(float Value)
+{
+	if (bIsUsingObject)
+	{
+		if(UsedActor)
+			
+		return;
+	}
+	Super::MoveRight(Value);
+}
+
 
 bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors) const
 {
 
 	auto PC = Cast<ACustomPlayerController>(GetController());
+	if (!PC)
+		return false;
 	const bool R = PC->GetActorsInCenterOfScreen<AActor>(OutActors);
 	for (int32 id = OutActors.Num()-1; id >= 0; --id)
 		if(!Cast<IHackInterface>(OutActors[id]))
@@ -35,9 +58,10 @@ bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors) const
 	return R;
 }
 
-bool AJulia::TryHack(AActor* target) const 
+bool AJulia::TryHack(AActor* target)  
 {
 	auto AsInterface = Cast<IHackInterface>(target);
+	HackDelegate.Broadcast(target);
 	if(!AsInterface)
 		return false;
 	switch(AsInterface->I_GetInteractState()) 
@@ -51,28 +75,48 @@ bool AJulia::TryHack(AActor* target) const
 	case EInteractableState::ISE_Useable:
 		if (GetController()->Role == ROLE_AutonomousProxy)
 		{
-			AsInterface->I_Server_Hack(GetController());
+			Server_Hack(target);
 			return true;
 		}
 		if (GetController()->Role == ROLE_Authority)
 		{
-			AsInterface->I_Server_Hack_Implementation(GetController()); // We're already server, no need for confirmation
+			Server_Hack_Implementation(target);
 			return true;
 		}
 	default: 
 		return false;
 	}
-	if(Cast<IHackInterface>(target))
-	{
-		HackDelegate.Broadcast(target);
-		return true;
-	}
-	return false;
-
 }
 
-void AJulia::Hack(AActor * target)
+void AJulia::ReturnToCharacter()
+{
+	const auto aPC = Cast<APlayerController>(GetController());
+	aPC->SetViewTargetWithBlend(this, 0.2);
+	SetOwner(aPC);
+	aPC->SetControlRotation(this->GetActorRotation());
+	Controller = aPC;
+}
+
+bool AJulia::Server_Hack_Validate(AActor * target)
+{
+	return true;
+}
+
+
+void AJulia::Server_Hack_Implementation (AActor * target)
 {
 	const auto AsInterface = Cast<IHackInterface>(target);
-	AsInterface->I_Server_Hack(GetController());
+	if (!AsInterface)
+		return;
+	bIsUsingObject = true;
+	UsedActor = target;
+	if (GetController())
+		AsInterface->Execute_I_Server_Hack(target, GetController());
+}
+
+void AJulia::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AJulia, bIsUsingObject);
+	DOREPLIFETIME(AJulia, UsedActor);
 }

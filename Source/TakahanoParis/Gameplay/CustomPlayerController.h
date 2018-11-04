@@ -33,6 +33,32 @@ public:
 	 */
 	virtual void SetupInputComponent() override;
 
+	virtual void Reset() override;
+
+protected:
+
+	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		float BaseTurnRate;
+
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+		float BaseLookUpRate;
+
+	/**
+   * Called via input to turn at a given rate.
+   * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+   */
+	virtual void TurnAtRate(float Rate);
+
+	/**
+	 * Called via input to turn look up/down at a given rate.
+	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	 */
+	virtual void LookUpAtRate(float Rate);
+
+
+
 public:
 
 	/**
@@ -258,5 +284,11 @@ protected:
 	 */
 	UPROPERTY()
 		TArray<UCustomWidget *> ActiveWidgetList;
-		
+
+
+private:
+	UPROPERTY(Replicated)
+		class ABaseCharacter * InitialCharacter;
+
+
 };

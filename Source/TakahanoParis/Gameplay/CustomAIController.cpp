@@ -19,7 +19,7 @@ ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitial
 	// Basic setup :
 	PrimaryActorTick.bCanEverTick = true;
 	bAttachToPawn = true;
-
+	bWantsPlayerState = true;
 
 
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
@@ -127,10 +127,22 @@ void ACustomAIController::InitializeBlackboardValues_Implementation()
 
 }
 
+void ACustomAIController::I_SetTeam(FTeam NewTeam)
+{
+}
+
+FTeam ACustomAIController::I_GetTeam() const
+{
+	return FTeam();
+}
+
 void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAIStimulus Stimulus)
 {
-	const auto T = GetGenericTeamId().GetAttitude(Actor, this);
-	UE_LOG(LogTemp, Warning, TEXT("%s sees %s as %d"), *this->GetName(), *Actor->GetName(), T);
+	const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(Actor, this);
+
+	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETeamAttitudeEnum"), true);
+	if (EnumPtr) 
+		UE_LOG(LogTemp, Warning, TEXT("%s sees %s as %d"), *this->GetName(), *Actor->GetName(), *EnumPtr->GetNameByValue((int8)T).ToString());
 }
 
 

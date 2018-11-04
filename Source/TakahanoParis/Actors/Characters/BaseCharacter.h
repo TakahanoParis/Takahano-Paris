@@ -4,36 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Actors/Interfaces/TeamInterface.h"
 #include "BaseCharacter.generated.h"
+
 
 
 /**
 * @Class The base class of all heroes and controller character of TakahanoParis.
 */
-UCLASS(ClassGroup = (Character))//config=Game)
-class TAKAHANOPARIS_API ABaseCharacter : public ACharacter
+UCLASS(ClassGroup = (Character), config=Game)
+class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface
 {
     GENERATED_BODY()
 
 
-    public:
+public:
 	ABaseCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 
-    /** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-    float BaseTurnRate;
-
-    /** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
-    float BaseLookUpRate;
-
+   
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
     void SetReady(bool NewReady);
 
     UFUNCTION(BlueprintCallable, Category ="Gameplay")
     bool GetIsReady() const;
 
-    private:
+private:
 
     UPROPERTY(Replicated) //ReplicatedUsing = OnRep_IsReady)
     bool bIsReady;
@@ -44,30 +39,14 @@ class TAKAHANOPARIS_API ABaseCharacter : public ACharacter
     UFUNCTION(Server, Reliable, WithValidation)
     void Server_IsReady(bool ServerIsReady);
 
-    /*
-    UFUNCTION(NetMulticast, BlueprintCallable, Category = "Replication")
-        void
-    */
+protected:
     /** Called for forwards/backward input */
-    void MoveForward(float Value);
+    virtual void MoveForward(float Value);
 
     /** Called for side to side input */
-    void MoveRight(float Value);
+	virtual void MoveRight(float Value);
 
-    /**
-     * Called via input to turn at a given rate.
-     * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-     */
-    void TurnAtRate(float Rate);
-
-    /**
-     * Called via input to turn look up/down at a given rate.
-     * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-     */
-    void LookUpAtRate(float Rate);
-
-
-
+  
     /** Called for Main Attack ability Cannot be passive	 */
     UFUNCTION()
     virtual void Attack();
@@ -81,21 +60,20 @@ class TAKAHANOPARIS_API ABaseCharacter : public ACharacter
 	virtual bool Ability(const uint8 &Number);
 
 
-    protected:
+protected:
+
     // APawn interface
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     // End of APawn interface
 
 
 
+	// Inherited via ITeamInterface
+	virtual void I_SetTeam(FTeam NewTeam) override;
 
-#if 0
-    /** Team Interface */
-protected:
+	virtual FTeam I_GetTeam() const;
 
 
-    virtual uint8 I_GetTeam() override;
-    virtual void I_SetTeam(uint8 NewTeam) override;
-#endif
+	virtual void FellOutOfWorld(const UDamageType& dmgType) override;
 
 };

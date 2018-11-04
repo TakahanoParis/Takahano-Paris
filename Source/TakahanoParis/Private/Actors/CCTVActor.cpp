@@ -11,12 +11,16 @@
 ACCTVActor::ACCTVActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
 	PrimaryActorTick.bCanEverTick = true;
 	CameraView = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera View"));
 	CameraView->bAutoActivate = true;
-	RootComponent = CameraView;
+	CameraView->bUsePawnControlRotation = true;
+	//RootComponent = CameraView;
 	CameraMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Camera Mesh"));
 	CameraMesh->SetupAttachment(CameraView);
+
 
 }
 
@@ -46,6 +50,10 @@ void ACCTVActor::I_Hack(AController* User)
 	if(!aPC)
 		return;
 	aPC->SetViewTargetWithBlend(this, BlendTime, BlendFunction, BlendExponent, false);
+	SetOwner(aPC);
+	aPC->SetControlRotation(this->GetActorRotation());
+	Controller = aPC;
+	//aPC->Possess(this);
 }
 
 

@@ -62,6 +62,8 @@ public:
 	
 	static void SetAttitudeSolver(FTeamAttitudeSolverFunction* Solver)	{AttitudeSolverImpl = Solver;}
 
+	static ETeamAttitudeEnum DefaultTeamAttitudeSolver(FTeam A, FTeam B);
+
 
 protected:
 	// the default implementation makes all teams hostile
@@ -103,7 +105,7 @@ public:
 	 * @note You MUST implement it in your classes
 	 */
 	UFUNCTION()
-		virtual uint8 I_GetTeam() = 0;
+		virtual FTeam I_GetTeam() const = 0;
 
 	/**
 	* @brief I_SetTeam function.
@@ -112,7 +114,7 @@ public:
 	* @note You MUST implement it in your classes
 	*/
 	UFUNCTION()
-		virtual void I_SetTeam(uint8 NewTeam) = 0;
+		virtual void I_SetTeam(FTeam NewTeam) = 0;
 
 	/**
 	* @brief I_GetTeamBP function.

@@ -14,7 +14,7 @@
  * @see AJulia
  */
 UCLASS()
-class ACCTVActor : public AActor , public IHackInterface
+class ACCTVActor : public APawn , public IHackInterface
 {
 	GENERATED_BODY()
 	
@@ -66,7 +66,7 @@ protected:
 	 *	@brief float that is use to get the interpolation time.
 	 */	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-		float BlendTime = 5.f;
+		float BlendTime = 1.f;
 
 	/**
 	 *	@property BlendFunction

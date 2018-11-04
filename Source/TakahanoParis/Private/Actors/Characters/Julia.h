@@ -23,8 +23,18 @@ public :
 	
 	AJulia();
 
+
 	/* Tick function - called each frame*/
 	void Tick(float DeltaSeconds) override;
+
+
+	/** overriden from BaseCharacter */
+
+	/** Called for forwards/backward input */
+	virtual void MoveForward(float Value) override;
+
+	/** Called for side to side input */
+	virtual void MoveRight(float Value) override;
 
 
 	/**
@@ -53,7 +63,7 @@ public :
 	 *	@property HackDelegate
 	 *	@brief Delegate that gets fired when you want to hack an object
 	 */
-	UPROPERTY()
+	UPROPERTY(BlueprintAssignable, Category = "Events")
 		FHackElectronicDelegate HackDelegate;
 
 protected:
@@ -66,7 +76,7 @@ protected:
 	 *	@see IHackInterface
 	 */
 	UFUNCTION()
-		bool TryHack(AActor * target)const ;
+		bool TryHack(AActor * target);
 
 		/**
 	 *	@fn TryHack_BP()
@@ -79,7 +89,21 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="Julia", meta = (DisplayName = "Try Hack"))
 		bool TryHack_BP(AActor * target) {return TryHack(target);}
 
+	/**
+	 *	@fn ReturnToCharacter()
+	 *	@brief make sure we're using the camera from this actor
+	 */
+	UFUNCTION()
+		virtual void ReturnToCharacter();
 
+	/**
+	 *	@fn ReturnToCharacter_BP()
+	 *	@brief make sure we're using the camera from this actor
+	 *	@note For blueprint
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Return to Julia"))
+		void ReturnToCharacter_BP() { ReturnToCharacter(); }
+		
 
 private:
 	/**
@@ -88,8 +112,25 @@ private:
  	 *	@param target : the object you want to hack
 	 *	@see IHackInterface
 	 */
-	UFUNCTION()
-		void Hack(AActor * target);
+	UFUNCTION(Server, Reliable, WithValidation)
+		void Server_Hack(AActor * target);
+
+
+	/**
+	 *	@property bIsUsingObject
+	 *	@brief boolean flag to know if another object is currently used
+	 */
+	UPROPERTY(Replicated)
+		bool bIsUsingObject;
+
+
+	/**
+	 *	@property UsedActor
+	 *	@brief pointer to the used actor
+	 */
+	UPROPERTY(Replicated)
+		AActor * UsedActor;
+
 
 	
 	

@@ -7,6 +7,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "UnrealNetwork.h"
+#include "Engine/World.h"
+#include "GameFramework/GameModeBase.h"
 //#include "Gameplay/AnimaPlayerState.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -16,10 +18,6 @@ ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-
-	// set our turn rates for input
-	BaseTurnRate = 45.f;
-	BaseLookUpRate = 45.f;
 
 	// Only rotates along the Z axis  when the controller rotates. Let the rest just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -53,28 +51,26 @@ void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("MoveForward", this, &ABaseCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ABaseCharacter::MoveRight);
 
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("TurnRate", this, &ABaseCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("LookUpRate", this, &ABaseCharacter::LookUpAtRate);
-
 }
 
-#if 0
-uint8 ABaseCharacter::I_GetTeam()
+
+FTeam ABaseCharacter::I_GetTeam() const
 {
-//	AAnimaPlayerState* APState = Cast<AAnimaPlayerState>(this->PlayerState);
+//	AcustomPlayerState* APState = Cast<AAnimaPlayerState>(this->PlayerState);
 // return APState->I_GetTeam();
 	return 0;
 }
 
-void ABaseCharacter::I_SetTeam(uint8 NewTeam)
+void ABaseCharacter::FellOutOfWorld(const UDamageType& dmgType)
+{
+	GetWorld()->GetAuthGameMode()->RestartPlayer(GetController());
+	//Super::FellOutOfWorld(); -> we don't want to delete oneself
+}
+
+void ABaseCharacter::I_SetTeam(FTeam NewTeam)
 {
 }
-#endif // 0
+
 
 void ABaseCharacter::Attack()
 {
@@ -85,19 +81,6 @@ bool ABaseCharacter::Ability(const uint8 &Number)
 {
 	UE_LOG(LogTemp, Display, TEXT("Do Ability number &d"), Number);
 	return false;
-}
-
-
-void ABaseCharacter::TurnAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
-}
-
-void ABaseCharacter::LookUpAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ABaseCharacter::SetReady(bool NewReady)

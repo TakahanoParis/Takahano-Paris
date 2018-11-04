@@ -21,8 +21,8 @@ protected:
 	UPROPERTY(Replicated)
 		FTeam HeroTeam;
 public:
-	FORCEINLINE uint8 I_GetTeam() override {return HeroTeam.GetId();}
-	FORCEINLINE void I_SetTeam(uint8 NewTeam) override { HeroTeam.SetId(NewTeam); }
+	FORCEINLINE FTeam I_GetTeam() const override {return HeroTeam.GetId();}
+	FORCEINLINE void I_SetTeam(FTeam NewTeam) override { HeroTeam.SetId(NewTeam); }
 
 	
 };
