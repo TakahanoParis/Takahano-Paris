@@ -32,11 +32,6 @@ AHero::AHero() : Super()
 	GetCharacterMovement()->bCanWalkOffLedges = false;
 }
 
-bool AHero::GetLookedAtActor(TArray<AActor*>& OutActors)
-{
-	auto PC = Cast<ACustomPlayerController>(GetController());
-	return PC->GetActorsInCenterOfScreen<AActor>(OutActors); 
-}
 
 void AHero::OnConstruction( const FTransform & Transform){
     Super::OnConstruction(Transform);

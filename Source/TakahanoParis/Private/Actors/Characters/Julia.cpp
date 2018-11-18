@@ -50,11 +50,7 @@ bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors) const
 	auto PC = Cast<ACustomPlayerController>(GetController());
 	if (!PC)
 		return false;
-	const bool R = PC->GetActorsInCenterOfScreen<AActor>(OutActors);
-	for (int32 id = OutActors.Num()-1; id >= 0; --id)
-		if(!Cast<IHackInterface>(OutActors[id]))
-			OutActors.RemoveAt(id,1,false);
-	OutActors.Shrink();
+	const bool R = PC->GetVisibleActorsWithInterface(OutActors, UHackInterface::StaticClass());
 	return R;
 }
 
