@@ -38,11 +38,11 @@ public:
 protected:
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseTurnRate;
 
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseLookUpRate;
 
 	/**
@@ -57,9 +57,41 @@ protected:
 	 */
 	virtual void LookUpAtRate(float Rate);
 
+	/**
+* Called via input to turn at a given rate.
+* @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+*/
+	virtual void Turn(float Val);
+
+	/**
+	 * Called via input to turn look up/down at a given rate.
+	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
+	 */
+	virtual void LookUp(float Val);
+
 public:
 
+
+	/**
+	 * @fn Get GetVisibleActorsInArray()
+	 * @brief Get the actors implementing interface in Zone
+	 * @param OutActors : an array containing valid scene actors
+	 * @param Interface :the interface you want to use
+	 * @return true if array is valid, false otherwise
+	 */
 	virtual bool GetVisibleActorsWithInterface(TArray<AActor*> &OutActors,const TSubclassOf<UInterface> Interface) const;
+
+	/**
+	 * @fn Get GetVisibleActorsInArray()
+	 * @brief Get the actors implementing interface in Zone
+	 * @param OutActors : an array containing valid scene actors
+	 * @param Interface :the interface you want to use
+	 * @return true if array is valid, false otherwise
+	 * @note for blueprints
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Actors", meta = (DisplayName = "Get Visible Actors With Interface"))
+		virtual bool GetVisibleActorsWithInterface_BP(TArray<AActor*> &OutActors, const TSubclassOf<UInterface> Interface) const { return GetVisibleActorsWithInterface(OutActors, Interface); }
+
 
 	/**
 	 * @fn Get GetVisibleActorsInArray()
@@ -69,7 +101,6 @@ public:
 	 * @return true if array is valid, false otherwise
 	 */
 	static bool GetVisibleActorsInArray(TArray<AActor*> &OutActors,const ACustomPlayerController * Player);
-
 
 
 	// Widgets functions
@@ -90,8 +121,8 @@ public:
 	 *	@param AnchorPoint	: The @D position on screen at which we should add it to viewport
 	 *	@return UCustomWidget * , a pointer to the newly created Widget
 	 */
-	UFUNCTION()
-		UCustomWidget * AddWidgetToScreen_BP(TSubclassOf<UCustomWidget> ClassToSpawn, FVector2D AnchorPoint = FVector2D(), int ZOrder = 0) {return AddWidgetToScreen(ClassToSpawn, AnchorPoint, ZOrder); }
+	UFUNCTION(BlueprintCallable, Category = "Widget", meta = (DisplayName = "AddWidgetToScreen_BP"))
+		FORCEINLINE UCustomWidget * AddWidgetToScreen_BP(TSubclassOf<UCustomWidget> ClassToSpawn, FVector2D AnchorPoint = FVector2D(0.f,0.f), int ZOrder = 0) {return AddWidgetToScreen(ClassToSpawn, AnchorPoint, ZOrder); }
 
 protected:
 
@@ -106,6 +137,20 @@ protected:
 private:
 	UPROPERTY(Replicated)
 		class ABaseCharacter * InitialCharacter;
+
+public:
+
+	/**
+	 *	@fn OnCharacterDie()
+	 *	@brief Event to handle the death of a character
+	 *	@note: this can be implemented and overriden in Blueprint
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
+		void OnCharacterDie();
+
+protected:
+	UFUNCTION(Server, Reliable,  WithValidation)
+		virtual void Server_OnCharacterDie();
 
 
 };

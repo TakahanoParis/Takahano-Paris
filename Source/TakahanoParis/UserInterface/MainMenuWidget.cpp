@@ -21,19 +21,20 @@ void UMainMenuWidget::QuitButtonCliqued()
 	GetCustomGameInstance()->ShowQuitGameConfirmationMessage();
 }
 
-void UMainMenuWidget::HostButtonCliqued()
+void UMainMenuWidget::HostButtonCliqued_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Host Button Has been Clicked"));
 	GetCustomGameInstance()->RequestHostGame();
 }
 
-void UMainMenuWidget::JoinButtonCliqued()
+void UMainMenuWidget::JoinButtonCliqued_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("JoinButton Has been Clicked !!"));
+	UE_LOG(LogTemp, Warning, TEXT("JoinButton Has been Clicked"));
 }
 
 void UMainMenuWidget::SettingsButtonCliqued()
 {
-	UE_LOG(LogTemp, Warning, TEXT("SettingsButton Has been Clicked !!"));
+	UE_LOG(LogTemp, Warning, TEXT("SettingsButton Has been Clicked"));
 }
 
 

@@ -40,8 +40,8 @@ void UCustomGameInstance::ShowMainMenu()
 		UE_LOG(LogSlate, Error, TEXT("Couldn't Create a Main Menu"));
 		return;
 	}
-	//APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
-	//MainMenu->AddToViewport(0);
+	APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
+	MainMenu->AddToViewport(0);
 }
 
 void UCustomGameInstance::ShowHostMenu()
@@ -103,8 +103,9 @@ void UCustomGameInstance::RequestHostGame()
 
 bool UCustomGameInstance::CreateMainMenu()
 {
-	if (MainMenu)
-		return true;
+	if(MainMenu)
+		if (MainMenu->GetIsVisible())
+			return true;
 
 	if(!GetWorld())
 		UE_LOG(LogLevel, Error, TEXT("GetWorld failed"));
@@ -208,7 +209,7 @@ void UCustomGameInstance::OnStart()
 	
 	//@todo Load Loading Screen ASAP
 
-	ReturnToMainMenu();
+	//ReturnToMainMenu();
 }
 
 void UCustomGameInstance::ReturnToMainMenu()

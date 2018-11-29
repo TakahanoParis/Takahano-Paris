@@ -66,6 +66,7 @@ public:
 
 
 
+
 	/**
 	 *	@fn PausePatrol()
 	 *	@brief pause the Patrol timer
@@ -94,6 +95,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AI", meta = (DisplayName = "End Patrol"))
 		void EndPatrol_BP() { EndPatrol(); }
 
+	/**
+	 *	@fn GetNextPointOnSpline()
+	 *	@brief Gets the nex point to reach on the spline
+	 *	@return the nex point to reach on patrol
+	 */
+	UFUNCTION()
+		 FVector GetNextPointOnSpline(const float radius);
+
+	/**
+ *	@fn GetNextPointOnSpline()
+ *	@brief Gets the nex point to reach on the spline
+ *	@return the nex point to reach on patrol
+ */
+	UFUNCTION(BlueprintCallable, Category = "AI", meta = (DisplayName = "Get Next point on Patrol"))
+		FVector GetNextPointOnSpline_BP(const float radius) { return GetNextPointOnSpline(radius); }
+
 protected:
 	/**
 	 *	@fn Patrol()
@@ -101,6 +118,9 @@ protected:
 	 */
 	UFUNCTION()
 		void Patrol();
+
+	UFUNCTION()
+		virtual bool AttackActor(AActor * Target);
 
 	
 private:
@@ -190,6 +210,8 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 		void OnPerceptionReceived(AActor * Actor, FAIStimulus Stimulus);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Spotted Reaction"))
+		void OnHostileSpotted(const AActor * Actor);
 
 	/**
 	 *	@property AISightRadius

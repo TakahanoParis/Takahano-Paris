@@ -35,7 +35,7 @@ public:
 	 * @param DistanceDelta : How far along the spline you are
 	 */
 	UFUNCTION()
-	FORCEINLINE FVector GetWorldLocationAlongSpline(float DistanceDelta) const;
+		FVector GetWorldLocationAlongSpline(float DistanceDelta) const;
 
 
 	/**

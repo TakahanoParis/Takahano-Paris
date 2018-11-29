@@ -72,8 +72,8 @@ protected:
 	 *	@property BlendFunction
 	 *	@brief Enum that gives the correct function to use to find the curve
 	 */	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
-		 TEnumAsByte<EViewTargetBlendFunction> BlendFunction = EViewTargetBlendFunction::VTBlend_EaseInOut;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera")
+	//	 TEnumAsByte<EViewTargetBlendFunction> BlendFunction = EViewTargetBlendFunction::VTBlend_EaseInOut;
 
 	/**
 	 *	@property BlendTime

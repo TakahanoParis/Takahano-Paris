@@ -5,31 +5,22 @@
 #include "Gameplay/CustomHUD.h"
 //#include "UObject/ConstructorHelpers.h"
 #include "TimerManager.h"
+#include "CustomPlayerState.h"
+#include "Kismet/GameplayStatics.h"
+#include "CustomGameInstance.h"
 
-ACustomGameMode::ACustomGameMode(const FObjectInitializer& ObjectInitializer)	: Super(ObjectInitializer)
+ACustomGameMode::ACustomGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer),
+                                                                                DefaultPlayerTeamID(0),
+                                                                                DefaultAITeamID(254)
 {
-
-		DefaultPawnClass = AHero::StaticClass();
-		PlayerControllerClass = ACustomPlayerController::StaticClass();
-		HUDClass = ACustomHUD::StaticClass();
-		PlayerControllerNum = 0;
-		MaxPlayerNumber = 10;
-		bCanStartMatch = false;
+	DefaultPawnClass = AHero::StaticClass();
+	PlayerControllerClass = ACustomPlayerController::StaticClass();
+	PlayerStateClass = ACustomPlayerState::StaticClass();
+	HUDClass = ACustomHUD::StaticClass();
+	PlayerControllerNum = 0;
+	MaxPlayerNumber = 10;
+	bCanStartMatch = false;
 }
-
-#if 0
-FTeam ACustomGameMode::GetTeam(int TeamNumber)
-{
-	return  TeamLists.IsValidIndex(TeamNumber)? TeamLists[TeamNumber] : FTeam();
-}
-
-bool ACustomGameMode::TeamExists(int TeamNumber)
-{
-	return TeamLists.IsValidIndex(TeamNumber);
-}
-#endif // 0
-
-
 
 
 void ACustomGameMode::PostLogin(APlayerController * NewPlayer)
@@ -71,13 +62,30 @@ bool ACustomGameMode::ReadyToStartMatch_Implementation()
 	}
 }
 
+bool ACustomGameMode::EndGameToMainMenuMap()
+{
+	const auto aGM = Cast < UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!aGM)
+		return false;
+	aGM->ReturnToMainMenu();
+	return true;
+}
+
+AActor * ACustomGameMode::ChoosePlayerStart_Implementation(AController * Player)
+{
+	return Super::ChoosePlayerStart_Implementation(Player);
+}
+
 void ACustomGameMode::RestartGameLevel()
 {
-
+	UGameplayStatics::OpenLevel((UObject*)GetWorld(), FName(*UGameplayStatics::GetCurrentLevelName(this)));
 }
-void ACustomGameMode::SetGameOver()
+
+void ACustomGameMode::SetGameOver(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> &GameOverReason)
 {
 	PlayState = EPlayStateEnum::PSE_GameOver;
+	GameOverMessage = TEXT("Game Over");
+	(GameOverReason == EGameOverEnum::GOE_Defeat) ? RestartGameLevel() : EndGameToMainMenuMap();
 }
 
 

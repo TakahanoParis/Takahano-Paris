@@ -18,9 +18,7 @@ AJulia::AJulia() : Super()
 void AJulia::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	TArray<AActor*> ElectronicActors;
-	GetLookedAtHackable(ElectronicActors);
-
+	GetLookedAtHackable(Hackables);
 }
 
 void AJulia::MoveForward(float Value)
@@ -44,15 +42,17 @@ void AJulia::MoveRight(float Value)
 }
 
 
-bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors) const
+bool AJulia::GetLookedAtHackable_Implementation(TArray<AActor*>& OutActors) const
 {
-
-	auto PC = Cast<ACustomPlayerController>(GetController());
-	if (!PC)
+	OutActors.Empty();
+	const auto aPC = Cast<ACustomPlayerController>(GetController());
+	if (!aPC)
 		return false;
-	const bool R = PC->GetVisibleActorsWithInterface(OutActors, UHackInterface::StaticClass());
+	const bool R = aPC->GetVisibleActorsWithInterface(OutActors, UHackInterface::StaticClass());
 	return R;
 }
+
+
 
 bool AJulia::TryHack(AActor* target)  
 {
@@ -84,13 +84,21 @@ bool AJulia::TryHack(AActor* target)
 	}
 }
 
-void AJulia::ReturnToCharacter()
+bool AJulia::Server_ReturnToCharacter_Validate()
+{
+	return true;
+}
+
+void AJulia::Server_ReturnToCharacter_Implementation()
 {
 	const auto aPC = Cast<APlayerController>(GetController());
 	aPC->SetViewTargetWithBlend(this, 0.2);
 	SetOwner(aPC);
 	aPC->SetControlRotation(this->GetActorRotation());
 	Controller = aPC;
+	bIsUsingObject = false;
+	UsedActor = nullptr;
+
 }
 
 bool AJulia::Server_Hack_Validate(AActor * target)

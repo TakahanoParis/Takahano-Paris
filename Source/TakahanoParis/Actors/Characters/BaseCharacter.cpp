@@ -1,7 +1,6 @@
  // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "BaseCharacter.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -9,26 +8,29 @@
 #include "UnrealNetwork.h"
 #include "Engine/World.h"
 #include "GameFramework/GameModeBase.h"
-//#include "Gameplay/AnimaPlayerState.h"
+#include "Gameplay/CustomPlayerState.h"
+#include "CustomCharacterMovementComponent.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 // ABaseCharacter
 
-ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer)
+ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-
+	bCanJump = false;
 	// Only rotates along the Z axis  when the controller rotates. Let the rest just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
-	GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...	
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 400.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+
 
 
 }
@@ -42,9 +44,10 @@ void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &ABaseCharacter::Run);
 
 	// Hero Abilities
-	PlayerInputComponent->BindAction("Attack",			IE_Pressed, this, &ABaseCharacter::Attack);
+	//PlayerInputComponent->BindAction("Attack",			IE_Pressed, this, &ABaseCharacter::Attack);
 	//PlayerInputComponent->BindAction("FirstAbility",	IE_Pressed, this, &ABaseCharacter::Ability);
 
 
@@ -53,29 +56,77 @@ void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 
 }
 
-
-FTeam ABaseCharacter::I_GetTeam() const
-{
-//	AcustomPlayerState* APState = Cast<AAnimaPlayerState>(this->PlayerState);
-// return APState->I_GetTeam();
-	return 0;
-}
-
 void ABaseCharacter::FellOutOfWorld(const UDamageType& dmgType)
 {
 	GetWorld()->GetAuthGameMode()->RestartPlayer(GetController());
 	//Super::FellOutOfWorld(); -> we don't want to delete oneself
 }
 
+float ABaseCharacter::I_GetLifePoints() const
+{
+	const auto aPS = Cast<ACustomPlayerState>(GetController()->PlayerState);
+	if (aPS)
+		return aPS->I_GetLifePoints();
+	return -1.f;
+}
+
+bool ABaseCharacter::I_TakeDamage(const float& DamageAmount, AActor* Instigator)
+{
+	const auto aPS = Cast<ACustomPlayerState>(GetController()->PlayerState);
+	if (aPS)
+		return aPS->I_TakeDamage(DamageAmount,Instigator);
+	return -1.f;
+}
+
+float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,	AActor* DamageCauser)
+{
+	I_TakeDamage(DamageAmount, EventInstigator);
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+}
+
+bool ABaseCharacter::CanJumpInternal_Implementation() const
+{
+	return Super::CanJumpInternal_Implementation() && bCanJump;
+}
+
+bool ABaseCharacter::CanRun()
+{
+	return false;
+}
+
+void ABaseCharacter::Run()
+{
+	if (!CanRun())
+		return;
+	UCustomCharacterMovementComponent *  CharacterMovementComponent  = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	if (!CharacterMovementComponent)
+		return;
+	CharacterMovementComponent->bIsRunning = true;
+}
+
+FTeam ABaseCharacter::I_GetTeam() const
+{
+	if(GetController())
+		if(GetController()->PlayerState)
+	{
+		const auto aPS = Cast<ACustomPlayerState>(GetController()->PlayerState);
+		if (aPS)
+			return aPS->I_GetTeam();
+	}
+	return 0;
+}
+
+
 void ABaseCharacter::I_SetTeam(FTeam NewTeam)
 {
+	const auto aPS = Cast<ACustomPlayerState>(GetController()->PlayerState);
+	if (aPS)
+		return aPS->I_SetTeam(NewTeam);
 }
 
 
-void ABaseCharacter::Attack()
-{
-	UE_LOG(LogTemp, Display, TEXT("Do Attack"));
-}
+
 
 bool ABaseCharacter::Ability(const uint8 &Number)
 {
@@ -132,7 +183,7 @@ void ABaseCharacter::MoveRight(float Value)
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-	
+
 		// get right vector 
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
@@ -145,5 +196,5 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	//DOREPLIFETIME(ABaseCharacter, bIsReady);
 	DOREPLIFETIME_CONDITION(ABaseCharacter, bIsReady, COND_SkipOwner);
-
+	DOREPLIFETIME_CONDITION(ABaseCharacter, bCanJump, COND_SkipOwner);
 }

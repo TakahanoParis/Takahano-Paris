@@ -12,8 +12,8 @@ class AActor;
  *	@enum ETeamAttitudeEnum
  *	@brief describe how the team interacts with 
  */
-UENUM()
-enum class ETeamAttitudeEnum  : int32
+UENUM(BlueprintType)
+enum class ETeamAttitudeEnum  : uint8
 {
     TAE_Hostile 	UMETA(DisplayName="Hostile"),
     TAE_Friendly 	UMETA(DisplayName="Friendly"),
@@ -52,8 +52,8 @@ public:
 	FORCEINLINE void SetId(uint8 NewId) { TeamID = NewId; }
 	
 	static FTeam GetTeamIdentifier(const AActor* TeamMember);
-	static ETeamAttitudeEnum GetAttitude(const AActor* A, const AActor* B);
-	static ETeamAttitudeEnum GetAttitude(FTeam TeamA, FTeam TeamB)
+	static const ETeamAttitudeEnum GetAttitude(const AActor* A, const AActor* B);
+	static const ETeamAttitudeEnum GetAttitude(const FTeam TeamA,const FTeam TeamB)
 	{
 		return AttitudeSolverImpl ? (*AttitudeSolverImpl)(TeamA, TeamB) : ETeamAttitudeEnum::TAE_Neutral;
 	}
@@ -97,8 +97,8 @@ class TAKAHANOPARIS_API ITeamInterface
 {
 	GENERATED_BODY()
 
-public:
 
+public:
 	/** 
 	 * @brief I_GetTeam function.
  	 * @return the index of the team of your object.
@@ -107,6 +107,7 @@ public:
 	UFUNCTION()
 		virtual FTeam I_GetTeam() const = 0;
 
+protected:
 	/**
 	* @brief I_SetTeam function.
 	* set the index of the team of your object.
@@ -116,23 +117,48 @@ public:
 	UFUNCTION()
 		virtual void I_SetTeam(FTeam NewTeam) = 0;
 
+public:
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		virtual void I_Server_SetTeam(FTeam NewTeam) ;
+		virtual void I_Server_SetTeam_Implementation(FTeam NewTeam);
+
 	/**
-	* @brief I_GetTeamBP function.
+	* @brief I_GetTeam_BP function.
 	* @return the index of the team of your object.
 	* @note  for Blueprint, no need to implement it in your classes
 	*/
 	UFUNCTION(BlueprintCallable, meta=(DisplayName="GetTeam"))
-		virtual int I_GetTeam_BP() {return I_GetTeam();}
+		virtual int I_GetTeam_BP() { return I_GetTeam().GetId(); }
 
 
 	/**
-	* @brief I_SetTeamBP function.
+	* @brief I_SetTeam_BP()
 	* set the index of the team of your object;
 	* @param NewTeam the index of the team you want to be in
 	* @note  for Blueprint, no need to implement it in your classes
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SetTeam"))
-		virtual void I_SetTeam_BP(int NewTeam){I_SetTeam(static_cast<uint8>(NewTeam)); }
+		virtual void I_SetTeam_BP(int NewTeam){I_Server_SetTeam(static_cast<uint8>(NewTeam)); }
 
+
+	/**
+	 *	@fn I_GetAttitudeToward()
+	 *	@brief Gets the attitude toward other actor
+	 *	@return attitude towards OtherTeamActor
+	 *	@param OtherTeamActor the other actor we wanna know the attitude towards
+	 */
+	UFUNCTION()
+		virtual ETeamAttitudeEnum I_GetAttitudeToward(AActor * OtherTeamActor) const;
+
+	/**
+	 *	@fn I_GetAttitudeToward_BP()
+	 *	@brief Gets the attitude toward other actor
+	 *	@return attitude towards OtherTeamActor
+	 *	@param OtherTeamActor the other actor we wanna know the attitude towards
+ 	 *	@note  for Blueprint, no need to implement it in your classes
+	 */
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Attitude toward"))
+		virtual ETeamAttitudeEnum I_GetAttitudeToward_BP(AActor * OtherTeamActor) const { return I_GetAttitudeToward(OtherTeamActor); }
 
 };

@@ -28,7 +28,8 @@ void UCustomButton::OnWidgetRebuilt()
 	const auto Style = CustomButtonStyle->GetStyle<FCustomButtonStyle>();
 	if (Style)
 		UCustomButtonWidgetStyle::SetStyle(this, *Style);
-
+	else
+		UE_LOG(LogSlate, Error, TEXT("Custom style not set."));
 }
 
 

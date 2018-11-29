@@ -53,7 +53,7 @@ public:
 	 *	@return true if damage were taken 
 	 */
 	UFUNCTION()
-		virtual bool I_takeDamage(float DamageAmount, class AActor * Instigator) = 0;
+		virtual bool I_TakeDamage(const float &DamageAmount, class AActor * Instigator) = 0;
 
 	/**
 	 *	@fn I_takeDamage_BP()
@@ -64,7 +64,7 @@ public:
 	 *	@note For Blueprints
 	 */
 	UFUNCTION(BlueprintCallable, Category ="Life", meta= (DisplayName = "Take damage") )
-		virtual bool I_takeDamage_BP(float DamageAmount, class AActor * Instigator){return I_takeDamage(DamageAmount, Instigator);}
+		virtual bool I_TakeDamage_BP(const float &DamageAmount, class AActor * Instigator){return I_TakeDamage(DamageAmount, Instigator);}
 
 
 

@@ -15,6 +15,7 @@ void AAICharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutL
 
 AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
+	AIControllerClass = ACustomAIController::StaticClass();
 }
 
 void AAICharacter::BeginPlay()
@@ -24,6 +25,10 @@ void AAICharacter::BeginPlay()
 	if(AI && PatrolPath)
 	{
 		AI->SetPathActor(PatrolPath);
-		AI->StartPatrol();
+		//AI->StartPatrol();
 	}
+}
+
+void AAICharacter::Attack_Implementation(AActor* Target)
+{
 }

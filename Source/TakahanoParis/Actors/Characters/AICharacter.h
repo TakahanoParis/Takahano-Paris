@@ -18,13 +18,13 @@ class UAIPerceptionComponent;
  *	@todo Use IGenericTeamAgentInterface or replace it all together by a Team Interface of my own
  */
 UCLASS()
-class TAKAHANOPARIS_API AAICharacter : public ABaseCharacter , public IGenericTeamAgentInterface
+class TAKAHANOPARIS_API AAICharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
 public:
 	 /** Default UObject constructor. */
-	AAICharacter(const FObjectInitializer& ObjectInitializer);
+	AAICharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// Called at Spawn or level start
 	void BeginPlay() override;
@@ -50,5 +50,11 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="AI", meta = (DisplayName = "Get Custom AI Controller"))
 		ACustomAIController * GetCustomAIController_BP() const {return GetCustomAIController();}
+
+	UFUNCTION(BlueprintNativeEvent, Category = "IA")
+		void Attack(AActor * Target);
+		virtual void Attack_Implementation(AActor * Target);
+
+
 
 };

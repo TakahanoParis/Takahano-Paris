@@ -15,6 +15,7 @@ ACCTVActor::ACCTVActor()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
 	PrimaryActorTick.bCanEverTick = true;
 	CameraView = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera View"));
+	CameraView->SetupAttachment(RootComponent);
 	CameraView->bAutoActivate = true;
 	CameraView->bUsePawnControlRotation = true;
 	//RootComponent = CameraView;
@@ -49,7 +50,7 @@ void ACCTVActor::I_Hack(AController* User)
 	const auto aPC = Cast<APlayerController>(User);
 	if(!aPC)
 		return;
-	aPC->SetViewTargetWithBlend(this, BlendTime, BlendFunction, BlendExponent, false);
+	aPC->SetViewTargetWithBlend(this, BlendTime, VTBlend_EaseInOut, BlendExponent, false);
 	SetOwner(aPC);
 	aPC->SetControlRotation(this->GetActorRotation());
 	Controller = aPC;
