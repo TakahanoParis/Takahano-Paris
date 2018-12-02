@@ -100,7 +100,7 @@ public:
 	 * @param Player : The player that is is supposed to see the objects
 	 * @return true if array is valid, false otherwise
 	 */
-	static bool GetVisibleActorsInArray(TArray<AActor*> &OutActors,const ACustomPlayerController * Player);
+	static bool GetVisibleActorsInArray(TArray<AActor*> &OutActors,const APlayerController * Player);
 
 
 	// Widgets functions

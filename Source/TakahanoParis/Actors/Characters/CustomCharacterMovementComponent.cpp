@@ -31,7 +31,6 @@ float UCustomCharacterMovementComponent::GetMaxSpeed() const
 {
 	if (!WalkSpeedCurve)
 		return Super::GetMaxSpeed();
-	UE_LOG(LogTemp, Warning, TEXT("MaxSpeed = %f"), WalkSpeedCurve->GetFloatValue(SpeedDelta));
 	// Setup Speed Delta here
 	return (MovementMode == MOVE_Walking || MovementMode == MOVE_NavWalking) ? WalkSpeedCurve->GetFloatValue(SpeedDelta) : Super::GetMaxSpeed();
 }

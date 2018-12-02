@@ -36,7 +36,8 @@ public :
 	/** Called for side to side input */
 	virtual void MoveRight(float Value) override;
 
-
+	/** Used to save the avaible actors */
+	void BeginPlay() override;
 
 	/**
 	 *	@property HackDelegate
@@ -143,7 +144,14 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Get looked at Electronic"))
 		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const { return  GetLookedAtHackable(OutActors); }
 		
+private:
 
+	/**
+	 *	@property HackableActors
+	 *	@brief	all hackable actors found at begin Play. Improves logic and speed to look here
+	 */
+	UPROPERTY()
+	TArray<AActor*>	HackableActors;
 	
 	
 	

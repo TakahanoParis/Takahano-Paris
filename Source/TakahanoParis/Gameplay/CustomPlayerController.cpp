@@ -80,7 +80,7 @@ bool ACustomPlayerController::GetVisibleActorsWithInterface(TArray<AActor*>& Out
 	return GetVisibleActorsInArray(OutActors, this);
 }
 
-bool ACustomPlayerController::GetVisibleActorsInArray(TArray<AActor*>& OutActors, const ACustomPlayerController* Player)
+bool ACustomPlayerController::GetVisibleActorsInArray(TArray<AActor*>& OutActors, const APlayerController* Player)
 {
 	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
 	Params.AddIgnoredActor(Player->GetPawn());
