@@ -14,7 +14,20 @@ float UPlayerStateBar::GetPlayerStaminaPercent() const
 	return aPS->GetStamina() / aPS->GetMaxStamina();
 }
 
+float UPlayerStateBar::GetPlayerHealthPercent() const
+{
+	const auto aPS = Cast<ACustomPlayerState>(GetOwningPlayerState());
+	if (!aPS)
+		return 0;
+	return aPS->GetLife() / aPS->GetMaxLife();
+}
+
 void UPlayerStateBar::BindDelegates()
 {
-	StaminaBar->PercentDelegate.BindUFunction(this, TEXT("GetPlayerStaminaPercent"));
+	if(StaminaBar)
+	{
+		StaminaBar->PercentDelegate.BindUFunction(this, TEXT("GetPlayerStaminaPercent"));
+		HealthBar->PercentDelegate.BindUFunction(this, TEXT("GetPlayerHealthPercent"));
+	}
+
 }

@@ -37,7 +37,7 @@ protected:
 	 *	@property PlayerTeam
 	 *	@brief Team this player belongs to 
 	 */
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, SaveGame)
 		FTeam PlayerTeam;
 
 
@@ -45,7 +45,7 @@ protected:
 	 *	@property PlayerLife
 	 *	@brief How much Life this player has
 	 */
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, SaveGame)
 		float PlayerLife;
 
 
@@ -53,28 +53,28 @@ protected:
 	 *	@property PlayerStamina
 	 *	@brief How much stamina this player has
 	 */
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, SaveGame)
 		float PlayerStamina;
 
 	/**
 	 *	@property MaxPlayerLife
 	 *	@brief how much life this player can have
 	 */
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, SaveGame)
 		float MaxPlayerLife;
 
 	/**
 	 *	@property MaxPlayerStamina
 	 *	@brief how much stamina this player can have
 	 */
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, SaveGame)
 		float MaxPlayerStamina;
 
 	/**
  *	@property PlayerStaminaRegenRate
  *	@brief how fast the player can regenerate stamina
  */
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, SaveGame)
 		float PlayerStaminaRegenRate;
 
 
