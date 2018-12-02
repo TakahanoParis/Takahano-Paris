@@ -6,15 +6,20 @@
 #include "GameFramework/Character.h"
 #include "Actors/Interfaces/TeamInterface.h"
 #include "Actors/Interfaces/LifeInterface.h"
+#include "Actors/Interfaces/SaveGameInterface.h"
 #include "BaseCharacter.generated.h"
 
 
+//forward declaration
+class UCustomSaveGame;
+
 
 /**
-* @Class The base class of all heroes and controller character of TakahanoParis.
+* @Class ABaseCharacter
+* @brief The base class of all heroes and controller character of TakahanoParis.
 */
 UCLASS(ClassGroup = (Character), config=Game)
-class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface
+class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface, public ISaveGameInterface
 {
     GENERATED_BODY()
 
@@ -103,11 +108,11 @@ public:
 
 	/**
 	 *	@fn Run
-	 *	@return enable the run on the character movement
+	 *	@brief Apply the necessary changes to be running
 	 */
 	UFUNCTION()
 		virtual void Run();
 
-
-
+	virtual void LoadFromSaveGame(UCustomSaveGame* SaveGameInstance) override;
+	virtual void SaveToSaveGame(UCustomSaveGame* SaveGameInstance) const override;
 };

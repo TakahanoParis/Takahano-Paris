@@ -10,6 +10,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "Gameplay/CustomPlayerState.h"
 #include "CustomCharacterMovementComponent.h"
+#include "Gameplay/CustomSaveGame.h"
+#include "Kismet/GameplayStatics.h"
+#include "TakahanoParis.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -104,6 +107,17 @@ void ABaseCharacter::Run()
 		return;
 	CharacterMovementComponent->bIsRunning = true;
 }
+
+void ABaseCharacter::LoadFromSaveGame(UCustomSaveGame* SaveGameInstance)
+{
+	UE_LOG(LogTakahanoParis, Display, TEXT("Loaded : %s"), *this->GetName());
+}
+
+void ABaseCharacter::SaveToSaveGame(UCustomSaveGame* SaveGameInstance) const 
+{
+	UE_LOG(LogTakahanoParis, Display, TEXT("Saved: %s"), *this->GetName());
+}
+
 
 FTeam ABaseCharacter::I_GetTeam() const
 {

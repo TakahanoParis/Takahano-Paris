@@ -8,6 +8,7 @@
 #include "CustomPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "CustomGameInstance.h"
+#include "CustomGameState.h"
 
 ACustomGameMode::ACustomGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer),
                                                                                 DefaultPlayerTeamID(0),
@@ -20,6 +21,7 @@ ACustomGameMode::ACustomGameMode(const FObjectInitializer& ObjectInitializer) : 
 	PlayerControllerNum = 0;
 	MaxPlayerNumber = 10;
 	bCanStartMatch = false;
+	GameStateClass = ACustomGameState::StaticClass();
 }
 
 
