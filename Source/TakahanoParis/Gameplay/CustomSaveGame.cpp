@@ -6,5 +6,6 @@ UCustomSaveGame::UCustomSaveGame()
 {
 	SaveSlotName = TEXT("TestSaveSlot");
 	UserIndex = 0;
+	PlayerLocation = FVector(0.f,0.f,0.f);
 }
 
