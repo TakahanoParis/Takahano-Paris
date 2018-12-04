@@ -5,6 +5,7 @@
 #include "Gameplay/CustomPlayerController.h"
 #include "Actors/Interfaces/HackInterface.h"
 #include "UnrealNetwork.h"
+#include "TakahanoParis.h"
 
 AJulia::AJulia() : Super()
 {
@@ -18,9 +19,7 @@ AJulia::AJulia() : Super()
 void AJulia::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	TArray<AActor*> ElectronicActors;
-	GetLookedAtHackable(ElectronicActors);
-
+	GetLookedAtHackable(Hackables);
 }
 
 void AJulia::MoveForward(float Value)
@@ -43,16 +42,32 @@ void AJulia::MoveRight(float Value)
 	Super::MoveRight(Value);
 }
 
-
-bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors) const
+void AJulia::BeginPlay()
 {
-
-	auto PC = Cast<ACustomPlayerController>(GetController());
-	if (!PC)
-		return false;
-	const bool R = PC->GetVisibleActorsWithInterface(OutActors, UHackInterface::StaticClass());
-	return R;
+	HackableActors.Empty();
+	const auto aPC = Cast<ACustomPlayerController>(GetController());
+	if (!aPC)
+	{
+		UE_LOG(LogTakahanoParis, Error, TEXT("Cannot retrieve a pointer to a ACustomPlayerController"));
+		return;
+	}
+	const bool R = aPC->GetVisibleActorsWithInterface(HackableActors, UHackInterface::StaticClass());
 }
+
+
+bool AJulia::GetLookedAtHackable_Implementation(TArray<AActor*>& OutActors) const
+{
+	OutActors.Empty();
+	const auto aPC = Cast<APlayerController>(GetController());
+	if(aPC)
+	{
+		OutActors = HackableActors;
+		ACustomPlayerController::GetVisibleActorsInArray(OutActors, aPC);
+	}
+	return OutActors.Num() > 0;	
+}
+
+
 
 bool AJulia::TryHack(AActor* target)  
 {
@@ -84,13 +99,21 @@ bool AJulia::TryHack(AActor* target)
 	}
 }
 
-void AJulia::ReturnToCharacter()
+bool AJulia::Server_ReturnToCharacter_Validate()
+{
+	return true;
+}
+
+void AJulia::Server_ReturnToCharacter_Implementation()
 {
 	const auto aPC = Cast<APlayerController>(GetController());
 	aPC->SetViewTargetWithBlend(this, 0.2);
 	SetOwner(aPC);
 	aPC->SetControlRotation(this->GetActorRotation());
 	Controller = aPC;
+	bIsUsingObject = false;
+	UsedActor = nullptr;
+
 }
 
 bool AJulia::Server_Hack_Validate(AActor * target)

@@ -38,18 +38,21 @@ public:
 	 *	@todo Improve that logic, because it is highly inefficient to retrieve the last draw's found actors
 	 */
 	template <typename ClassFilter>
-	bool GetActorsInCenterofScreen(TArray<ClassFilter *> &OutActors, FVector2D NewCenterSpan)
+	bool GetActorsInCenterofScreen(TArray<ClassFilter*>& OutActors, FVector2D NewCenterSpan)
 	{
 		OutActors.Empty();
 		CenterSpan = NewCenterSpan;
 		if (!ClassFilter::StaticClass()->IsChildOf(AActor::StaticClass()))
 			return false;
 		for (AActor* EachActor : ActorsInCenterofScreen)
-			if(Cast<ClassFilter>(EachActor))
+			if (Cast<ClassFilter>(EachActor))
 				OutActors.Add(Cast<ClassFilter>(EachActor));
-			//OutActors.Add(CastChecked<ClassFilter>(EachActor));
+		//OutActors.Add(CastChecked<ClassFilter>(EachActor));
 		return true;
 	}
+
+	bool GetActorsInCenterofScreen(TArray<AActor *>& OutActors, FVector2D NewCenterSpan,
+	                               TSubclassOf<AActor> ClassFilter);
 
 	/**
 	 *	@fn SetClassFilter()
@@ -112,3 +115,5 @@ private:
 	
 	
 };
+
+

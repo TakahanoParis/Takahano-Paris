@@ -34,11 +34,11 @@ void ACustomPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-// "turn" handles devices that provide an absolute delta, such as a mouse.
-// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	InputComponent->BindAxis("Turn", GetPawn(), &APawn::AddControllerYawInput);
+	// "turn" handles devices that provide an absolute delta, such as a mouse.
+	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+	InputComponent->BindAxis("Turn", this, &ACustomPlayerController::Turn);
 	InputComponent->BindAxis("TurnRate", this, &ACustomPlayerController::TurnAtRate);
-	InputComponent->BindAxis("LookUp", GetPawn(), &APawn::AddControllerPitchInput);
+	InputComponent->BindAxis("LookUp", this, &ACustomPlayerController::LookUp);
 	InputComponent->BindAxis("LookUpRate", this, &ACustomPlayerController::LookUpAtRate);
 }
 
@@ -48,6 +48,22 @@ void ACustomPlayerController::TurnAtRate(float Rate)
 		return;
 	// calculate delta for this frame from the rate information
 	GetPawn()->AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+void ACustomPlayerController::Turn(float Val)
+{
+	if (!GetPawn())
+		return;
+	// calculate delta for this frame from the rate information
+	GetPawn()->AddControllerYawInput(Val);
+}
+
+void ACustomPlayerController::LookUp(float Val)
+{
+	if (!GetPawn())
+		return;
+	// calculate delta for this frame from the rate information
+	GetPawn()->AddControllerYawInput(Val);
 }
 
 void ACustomPlayerController::LookUpAtRate(float Rate)
@@ -64,15 +80,19 @@ bool ACustomPlayerController::GetVisibleActorsWithInterface(TArray<AActor*>& Out
 	return GetVisibleActorsInArray(OutActors, this);
 }
 
-bool ACustomPlayerController::GetVisibleActorsInArray(TArray<AActor*>& OutActors, const ACustomPlayerController* Player)
+bool ACustomPlayerController::GetVisibleActorsInArray(TArray<AActor*>& OutActors, const APlayerController* Player)
 {
-	const FCollisionQueryParams Params;
-	const FCollisionResponseParams ResponseParam;
-	for (auto it : OutActors)
+	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
+	Params.AddIgnoredActor(Player->GetPawn());
+	FCollisionObjectQueryParams ObjectsParam = FCollisionObjectQueryParams::DefaultObjectQueryParam;
+	OutActors.Shrink();
+	for (int32 id = OutActors.Num() - 1; id >= 0; --id)
 	{
+		Params.AddIgnoredActor(OutActors[id]);
 		struct FHitResult OutHit;
-		if (!Player->GetWorld()->LineTraceSingleByChannel(OutHit, it->GetActorLocation(), Player->GetPawn()->GetActorLocation(), ECollisionChannel::ECC_Visibility, Params, ResponseParam))
-			OutActors.Remove(it);
+		Player->GetWorld()->LineTraceSingleByObjectType(OutHit, OutActors[id]->GetActorLocation(), Player->GetPawn()->GetActorLocation(), ObjectsParam, Params);
+		if (OutHit.IsValidBlockingHit())
+			OutActors.RemoveAt(id, 1, false);	
 	}
 	return OutActors.Num() > 0;
 }
@@ -92,6 +112,24 @@ UCustomWidget* ACustomPlayerController::AddWidgetToScreen(TSubclassOf<UCustomWid
 	NewWidget->SetPositionInViewport(AnchorPoint, true);
 	NewWidget->AddToPlayerScreen(ZOrder);
 	return NewWidget;
+}
+
+bool ACustomPlayerController::Server_OnCharacterDie_Validate()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player Died"));
+	return true;
+}
+
+
+void ACustomPlayerController::Server_OnCharacterDie_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player Died"));
+
+}
+
+void ACustomPlayerController::OnCharacterDie_Implementation()
+{
+	Server_OnCharacterDie();
 }
 
 void ACustomPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

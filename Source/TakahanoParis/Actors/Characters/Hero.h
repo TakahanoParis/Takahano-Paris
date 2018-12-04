@@ -24,9 +24,9 @@ public:
 	 */
 	AHero();
 
-private:
+protected:
 	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)// meta = (AllowPrivateAccess = "true"))
 		class USpringArmComponent* CameraBoom;
 
 	/** Follow camera */
@@ -56,6 +56,12 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
+	// inherit via ILifeInterface
+	virtual bool I_TakeDamage(const float& DamageAmount, AActor* Instigator) override;
 
-	
+protected:
+	virtual bool CanRun() override;
+public:
+	virtual void Run() override;
+		
 };

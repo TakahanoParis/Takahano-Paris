@@ -5,12 +5,18 @@
 #include "Actors/Characters/AICharacter.h"
 #include "UnrealNetwork.h"
 #include "NavigationSystem.h"
-#include "SplinePathActor.h"
+#include "Gameplay/SplinePathActor.h"
 #include "GameFramework/Pawn.h"
 #include "Components/SplineComponent.h"
 #include "TimerManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "CustomPlayerState.h"
+#include "CustomPlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Gameplay/CustomGameMode.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Actors/Characters/AICharacter.h"
 
 
 ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -45,7 +51,14 @@ void ACustomAIController::BeginPlay()
 {
 	// call super begin play to have this function to work properly
 	Super::BeginPlay();
-	
+
+	// Set up team ID
+	const auto aGM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(ACustomAIController::GetWorld()));
+	if (aGM)
+		ACustomAIController::Execute_I_Server_SetTeam(this, FTeam(aGM->GetDefaultAITeamID()));
+
+
+
 	// Setup blackboard
 	const bool IsBlackboardValid =  UseBlackboard(AIBlackboard, Blackboard);
 	InitializeBlackboardValues(); // Anything could happen here, as blueprint can override this function
@@ -53,10 +66,14 @@ void ACustomAIController::BeginPlay()
 	// run the behavior tree
 	if (BehaviourTreeAsset)
 		RunBehaviorTree(BehaviourTreeAsset);
+
+
 }
 
 void ACustomAIController::OnPossess_Implementation(APawn* PossessedPawn)
 {
+	const bool IsBlackboardValid =  UseBlackboard(AIBlackboard, Blackboard);
+	InitializeBlackboardValues(); // Anything could happen here, as blueprint can override this function
 
 }
 
@@ -77,6 +94,25 @@ void ACustomAIController::EndPatrol()
 	GetWorldTimerManager().ClearTimer(PatrolTimerHandle);
 }
 
+
+FVector ACustomAIController::GetNextPointOnSpline(const float radius) 
+{
+	if (!PatrolPath)
+		return FVector();
+	FVector GoalLocation = PatrolPath->GetWorldLocationAlongSpline(PathDistanceDelta);
+	
+	if (GetPawn()->GetActorLocation().Equals(GoalLocation, radius))
+	{
+		// we need to move further up the spline
+		PathDistanceDelta += PatrolPath->GetSpline()->GetSplineLength() / PatrolPath->GetPathPoints();
+	}
+	if (FMath::IsNearlyEqual(PatrolPath->GetSpline()->GetSplineLength(), PathDistanceDelta, radius))
+	{
+		// we need to reset the path
+		PathDistanceDelta = 0;
+	}
+	return GoalLocation;
+}
 
 void ACustomAIController::Patrol()
 {
@@ -122,28 +158,71 @@ void ACustomAIController::Patrol()
 	
 }
 
+bool ACustomAIController::AttackActor(AActor* Target)
+{
+	if(!Target)
+		return false;
+	const auto Character = Cast<AAICharacter>(GetCharacter());
+	if (!Character)
+		return false;
+	Character->Attack(Target);
+	return true;
+}
+
 void ACustomAIController::InitializeBlackboardValues_Implementation()
 {
-
+	if (!GetBlackboardComponent())
+		return;
+	GetBlackboardComponent()->SetValueAsBool(TEXT("HasSpottedHostile"), false);
 }
 
 void ACustomAIController::I_SetTeam(FTeam NewTeam)
 {
+	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
+	if (aPS)
+		aPS->I_SetTeam(NewTeam);
 }
 
 FTeam ACustomAIController::I_GetTeam() const
 {
-	return FTeam();
+	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
+	if (aPS)
+		return aPS->I_GetTeam();
+	return 0;
 }
 
 void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAIStimulus Stimulus)
 {
+	if (!GetBlackboardComponent())
+		return;
+	GetBlackboardComponent()->SetValueAsObject(TEXT("ActorPerceived"), Actor);
+	if (Stimulus.SensingFailed)
+	{
+		//GetBlackboardComponent()->SetValueAsBool(TEXT("HasSpottedHostile"), false);
+		return;
+	}
 	const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(Actor, this);
-
-	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("ETeamAttitudeEnum"), true);
-	if (EnumPtr) 
-		UE_LOG(LogTemp, Warning, TEXT("%s sees %s as %d"), *this->GetName(), *Actor->GetName(), *EnumPtr->GetNameByValue((int8)T).ToString());
+	switch (T)
+	{
+	case ETeamAttitudeEnum::TAE_Hostile:
+		
+		OnHostileSpotted(Actor);
+		break;
+	case ETeamAttitudeEnum::TAE_Friendly: 
+		// Implements friendly behaviour here
+		break;
+	case ETeamAttitudeEnum::TAE_Neutral: 
+		// Implements friendly behaviour here
+		break;
+	}
 }
+
+void ACustomAIController::OnHostileSpotted_Implementation(const AActor * Actor)
+{
+	GetBlackboardComponent()->SetValueAsBool(TEXT("HasSpottedHostile"), true);
+	UE_LOG(LogTemp, Warning, TEXT("%s sees %s as hostile"), *this->GetName(), *Actor->GetName());
+}
+
 
 
 void ACustomAIController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const

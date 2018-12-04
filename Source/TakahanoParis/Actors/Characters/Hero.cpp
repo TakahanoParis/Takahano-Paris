@@ -8,6 +8,7 @@
 #include "Gameplay/CustomPlayerController.h"
 #include "Actors/Interfaces/InteractInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Gameplay/CustomPlayerState.h"
 
 
 AHero::AHero() : Super()
@@ -17,6 +18,9 @@ AHero::AHero() : Super()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 250.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+	//CameraBoom->bInheritPitch = true;
+	//CameraBoom->bInheritRoll = true;
+	//CameraBoom->bInheritYaw = true;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -29,7 +33,11 @@ AHero::AHero() : Super()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset (to avoid direct content references in C++)
 
+	// Do not fall
 	GetCharacterMovement()->bCanWalkOffLedges = false;
+
+	// Move freely
+	bUseControllerRotationYaw = false;
 }
 
 
@@ -64,6 +72,32 @@ bool AHero::TryUse(AActor * Target)
 	default: 
 		return false;
 	}
+}
+
+bool AHero::I_TakeDamage(const float& DamageAmount, AActor* Instigator)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Take Tamage"));
+	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
+	if (!aPS)
+		return false;
+	aPS->I_TakeDamage(DamageAmount, Instigator);
+	return true;
+}
+
+bool AHero::CanRun()
+{
+	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
+	if (!aPS)
+		return false;
+	return aPS->GetStamina() >= 0;
+}
+
+void AHero::Run()
+{
+	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
+	if (!aPS)
+		return;
+	Super::Run();
 }
 
 

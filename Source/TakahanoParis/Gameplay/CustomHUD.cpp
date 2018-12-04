@@ -16,6 +16,19 @@ void ACustomHUD::DrawHUD()
 	Super::DrawHUD();
 }
 
+bool ACustomHUD::GetActorsInCenterofScreen(TArray<AActor*>& OutActors, FVector2D NewCenterSpan,
+                                           TSubclassOf<AActor> ClassFilter)
+{
+	if (!ClassFilter)
+		return false;
+	OutActors.Empty();
+	CenterSpan = NewCenterSpan;
+	for (AActor* EachActor : ActorsInCenterofScreen)
+		if (EachActor->IsA(ClassFilter))
+			OutActors.Add(EachActor);
+	return true;
+}
+
 void ACustomHUD::SetClassFilter(TSubclassOf<AActor> NewClassFilter)
 {
 	ClassFilter = NewClassFilter;
@@ -28,3 +41,5 @@ bool ACustomHUD::GetActorsInCenterofScreen_Backend(TArray<AActor*>& OutActors)
 	GetActorsInSelectionRectangle<AActor>(CenterOfScreen - CenterSpan, CenterOfScreen + CenterSpan, OutActors, true, false); // Using default values for the rest
 	return OutActors.Num() > 0;
 }
+
+

@@ -36,28 +36,8 @@ public :
 	/** Called for side to side input */
 	virtual void MoveRight(float Value) override;
 
-
-	/**
-	 * @fn GetLookedAtElectronic()
-	 * @brief Find all actors in center of screen provided by the player controller
-	 * @param OutActors : the array that will be filled with the actors given by the player controller
-	 * @return true if found something, false otherwise.
-	 * @see ACustomPlayerController
-	 */
-	UFUNCTION()
-		bool GetLookedAtHackable(TArray<class AActor*> &OutActors) const;
-
-	/**
-	 * @fn GetLookedAtElectronic()
-	 * @brief Find all actors in center of screen provided by the player controller
-	 * @param OutActors : the array that will be filled with the actors given by the player controller
-	 * @return true if found something, false otherwise.
-	 * @see ACustomPlayerController
-	 */
-	UFUNCTION(BlueprintCallable, Category ="Julia", meta = (DisplayName = "Get looked at Electronic"))
-		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const {return  GetLookedAtHackable(OutActors);}
-
-
+	/** Used to save the avaible actors */
+	void BeginPlay() override;
 
 	/**
 	 *	@property HackDelegate
@@ -93,8 +73,8 @@ protected:
 	 *	@fn ReturnToCharacter()
 	 *	@brief make sure we're using the camera from this actor
 	 */
-	UFUNCTION()
-		virtual void ReturnToCharacter();
+	UFUNCTION(Server, Reliable, WithValidation)
+		virtual void Server_ReturnToCharacter();
 
 	/**
 	 *	@fn ReturnToCharacter_BP()
@@ -102,7 +82,7 @@ protected:
 	 *	@note For blueprint
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Return to Julia"))
-		void ReturnToCharacter_BP() { ReturnToCharacter(); }
+		void ReturnToCharacter_BP() { Server_ReturnToCharacter(); }
 		
 
 private:
@@ -132,6 +112,46 @@ private:
 		AActor * UsedActor;
 
 
+protected:
+
+	/**
+	 *	@property Hackables
+	 *	@brief Array containing all the currently visible Actors having the IHackInterface
+	 *	@see IHackInterface
+	 */
+	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Julia|Hack", meta = (DisplayName = "LookedAtElectronics"))
+		TArray< AActor *> Hackables;
+
+
+
+	/**
+	 * @fn GetLookedAtElectronic()
+	 * @brief Find all actors in center of screen provided by the player controller
+	 * @param OutActors : the array that will be filled with the actors given by the player controller
+	 * @return true if found something, false otherwise.
+	 * @see ACustomPlayerController
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Julia")
+		bool GetLookedAtHackable(TArray<class AActor*> &OutActors) const;
+
+	/**
+	 * @fn GetLookedAtElectronic()
+	 * @brief Find all actors in center of screen provided by the player controller
+	 * @param OutActors : the array that will be filled with the actors given by the player controller
+	 * @return true if found something, false otherwise.
+	 * @see ACustomPlayerController
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Get looked at Electronic"))
+		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const { return  GetLookedAtHackable(OutActors); }
+		
+private:
+
+	/**
+	 *	@property HackableActors
+	 *	@brief	all hackable actors found at begin Play. Improves logic and speed to look here
+	 */
+	UPROPERTY()
+	TArray<AActor*>	HackableActors;
 	
 	
 	

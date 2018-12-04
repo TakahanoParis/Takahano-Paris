@@ -35,10 +35,10 @@ protected:
 	UFUNCTION()
 		void QuitButtonCliqued();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent) // QnD, @todo should revert to nothing
 		void HostButtonCliqued();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent)
 		void JoinButtonCliqued();
 
 	UFUNCTION()

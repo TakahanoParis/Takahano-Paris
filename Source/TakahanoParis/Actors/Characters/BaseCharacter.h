@@ -5,15 +5,21 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Actors/Interfaces/TeamInterface.h"
+#include "Actors/Interfaces/LifeInterface.h"
+#include "Actors/Interfaces/SaveGameInterface.h"
 #include "BaseCharacter.generated.h"
 
 
+//forward declaration
+class UCustomSaveGame;
+
 
 /**
-* @Class The base class of all heroes and controller character of TakahanoParis.
+* @Class ABaseCharacter
+* @brief The base class of all heroes and controller character of TakahanoParis.
 */
 UCLASS(ClassGroup = (Character), config=Game)
-class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface
+class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface, public ISaveGameInterface
 {
     GENERATED_BODY()
 
@@ -21,7 +27,6 @@ class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterfac
 public:
 	ABaseCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 
-   
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
     void SetReady(bool NewReady);
 
@@ -46,10 +51,6 @@ protected:
     /** Called for side to side input */
 	virtual void MoveRight(float Value);
 
-  
-    /** Called for Main Attack ability Cannot be passive	 */
-    UFUNCTION()
-    virtual void Attack();
 
 	/**
 	 *	@brief Ability Function 
@@ -58,6 +59,8 @@ protected:
 	 */
 	UFUNCTION()
 	virtual bool Ability(const uint8 &Number);
+
+
 
 
 protected:
@@ -71,9 +74,45 @@ protected:
 	// Inherited via ITeamInterface
 	virtual void I_SetTeam(FTeam NewTeam) override;
 
-	virtual FTeam I_GetTeam() const;
+	virtual FTeam I_GetTeam() const override;
 
 
 	virtual void FellOutOfWorld(const UDamageType& dmgType) override;
 
+public:
+	virtual float I_GetLifePoints() const override;
+	virtual bool I_TakeDamage(const float& DamageAmount, AActor* Instigator) override;
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser) override;
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = Character)
+		bool bCanJump;
+
+
+private:
+	virtual bool CanJumpInternal_Implementation() const override;
+
+
+protected:
+	/**
+	 *	@fn CanRun
+	 *	@return true if the character can run  
+	 */
+	UFUNCTION()
+	virtual bool CanRun();
+
+
+public:
+
+	/**
+	 *	@fn Run
+	 *	@brief Apply the necessary changes to be running
+	 */
+	UFUNCTION()
+		virtual void Run();
+
+	virtual void LoadFromSaveGame(UCustomSaveGame* SaveGameInstance) override;
+	virtual void SaveToSaveGame(UCustomSaveGame* SaveGameInstance) const override;
 };

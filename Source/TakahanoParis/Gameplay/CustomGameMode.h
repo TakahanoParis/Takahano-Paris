@@ -17,6 +17,17 @@ enum class EPlayStateEnum : uint8
 	PSE_GameOver	UMETA(DisplayName = "Game Over"),
 };
 
+/**
+* @enum EPlayStateEnum represents the State of the Game
+*/
+UENUM(BlueprintType)
+enum class EGameOverEnum : uint8
+{
+	GOE_Victory		UMETA(DisplayName = "Victory"),
+	GOE_Defeat		UMETA(DisplayName = "Defeat")
+};
+
+
 
 /**
  * @class This is the Base GameMode for all TakahanoParis Game.
@@ -32,70 +43,220 @@ public:
 
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "Level")
+	/**
+	 *	@fn RestartGameLevel
+	 *	@brief restart level
+	 */
+	UFUNCTION()
 		void RestartGameLevel();
 
-	UFUNCTION(BlueprintCallable, Category = "PlayState")
-		void SetGameOver();
+	/**
+	 *	@fn RestartGameLevel
+	 *	@brief restart level
+	 *	@note For Blueprints
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Level", meta = (DisplayName = "Restart Level"))
+		void RestartGameLevel_BP() { RestartGameLevel(); }
 
-	UFUNCTION(BlueprintCallable, Category = "PlayState")
-		void PauseGame();
 
-	UFUNCTION(BlueprintCallable, Category = "PlayState")
+	/**
+	 *	@fn SetGameOver
+	 *	@brief End Level and call the related event
+	 *	@note For Blueprints
+	 */
+	UFUNCTION()
+		virtual void SetGameOver(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> &GameOverReason);
+
+	/**
+	 *	@fn SetGameOver
+	 *	@brief End Level and call the related event
+	 *	@note For Blueprints
+	 */
+	UFUNCTION(BlueprintCallable, Category = "PlayState", meta = (DisplayName = "Game Over"))
+		void SetGameOver_BP(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> GameOverReason){ SetGameOver(GameOverMessage,GameOverReason); }
+
+
+	/**
+	 *	@fn PauseGame
+	 *	@brief Pause Game
+	 */
+	UFUNCTION()
+		virtual void PauseGame();
+
+	/**
+	 *	@fn PauseGame
+	 *	@brief Pause Game
+	 *	@note For Blueprints
+	 */
+	UFUNCTION(BlueprintCallable, Category = "PlayState", meta = (DisplayName = "Pause Match"))
+		void PauseGame_BP() { PauseGame(); }
+
+	/**
+	 *	@fn PauseGame
+	 *	@brief resume game if the game was paused 
+	 */
+	UFUNCTION()
 		void ResumeGame();
 
-	UFUNCTION(BlueprintCallable, Category = "PlayState")
-		void SetCanStartMatch();
+	/**
+	 *	@fn PauseGame
+	 *	@brief resume game if the game was paused
+	 *	@note For Blueprints
+	 */
+	UFUNCTION(BlueprintCallable, Category = "PlayState", meta = (DisplayName = "Resume Match"))
+		void ResumeGame_BP() { ResumeGame(); }
+
+
+	/**
+	 *	@fn SetCanStartMatch
+	 *	@brief Enable the match to start
+	 */
+	UFUNCTION()
+		virtual void SetCanStartMatch();
+
+	/**
+	 *	@fn SetCanStartMatch
+	 *	@brief Enable the match to start
+	 *	@note For Blueprints
+	 */
+	UFUNCTION(BlueprintCallable, Category = "PlayState", meta = (DisplayName = "Set Can Start Match"))
+		void SetCanStartMatch_BP() { SetCanStartMatch(); }
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+
+	/**
+	 *	@property bCanStartMatch
+	 *	@brief describe if the match is ready to start
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayState")
 		bool bCanStartMatch;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		EPlayStateEnum PlayState;
+	/**
+	 *	@property PlayState
+	 *	@brief describe at which state the game is (ie. playing, paused, waiting to start)
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayState")
+		EPlayStateEnum PlayState{};
 
+	/**
+	 *	@property DefaultPlayerTeamID
+	 *	@brief The Team ID for the new real players
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="Teams")
+		uint8 DefaultPlayerTeamID;
+
+	/**
+	 *	@property DefaultIATeamID
+	 *	@brief The Team ID for the new IA players
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Teams")
+		uint8 DefaultAITeamID;
+
+
+
+public :
+
+	/**
+	 *	@fn GetDefaultPlayerTeamID
+	 *	@brief Getter for the DefaultPlayerTeamID
+	 *	@return The Team ID for the new IA players
+	 */
+	UFUNCTION(BlueprintPure, Category = "Teams", meta = (DisplayName = "Get Default AI Team ID"))
+		FORCEINLINE uint8 GetDefaultPlayerTeamID() const { return DefaultPlayerTeamID; };
+
+	/**
+	 *	@fn GetDefaultPlayerTeamID_BP
+	 *	@brief Getter for the DefaultPlayerTeamID
+	 *	@return The Team ID for the new IA players
+	 *	@note for Blueprints
+	 */
+	UFUNCTION(BlueprintPure, Category = "Teams", meta = (DisplayName = "Get Default AI Team ID"))
+		FORCEINLINE int GetDefaultPlayerTeamID_BP() const { return GetDefaultPlayerTeamID(); };
+
+
+	/**
+	 *	@fn GetDefaultAITeamID
+	 *	@brief Getter for the DefaultAITeamID
+	 *	@return The Team ID for the new IA players
+	 */
+	UFUNCTION(BlueprintPure, Category = "Teams", meta = (DisplayName = "Get Default AI Team ID"))
+		FORCEINLINE uint8 GetDefaultAITeamID() const { return DefaultAITeamID; };
+
+	/**
+	 *	@fn GetDefaultIATeamID_BP
+	 *	@brief Getter for the DefaultAITeamID
+	 *	@return The Team ID for the new IA players
+	 *	@note for Blueprints
+	 */
+	UFUNCTION(BlueprintPure, Category = "Teams", meta= (DisplayName = "Get Default AI Team ID"))
+		FORCEINLINE int GetDefaultAITeamID_BP() const { return GetDefaultAITeamID(); };
 
 protected:
 
+	/**
+	 *	@property PlayerControllerNum
+	 *	@brief The number of player connected to the game
+	 */
 	UPROPERTY()
 		int8 PlayerControllerNum;
 
+	/**
+	 *	@property PlayerControllerNum
+	 *	@brief The maximum of players connected to the game
+	 */
 	UPROPERTY(EditDefaultsOnly)
 		int8 MaxPlayerNumber;
 
+	/**
+	 *	@fn PostLogin
+	 *	@brief what to do when a player joins
+	 *	@param NewPlayer : the player that just joined in
+	 */
 	virtual void PostLogin(APlayerController * NewPlayer) override;
 
+	/**
+	 *	@fn PreLogin
+	 *	@brief what to do when a player tries to join
+	 *	@param Options the option set from connection
+	 *	@param UniqueId the ID of the incomming connection
+	 *	@param ErrorMessage the error message that we will send in case there's an error
+	 */
 	virtual void PreLogin(const FString & Options, const FString & Address, const FUniqueNetIdRepl & UniqueId, FString & ErrorMessage) override;
 
+	/**
+	 *	@fn Logout
+	 *	@brief what to do when a player tries to join
+	 *	@param Exiting the player controller that's leaving
+	 */
 	virtual void Logout(AController * Exiting) override;
 
-
+	/**
+	 *	@fn ReadyToStartMatch_Implementation
+	 *	@brief called to check if we can start the match or no
+	 *	@return true if the match can start, false otherwise
+	 */
 	virtual bool ReadyToStartMatch_Implementation() override;
 
-#if 0
-	//team
-public:
 
-	UFUNCTION(BlueprintPure)
-		FTeam GetTeam(int TeamNumber);
+private:
 
-	UFUNCTION(BlueprintPure)
-		bool TeamExists(int TeamNumber);
-
-
-protected:
-	UPROPERTY()
-		TArray<FTeam> TeamLists;
-
-	UPROPERTY()
-		int NumOfTeam;
-#endif
-
+	UFUNCTION()
+	/**
+	 *	@fn EndGameToMainMenuMap()
+	 *	@brief Calls game instance to open Main Menu Map
+	 *	@return true if it successfully called game instance function, false otherwise
+	 */
+		bool EndGameToMainMenuMap();
 public:
 	FORCEINLINE class FTimerManager * GetTimerManager() { return  &MultiPlayerTimerManager; }
 private:
 	class FTimerManager MultiPlayerTimerManager;
+
+
+public :
+	virtual class AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+	virtual bool ShouldSpawnAtStartSpot(AController* Player) override { return false; }
 };
 
 

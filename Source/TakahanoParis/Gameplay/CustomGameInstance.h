@@ -85,12 +85,22 @@ public:
 
 public:
 
+
+
+
 	/**
 	* @brief ShowMainMenu Function
 	* Shows the main menu, for local Player controller
 	*/
 	UFUNCTION()
 		virtual void ShowMainMenu();
+
+	/**
+	 * @brief ShowMainMenu Function
+	 * Shows the main menu, for local Player controller
+	 */
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show Main Menu"))
+	void ShowMainMenu_BP() { ShowMainMenu(); }
 
 
 	/**
@@ -268,6 +278,8 @@ protected:
 	/** Called when the game instance is started either normally or through PIE. */
 	virtual void OnStart() override;
 
+public:
+	UFUNCTION()
 	virtual void ReturnToMainMenu() override;
 
 

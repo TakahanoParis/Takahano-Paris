@@ -12,7 +12,9 @@
 
 UFootstep::UFootstep()
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::Yellow;
+#endif // WITH_EDITORONLY_DATA
 	Intensity = 1.f;
 	WalkingSurface = EPhysicalSurface::SurfaceType_Default;
 
