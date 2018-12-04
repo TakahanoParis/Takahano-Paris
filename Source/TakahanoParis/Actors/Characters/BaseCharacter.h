@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "Actors/Interfaces/TeamInterface.h"
 #include "Actors/Interfaces/LifeInterface.h"
-#include "Actors/Interfaces/SaveGameInterface.h"
 #include "BaseCharacter.generated.h"
 
 
@@ -19,7 +18,7 @@ class UCustomSaveGame;
 * @brief The base class of all heroes and controller character of TakahanoParis.
 */
 UCLASS(ClassGroup = (Character), config=Game)
-class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface, public ISaveGameInterface
+class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface
 {
     GENERATED_BODY()
 
@@ -90,29 +89,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = Character)
 		bool bCanJump;
 
-
 private:
 	virtual bool CanJumpInternal_Implementation() const override;
 
-
-protected:
-	/**
-	 *	@fn CanRun
-	 *	@return true if the character can run  
-	 */
-	UFUNCTION()
-	virtual bool CanRun();
-
-
-public:
-
-	/**
-	 *	@fn Run
-	 *	@brief Apply the necessary changes to be running
-	 */
-	UFUNCTION()
-		virtual void Run();
-
-	virtual void LoadFromSaveGame(UCustomSaveGame* SaveGameInstance) override;
-	virtual void SaveToSaveGame(UCustomSaveGame* SaveGameInstance) const override;
 };

@@ -93,6 +93,7 @@ bool ABaseCharacter::CanJumpInternal_Implementation() const
 	return Super::CanJumpInternal_Implementation() && bCanJump;
 }
 
+FTeam ABaseCharacter::I_GetTeam() const
 bool ABaseCharacter::CanRun()
 {
 	return false;

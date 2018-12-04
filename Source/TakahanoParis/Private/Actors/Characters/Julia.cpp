@@ -44,6 +44,7 @@ void AJulia::MoveRight(float Value)
 
 void AJulia::BeginPlay()
 {
+	Super::BeginPlay();
 	HackableActors.Empty();
 	const auto aPC = Cast<ACustomPlayerController>(GetController());
 	if (!aPC)
