@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Actors/Interfaces/TeamInterface.h"
 #include "Actors/Interfaces/LifeInterface.h"
-#include "Actors/Interfaces/SaveGameInterface.h"
+#include "Actors/Interfaces/SaveableActorInterface.h"
 #include "BaseCharacter.generated.h"
 
 
@@ -19,7 +19,7 @@ class UCustomSaveGame;
 * @brief The base class of all heroes and controller character of TakahanoParis.
 */
 UCLASS(ClassGroup = (Character), config=Game)
-class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface, public ISaveGameInterface
+class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface, public ISaveableActorInterface
 {
     GENERATED_BODY()
 
@@ -113,6 +113,4 @@ public:
 	UFUNCTION()
 		virtual void Run();
 
-	virtual void LoadFromSaveGame(UCustomSaveGame* SaveGameInstance) override;
-	virtual void SaveToSaveGame(UCustomSaveGame* SaveGameInstance) const override;
 };

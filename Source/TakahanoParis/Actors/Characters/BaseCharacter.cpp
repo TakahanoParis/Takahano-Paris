@@ -108,15 +108,6 @@ void ABaseCharacter::Run()
 	CharacterMovementComponent->bIsRunning = true;
 }
 
-void ABaseCharacter::LoadFromSaveGame(UCustomSaveGame* SaveGameInstance)
-{
-	UE_LOG(LogTakahanoParis, Display, TEXT("Loaded : %s"), *this->GetName());
-}
-
-void ABaseCharacter::SaveToSaveGame(UCustomSaveGame* SaveGameInstance) const 
-{
-	UE_LOG(LogTakahanoParis, Display, TEXT("Saved: %s"), *this->GetName());
-}
 
 
 FTeam ABaseCharacter::I_GetTeam() const
@@ -187,6 +178,10 @@ void ABaseCharacter::MoveForward(float Value)
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
+	}
+	if(Controller == NULL)
+	{
+		UE_LOG(LogTemp, Warning, TEXT(" Fuck you !"));
 	}
 }
 

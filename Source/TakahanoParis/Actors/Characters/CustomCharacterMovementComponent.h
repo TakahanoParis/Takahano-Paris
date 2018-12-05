@@ -42,21 +42,21 @@ public:
 	 *	@brief The Speed Delta to use when moving at normal speed
 	 */
 	UPROPERTY(Replicated, Category = "Character Movement: Walking | curve", EditAnywhere, BlueprintReadOnly)
-		float NormalSpeedDelta;
+		float NormalSpeedDelta = 0.5;
 
 	/**
 	 *	@property bIsRunning
 	 *	@brief Boolean flag telling to use max speed (ie. 1.0 Delta)
 	 */
 	UPROPERTY(Replicated, Category = "Character Movement: Walking | curve", EditAnywhere, BlueprintReadWrite)
-		bool bIsRunning;
+		bool bIsRunning = false;
 
 	/**
 	 *	@property bIsRunning
 	 *	@brief how fast we change from one value to the next.
 	 */
 	UPROPERTY(Replicated, Category = "Character Movement: Walking | curve", EditAnywhere, BlueprintReadOnly)
-		float RunInterpolationSpeed;
+		float RunInterpolationSpeed = 1.0;
 
 
 	/**

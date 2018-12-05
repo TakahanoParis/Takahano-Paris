@@ -114,6 +114,10 @@ private:
 
 protected:
 
+
+	UFUNCTION(BlueprintPure)
+		bool GetIsUsingObject() const { return bIsUsingObject; }
+
 	/**
 	 *	@property Hackables
 	 *	@brief Array containing all the currently visible Actors having the IHackInterface
@@ -131,7 +135,7 @@ protected:
 	 * @return true if found something, false otherwise.
 	 * @see ACustomPlayerController
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Julia")
+	UFUNCTION()
 		bool GetLookedAtHackable(TArray<class AActor*> &OutActors) const;
 
 	/**

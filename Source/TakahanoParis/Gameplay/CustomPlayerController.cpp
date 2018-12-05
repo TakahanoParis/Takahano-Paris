@@ -114,6 +114,12 @@ UCustomWidget* ACustomPlayerController::AddWidgetToScreen(TSubclassOf<UCustomWid
 	return NewWidget;
 }
 
+void ACustomPlayerController::ActorSaveDataSaved_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player %s saved"), *GetName());
+}
+
+
 bool ACustomPlayerController::Server_OnCharacterDie_Validate()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Died"));
@@ -130,6 +136,11 @@ void ACustomPlayerController::Server_OnCharacterDie_Implementation()
 void ACustomPlayerController::OnCharacterDie_Implementation()
 {
 	Server_OnCharacterDie();
+}
+
+void ActorSaveDataSaved_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s saved "), *GetName());
 }
 
 void ACustomPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

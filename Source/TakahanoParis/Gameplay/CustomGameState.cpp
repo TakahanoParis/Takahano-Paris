@@ -4,8 +4,12 @@
 #include "TakahanoParis.h" 
 #include "CustomSaveGame.h"
 #include "Kismet/GameplayStatics.h"
-#include "Actors/Interfaces/SaveGameInterface.h"
+#include "Actors/Interfaces/SaveableActorInterface.h"
+#include "SaveGameSystem.h"
+#include "PlatformFeatures.h"
 
+
+FString ACustomGameState::DefaultSaveGameName = TEXT("NativeCustomSaveGame");
 
 bool ACustomGameState::SaveGame_Validate()
 {
@@ -14,20 +18,22 @@ bool ACustomGameState::SaveGame_Validate()
 
 void ACustomGameState::SaveGame_Implementation()
 {
+#if 0
 	auto SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::CreateSaveGameObject(UCustomSaveGame::StaticClass()));
-	// Save data
-	TArray<AActor *> ActorsToSave;
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), USaveGameInterface::StaticClass() , ActorsToSave);
-	for(auto it:ActorsToSave)
+	if (!SaveGameInstance)
 	{
-		const auto SaveActor =  Cast<ISaveGameInterface>(it);
-		if(SaveActor)
-			SaveActor->SaveToSaveGame(SaveGameInstance);	
+		UE_LOG(LogSaveGame, Error, TEXT("Could not create SaveGame object %s"));
+		return;
 	}
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("CustomSaveSlot"), 0);
-	UE_LOG(LogSaveGame, Display, TEXT("Game Saved on Server"));
+	SaveGameInstance->SaveAllActors(this);
 
+	//SaveGameInstance->SaveTime = FDateTime::Now();
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, DefaultSaveGameName, 0);
+	UE_LOG(LogSaveGame, Display, TEXT("Game Saved on Server at %s"), *SaveGameInstance->SaveTime.ToString());
 	SaveGameInstance = nullptr;
+#endif //0
+	Multicast_SaveGame();
+
 }
 
 
@@ -38,16 +44,78 @@ bool ACustomGameState::LoadGame_Validate()
 
 void ACustomGameState::LoadGame_Implementation()
 {
-	// is this really necessary ?
+#if 0 
+		auto SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::LoadGameFromSlot(DefaultSaveGameName, 0));
+		if (!SaveGameInstance)
+		{
+			if (!IPlatformFeaturesModule::Get().GetSaveGameSystem())
+				UE_LOG(LogSaveGame, Error, TEXT("Save gamesystem unreachable"));
+			UE_LOG(LogSaveGame, Error, TEXT("Save Game does not exist"));
+		}
+		// Read from save .
+		SaveGameInstance->LoadActors(this);
+
+		UE_LOG(LogSaveGame, Warning, TEXT("Game Loaded on Server from save %s"), *SaveGameInstance->SaveTime.ToString());
+		// Get rid of pointer so it gets GCed ;)
+		SaveGameInstance = nullptr;
+#endif //0
+		Multicast_LoadGame();
+}
+
+bool ACustomGameState::Multicast_SaveGame_Validate()
+{
+	return true;
+}
+void ACustomGameState::Multicast_SaveGame_Implementation()
+{
+	/*
+	if (Role == ROLE_Authority)
+		return; // Server already saved his version
+		*/
 	auto SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::CreateSaveGameObject(UCustomSaveGame::StaticClass()));
-	SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("CustomGameSlot"), 0));
 	if (!SaveGameInstance)
+	{
+		UE_LOG(LogSaveGame, Error, TEXT("Could not create SaveGame object %s"));
 		return;
+	}
+
+	// Save data
+	TArray<AActor *> ActorsToSave;
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), USaveableActorInterface::StaticClass(), ActorsToSave);
+	for (auto it : ActorsToSave)
+	{
+		SaveGameInstance->AddActorToSave(it);
+
+	}
+	//SaveGameInstance->SaveTime = FDateTime::Now();
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, DefaultSaveGameName, 0);
+	FString IsServerLog = HasAuthority() ? TEXT("Server") : TEXT("Client");
+	UE_LOG(LogSaveGame, Display, TEXT("Game Saved on %s at %s"),*IsServerLog,  *SaveGameInstance->SaveTime.ToString());
+
+	SaveGameInstance = nullptr;
+}
+
+bool ACustomGameState::Multicast_LoadGame_Validate()
+{
+	return true;
+}
+void ACustomGameState::Multicast_LoadGame_Implementation()
+{
+	/*
+	if (Role == ROLE_Authority)
+		return; // Server already loaded his version
+*/
+	auto SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::LoadGameFromSlot(DefaultSaveGameName, 0));
+	if (!SaveGameInstance)
+	{
+		if (!IPlatformFeaturesModule::Get().GetSaveGameSystem())
+			UE_LOG(LogSaveGame, Error, TEXT("Save gamesystem unreachable"));
+		UE_LOG(LogSaveGame, Error, TEXT("Save Game does not exist"));
+	}
 	// Read from save .
-	// something = SaveGameInstance->Something
+	SaveGameInstance->LoadActors(this);
 
-	UE_LOG(LogSaveGame, Display, TEXT("Game Loaded on Server"));
-
+	UE_LOG(LogSaveGame, Warning, TEXT("Game Loaded on Server from save %s"), *SaveGameInstance->SaveTime.ToString());
 	// Get rid of pointer so it gets GCed ;)
 	SaveGameInstance = nullptr;
 }

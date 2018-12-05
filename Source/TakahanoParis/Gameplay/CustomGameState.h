@@ -23,10 +23,20 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 		void LoadGame();
 
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void Multicast_SaveGame();
+
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+		void Multicast_LoadGame();
+
 	UFUNCTION(BlueprintCallable, Category = "Save", meta = (DisplayName = "Save Game" ))
 		void SaveGame_BP() { SaveGame(); }
-	
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Save", meta = (DisplayName = "Load Game"))
+		void LoadGame_BP() { LoadGame(); }
+
+
+	static FString DefaultSaveGameName;
 	
 	
 };
