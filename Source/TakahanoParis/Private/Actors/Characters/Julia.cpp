@@ -10,7 +10,8 @@
 AJulia::AJulia() : Super()
 {
 	//HackDelegate.AddDynamic(this, &AJulia::Hack);
-	//bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
+	bIsUsingObject = false;
 }
 
 
@@ -26,7 +27,8 @@ void AJulia::MoveForward(float Value)
 {
 	if(bIsUsingObject)
 	{
-		return;
+		if (UsedActor)
+			return;
 	}
 	Super::MoveForward(Value);
 }
@@ -35,9 +37,8 @@ void AJulia::MoveRight(float Value)
 {
 	if (bIsUsingObject)
 	{
-		if(UsedActor)
-			
-		return;
+		if(UsedActor)	
+			return;
 	}
 	Super::MoveRight(Value);
 }
@@ -56,7 +57,7 @@ void AJulia::BeginPlay()
 }
 
 
-bool AJulia::GetLookedAtHackable_Implementation(TArray<AActor*>& OutActors) const
+bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors) const
 {
 	OutActors.Empty();
 	const auto aPC = Cast<APlayerController>(GetController());
@@ -139,4 +140,5 @@ void AJulia::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AJulia, bIsUsingObject);
 	DOREPLIFETIME(AJulia, UsedActor);
+	DOREPLIFETIME(AJulia, Hackables);
 }

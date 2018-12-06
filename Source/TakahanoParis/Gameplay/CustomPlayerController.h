@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/EngineTypes.h"
+#include "Actors/Interfaces/SaveableActorInterface.h"
 #include "CustomPlayerController.generated.h"
+
 
 // Forward Declaration
 class UCustomWidget;
@@ -15,7 +17,7 @@ class UCustomWidget;
  *	the base class for every player controller in Project centauri.
  */
 UCLASS()
-class TAKAHANOPARIS_API ACustomPlayerController : public APlayerController
+class TAKAHANOPARIS_API ACustomPlayerController : public APlayerController, public ISaveableActorInterface
 {
 	GENERATED_BODY()
 	
@@ -153,4 +155,6 @@ protected:
 		virtual void Server_OnCharacterDie();
 
 
+
+	virtual void ActorSaveDataSaved_Implementation() override;
 };

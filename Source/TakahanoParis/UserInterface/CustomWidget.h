@@ -22,7 +22,7 @@ class TAKAHANOPARIS_API UCustomWidget : public UUserWidget
 
 public:
 
-UCustomWidget(const FObjectInitializer& ObjectInitializer);
+UCustomWidget(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	/**	Allows for setting Applying Variables set in Blueprint	*/
 	virtual void OnWidgetRebuilt() override;

@@ -8,7 +8,9 @@ public class TakahanoParis : ModuleRules
 	{
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "StreamingPauseRendering", "OnlineSubsystem", "OnlineSubsystemUtils", "AIModule" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "StreamingPauseRendering", "AIModule" });
+        PublicDependencyModuleNames.AddRange(new string[] { "OnlineSubsystem", "OnlineSubsystemUtils" }); // multiplayer
+        PublicDependencyModuleNames.AddRange(new string[] { "MediaAssets"}); // video support
 
 
 
@@ -24,3 +26,4 @@ public class TakahanoParis : ModuleRules
         DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
     }
 }
+>>>>>>> Origin/Experimental
