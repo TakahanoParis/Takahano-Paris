@@ -210,8 +210,23 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 		void OnPerceptionReceived(AActor * Actor, FAIStimulus Stimulus);
 
+	/**
+	 *	@fn OnHostileSpotted()
+	 *	@brief Function handles when an enemy is spotted
+	 *	@param Actor  : the thing that was spotted
+	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Spotted Reaction"))
 		void OnHostileSpotted(const AActor * Actor);
+
+	/**
+	 *	@fn OnHostileSightLost()
+	 *	@brief Function handles when an enemy is no more visible
+	 *	@param Actor  : the thing that was spotted
+	 *	@param LastSeenPosition : the last world location where the hostile was seen
+	 */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Spotted Reaction"))
+		void OnHostileSightLost(const AActor * Actor, const FVector &LastSeenPosition);
+
 
 	/**
 	 *	@property AISightRadius

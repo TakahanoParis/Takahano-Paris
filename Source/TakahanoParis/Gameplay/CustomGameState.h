@@ -35,6 +35,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Save", meta = (DisplayName = "Load Game"))
 		void LoadGame_BP() { LoadGame(); }
 
+	UFUNCTION(BlueprintCallable, Category = "Save", meta = (DisplayName = "Get Actors in Saved Game"))
+		TArray<FName>  GetActorsInSavedGame_BP() {return GetActorsInSavedGame(); }
+
+	TArray<FName> GetActorsInSavedGame();
 
 	static FString DefaultSaveGameName;
 	

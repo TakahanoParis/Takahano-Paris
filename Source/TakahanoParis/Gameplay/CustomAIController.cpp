@@ -137,25 +137,6 @@ void ACustomAIController::Patrol()
 	const FString resultstring = (result != EPathFollowingRequestResult::Type::Failed)?TEXT("Success"):TEXT("Failed");
 
 
-
-#if 0
-	// setting static variables for patrol
-	static float distance;
-	const auto pawn= Cast<ACharacter>(GetPawn());
-	if (!pawn)
-		return;
-	static const float patrolSpeed = pawn->GetCharacterMovement()->MaxWalkSpeed / TimerDelay;
-	
-	distance += patrolSpeed;
-	if (distance > PatrolPath->GetLength())
-		distance -= PatrolPath->GetLength();
-	// do the patrolling 
-	const auto result = MoveToLocation(PatrolPath->GetWorldLocationAlongSpline(distance), PathAcceptanceRadius);
-	UE_LOG(LogTemp, Warning, TEXT("distance : %f"), distance);
-
-#endif // 0
-	
-	
 }
 
 bool ACustomAIController::AttackActor(AActor* Target)
@@ -195,23 +176,23 @@ void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAI
 {
 	if (!GetBlackboardComponent())
 		return;
-	GetBlackboardComponent()->SetValueAsObject(TEXT("ActorPerceived"), Actor);
-	if (Stimulus.SensingFailed)
-	{
-		//GetBlackboardComponent()->SetValueAsBool(TEXT("HasSpottedHostile"), false);
-		return;
-	}
 	const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(Actor, this);
 	switch (T)
 	{
 	case ETeamAttitudeEnum::TAE_Hostile:
-		
-		OnHostileSpotted(Actor);
+		if (Stimulus.SensingSucceeded)
+		{
+			GetBlackboardComponent()->SetValueAsObject(TEXT("ActorPerceived"), Actor);
+			OnHostileSpotted(Actor);
+			break;
+		}
+		OnHostileSightLost(this, Stimulus.StimulusLocation);
+
 		break;
-	case ETeamAttitudeEnum::TAE_Friendly: 
+	case ETeamAttitudeEnum::TAE_Friendly:
 		// Implements friendly behaviour here
 		break;
-	case ETeamAttitudeEnum::TAE_Neutral: 
+	case ETeamAttitudeEnum::TAE_Neutral:
 		// Implements friendly behaviour here
 		break;
 	}
@@ -223,6 +204,11 @@ void ACustomAIController::OnHostileSpotted_Implementation(const AActor * Actor)
 	UE_LOG(LogTemp, Warning, TEXT("%s sees %s as hostile"), *this->GetName(), *Actor->GetName());
 }
 
+void ACustomAIController::OnHostileSightLost_Implementation(const AActor * Actor, const FVector &LastSeenPosition)
+{
+	GetBlackboardComponent()->SetValueAsBool(TEXT("HasSpottedHostile"), false);
+	UE_LOG(LogTemp, Warning, TEXT("%s lost sight of %s as hostile"), *this->GetName(), *Actor->GetName());
+}
 
 
 void ACustomAIController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const

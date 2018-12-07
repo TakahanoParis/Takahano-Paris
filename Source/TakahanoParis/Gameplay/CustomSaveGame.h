@@ -12,28 +12,27 @@ class AActor;
 
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FActorSaveData
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, SaveGame)
 	FString ActorClass;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, SaveGame)
 	FName ActorName;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, SaveGame)
 	FTransform ActorTransform;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, SaveGame)
 		FVector ActorLocation;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, SaveGame)
 		FRotator ActorRotation;
 
-
-	UPROPERTY()
+	UPROPERTY(SaveGame)
 	TArray<uint8> ActorData;
 
 	friend FArchive& operator<<(FArchive& Ar, FActorSaveData& ActorData)
@@ -41,6 +40,8 @@ struct FActorSaveData
 		Ar << ActorData.ActorClass;
 		Ar << ActorData.ActorName;
 		Ar << ActorData.ActorTransform;
+		Ar << ActorData.ActorLocation;
+		Ar << ActorData.ActorRotation;
 		Ar << ActorData.ActorData;
 		return Ar;
 	}
@@ -128,6 +129,10 @@ public:
 
 	UFUNCTION()
 		void LoadActors(UObject * WorldContextObject);
+
+
+	UFUNCTION()
+		void GetSavedActors(TArray<FActorSaveData> &ActorsArray);
 
 private:
 

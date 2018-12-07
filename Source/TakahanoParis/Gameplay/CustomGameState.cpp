@@ -119,3 +119,21 @@ void ACustomGameState::Multicast_LoadGame_Implementation()
 	// Get rid of pointer so it gets GCed ;)
 	SaveGameInstance = nullptr;
 }
+
+TArray<FName> ACustomGameState::GetActorsInSavedGame()
+{
+	auto SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::LoadGameFromSlot(DefaultSaveGameName, 0));
+	if (!SaveGameInstance)
+	{
+		if (!IPlatformFeaturesModule::Get().GetSaveGameSystem())
+			UE_LOG(LogSaveGame, Error, TEXT("Save gamesystem unreachable"));
+		UE_LOG(LogSaveGame, Error, TEXT("Save Game does not exist"));
+	}
+	TArray<FActorSaveData> Actors;
+	SaveGameInstance->GetSavedActors(Actors);
+	// Read from save .
+	TArray<FName> ActorsName;
+	for (auto it : Actors) { ActorsName.Add(it.ActorName); }
+	//SaveGameInstance = nullptr;
+	return ActorsName;
+}

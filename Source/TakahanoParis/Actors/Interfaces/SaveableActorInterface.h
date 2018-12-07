@@ -6,6 +6,26 @@
 #include "UObject/Interface.h"
 #include "SaveableActorInterface.generated.h"
 
+
+
+USTRUCT(BlueprintType)
+struct FActorData
+{
+	GENERATED_BODY()
+
+public :
+
+	UPROPERTY()
+		FTransform ActorTransform;
+
+
+	FActorData(const FTransform &Transform = FTransform()) : ActorTransform(Transform)
+	{
+		
+	}
+};
+
+
 class UCustomSaveGame;
 
 // This class does not need to be modified.
@@ -26,8 +46,8 @@ class TAKAHANOPARIS_API ISaveableActorInterface
 public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Saveable Actor")
-		void ActorSaveDataLoaded();
+		void ActorSaveDataLoaded(const FActorData &Data );
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Saveable Actor")
-		void ActorSaveDataSaved();
+		void ActorSaveDataSaved( const FActorData &Data);
 	
 };
