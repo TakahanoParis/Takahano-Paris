@@ -50,7 +50,7 @@ void UCustomSaveGame::SaveAllActors(UObject * WorldContextObject)
 
 void UCustomSaveGame::CreateSaveGameData(FSaveGameArchive &BinaryData)
 {
-	SaveGameData.GameID = "1234";
+	SaveGameData.GameID = "TakahanoParis-0.2";
 	SaveGameData.Timestamp = FDateTime::Now();
 	SaveGameData.SavedActors = SavedActors;
 		
