@@ -137,6 +137,11 @@ protected:
 
 
 private:
+
+	/**
+	 *	@property InitialCharacter
+	 *	@brief the character originally controlled bty this pawn
+	 */
 	UPROPERTY(Replicated)
 		class ABaseCharacter * InitialCharacter;
 
@@ -151,6 +156,11 @@ public:
 		void OnCharacterDie();
 
 protected:
+
+	/**
+	 *	@fn Server_OnCharacterDie()
+	 *	@brief Called on server 
+	 */
 	UFUNCTION(Server, Reliable,  WithValidation)
 		virtual void Server_OnCharacterDie();
 
@@ -160,4 +170,46 @@ protected:
 
 
 	virtual void ActorSaveDataSaved_Implementation(const FActorData &Data) override;
+
+private:
+
+
+	/**
+	 *	@fn UpdatePlayersCharacterAlly
+	 *	@brief Updates the list of friendly Pawns
+	 */
+	FORCEINLINE void UpdatePlayersCharacterAlly() { Server_UpdatePlayersCharacterAlly(); }
+
+	/**
+	 *	@fn Server_UpdatePlayersCharacterAlly
+	 *	@brief Update on server the list of friendly Pawns
+	 */
+	UFUNCTION(Server, reliable, WithValidation)
+		void Server_UpdatePlayersCharacterAlly();
+
+	/**
+	 *	@property FriedndlyPawns
+	 *	@brief Array of Pawns that are friendly
+	 */
+	UPROPERTY(Replicated)
+		TArray<class APawn * >  FriendlyPawns;
+
+public:
+
+	/**
+	 *	@fn Direction2DToActor
+	 *	@param Actor, the actor you're looking to indicate to player
+	 *	@param out, a 2D vector indicating you where you should move
+	 *	@brief Allow indicating where the player should move toward to find an actor
+	 */
+	UFUNCTION()
+	bool Direction2DToActor(const AActor* Actor, FVector2D &Out) const;
+
+	/**
+	 *	@fn GetOtherPlayer
+	 *	@brief gets pointer to other player pawn
+	 *	@param Num as in the TArray.
+	 */
+	UFUNCTION()
+		APawn* GetOtherPlayerPawn(int Num = 0) { return FriendlyPawns[Num]; }
 };

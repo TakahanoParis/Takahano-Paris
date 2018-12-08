@@ -6,8 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "Actors/Interfaces/TeamInterface.h"
 #include "Actors/Interfaces/LifeInterface.h"
+#include "Actors/Interfaces/SaveableActorInterface.h"
 #include "CustomPlayerState.generated.h"
-
 
 /**
  *	@class ACustomPlayerState
@@ -15,7 +15,7 @@
  *	@note all the handling of the info could be handled by the character but the default design of UE4 is to have this separate class
  */
 UCLASS()
-class TAKAHANOPARIS_API ACustomPlayerState : public APlayerState, public ITeamInterface, public ILifeInterface
+class TAKAHANOPARIS_API ACustomPlayerState : public APlayerState, public ITeamInterface, public ILifeInterface, public ISaveableActorInterface
 {
 	GENERATED_BODY()
 
