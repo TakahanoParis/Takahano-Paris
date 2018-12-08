@@ -11,12 +11,12 @@
 
 FString ACustomGameState::DefaultSaveGameName = TEXT("NativeCustomSaveGame");
 
-bool ACustomGameState::SaveGame_Validate()
+bool ACustomGameState::Server_SaveGame_Validate()
 {
 	return true;
 }
 
-void ACustomGameState::SaveGame_Implementation()
+void ACustomGameState::Server_SaveGame_Implementation()
 {
 #if 0
 	auto SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::CreateSaveGameObject(UCustomSaveGame::StaticClass()));
@@ -37,12 +37,12 @@ void ACustomGameState::SaveGame_Implementation()
 }
 
 
-bool ACustomGameState::LoadGame_Validate()
+bool ACustomGameState::Server_LoadGame_Validate()
 {
 	return true;
 }
 
-void ACustomGameState::LoadGame_Implementation()
+void ACustomGameState::Server_LoadGame_Implementation()
 {
 #if 0 
 		auto SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::LoadGameFromSlot(DefaultSaveGameName, 0));
@@ -120,7 +120,7 @@ void ACustomGameState::Multicast_LoadGame_Implementation()
 	SaveGameInstance = nullptr;
 }
 
-TArray<FName> ACustomGameState::GetActorsInSavedGame()
+TArray<FName> ACustomGameState::GetActorsInSavedGame() const
 {
 	auto SaveGameInstance = Cast<UCustomSaveGame>(UGameplayStatics::LoadGameFromSlot(DefaultSaveGameName, 0));
 	if (!SaveGameInstance)

@@ -10,6 +10,7 @@
 #include "Gameplay/CustomGameMode.h"
 #include "UnrealNetwork.h"
 #include "Gameplay/CustomGameState.h"
+#include "Actors/Interfaces/TeamInterface.h"
 //#include "Components/PrimitiveComponent.h"
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
@@ -151,9 +152,61 @@ void ACustomPlayerController::ActorSaveDataSaved_Implementation(const FActorData
 	UE_LOG(LogTemp, Warning, TEXT("%s saved "), *GetName());
 }
 
+bool ACustomPlayerController::Direction2DToActor(const AActor* Actor, FVector2D& Out)const
+{
+	if (!Actor)
+		return false;
+
+	const auto PlayerLoc= ((AActor*)this)->GetActorLocation();
+	//const auto WorldPos = Actor->GetActorLocation();
+	const FVector V = Actor->GetActorLocation() - PlayerLoc;
+	const float angleToActor = FVector::DotProduct(PlayerLoc, V);
+	// compare to forward vector of controller
+	if(angleToActor > 0)
+	{
+		Out = FVector2D(0.f, 0.f);
+		return false;
+	}
+	const auto L = FVector2D(V.X, 0.f);
+	const auto M = FVector2D(0.f, V.Y);
+
+	const auto V2D = FVector2D(V.Y, V.Z);
+	const float X = FVector2D::DotProduct(V2D, L); // gauche ou Droite
+	const float Y = FVector2D::DotProduct(V2D, M); //haut ou bas
+
+	Out.X = X;
+	Out.Y = Y;
+	Out.Normalize();
+	return true;
+}
+
+bool ACustomPlayerController::Server_UpdatePlayersCharacterAlly_Validate()
+{
+	return true;
+}
+
+void ACustomPlayerController::Server_UpdatePlayersCharacterAlly_Implementation()
+{
+	FriendlyPawns.Empty();
+	TArray<AActor * > Pawns;
+	UGameplayStatics::GetAllActorsOfClass(this, APawn::StaticClass(), Pawns);
+	for (auto it: Pawns)
+	{
+		const auto Pawn = Cast<APawn>(it);
+		if (!Pawn)
+			break;
+		if (FTeam::GetAttitude(this, Pawn) == ETeamAttitudeEnum::TAE_Friendly)
+		{
+			FriendlyPawns.Add(Pawn);
+		}
+	}
+}
+
+
 void ACustomPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACustomPlayerController, InitialCharacter);
+	DOREPLIFETIME(ACustomPlayerController, FriendlyPawns);
 }
 
