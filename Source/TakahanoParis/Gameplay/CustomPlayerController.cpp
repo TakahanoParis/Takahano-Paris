@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/CustomGameMode.h"
 #include "UnrealNetwork.h"
+#include "Gameplay/CustomGameState.h"
 //#include "Components/PrimitiveComponent.h"
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
@@ -63,7 +64,7 @@ void ACustomPlayerController::LookUp(float Val)
 	if (!GetPawn())
 		return;
 	// calculate delta for this frame from the rate information
-	GetPawn()->AddControllerYawInput(Val);
+	GetPawn()->AddControllerPitchInput(Val);
 }
 
 void ACustomPlayerController::LookUpAtRate(float Rate)
@@ -114,11 +115,6 @@ UCustomWidget* ACustomPlayerController::AddWidgetToScreen(TSubclassOf<UCustomWid
 	return NewWidget;
 }
 
-void ACustomPlayerController::ActorSaveDataSaved_Implementation()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Player %s saved"), *GetName());
-}
-
 
 bool ACustomPlayerController::Server_OnCharacterDie_Validate()
 {
@@ -130,7 +126,14 @@ bool ACustomPlayerController::Server_OnCharacterDie_Validate()
 void ACustomPlayerController::Server_OnCharacterDie_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Died"));
-
+	const auto gameState = Cast<ACustomGameState>(UGameplayStatics::GetGameState(this));
+	if(gameState)
+	{
+		PlayCutScene();
+		gameState->LoadGame();
+		// Load Game
+	}
+	
 }
 
 void ACustomPlayerController::OnCharacterDie_Implementation()
@@ -138,7 +141,12 @@ void ACustomPlayerController::OnCharacterDie_Implementation()
 	Server_OnCharacterDie();
 }
 
-void ActorSaveDataSaved_Implementation()
+void ACustomPlayerController::PlayCutScene_Implementation()
+{
+
+}
+
+void ACustomPlayerController::ActorSaveDataSaved_Implementation(const FActorData &Data)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s saved "), *GetName());
 }

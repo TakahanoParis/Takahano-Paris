@@ -25,15 +25,16 @@ void UCustomSaveGame::AddActorToSave(AActor* Actor)
 
 	ActorRecord.ActorLocation = Actor->GetActorLocation();
 	ActorRecord.ActorRotation = Actor->GetActorRotation();
-
+	FActorData Data(Actor->GetTransform());
 
 	FMemoryWriter MemoryWriter(ActorRecord.ActorData, true);
 	FSaveGameArchive Ar(MemoryWriter);
 	Actor->Serialize(Ar);
+	SavedActors.Add(ActorRecord);
 	CreateSaveGameData(Ar);
 
-	SavedActors.Add(ActorRecord);
-	ISaveableActorInterface::Execute_ActorSaveDataSaved(Actor);
+
+	ISaveableActorInterface::Execute_ActorSaveDataSaved(Actor, Data);
 }
 
 void UCustomSaveGame::SaveAllActors(UObject * WorldContextObject)
@@ -49,7 +50,7 @@ void UCustomSaveGame::SaveAllActors(UObject * WorldContextObject)
 
 void UCustomSaveGame::CreateSaveGameData(FSaveGameArchive &BinaryData)
 {
-	SaveGameData.GameID = "1234";
+	SaveGameData.GameID = "TakahanoParis-0.2";
 	SaveGameData.Timestamp = FDateTime::Now();
 	SaveGameData.SavedActors = SavedActors;
 		
@@ -86,6 +87,7 @@ void UCustomSaveGame::LoadActors(UObject  * WorldContextObject)
 			FTransform ActorTransform = ActorRecord.ActorTransform;
 			const FVector  ActorLocation = ActorRecord.ActorLocation;
 			const FRotator  ActorRotation = ActorRecord.ActorRotation;
+			FActorData Data(ActorTransform);
 
 			FName ActorName = ActorRecord.ActorName;
 			// two possibilities :
@@ -123,8 +125,8 @@ void UCustomSaveGame::LoadActors(UObject  * WorldContextObject)
 					continue;
 				}
 				FSaveGameArchive Ar(MemoryReader);
-				//AlreadySpawnedActor->Serialize(Ar); // get all the data from the archive
-				ISaveableActorInterface::Execute_ActorSaveDataLoaded(AlreadySpawnedActor);
+				AlreadySpawnedActor->Serialize(Ar); // get all the data from the archive
+				ISaveableActorInterface::Execute_ActorSaveDataLoaded(AlreadySpawnedActor, Data);
 
 				WorldActorsNames.Remove(ActorName);
 				
@@ -145,10 +147,15 @@ void UCustomSaveGame::LoadActors(UObject  * WorldContextObject)
 				FSaveGameArchive Ar(MemoryReader);
 				NewActor->Serialize(Ar);
 				NewActor->SetActorTransform(ActorRecord.ActorTransform);
-				ISaveableActorInterface::Execute_ActorSaveDataLoaded(NewActor);
+				ISaveableActorInterface::Execute_ActorSaveDataLoaded(NewActor, Data);
 			}
 		}
 	UE_LOG(LogSaveGame, Display, TEXT("finished to load Actors"));
 
 }
 
+void UCustomSaveGame::GetSavedActors(TArray<FActorSaveData>& ActorsArray)
+{
+
+	ActorsArray = SavedActors;
+}

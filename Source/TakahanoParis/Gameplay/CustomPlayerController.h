@@ -155,6 +155,9 @@ protected:
 		virtual void Server_OnCharacterDie();
 
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CutScene") 
+		void PlayCutScene();
 
-	virtual void ActorSaveDataSaved_Implementation() override;
+
+	virtual void ActorSaveDataSaved_Implementation(const FActorData &Data) override;
 };
