@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UserInterface/CustomWidget.h"
-//#include "LocationWidget.h"
 #include "MainHUDWidget.generated.h"
 
 /**
@@ -18,8 +17,13 @@ class TAKAHANOPARIS_API UMainHUDWidget : public UCustomWidget
 
 public:
 
+	UMainHUDWidget();
+
 	UPROPERTY(meta = (BindWidget))
 	class ULocationWidget * LocationWidget;
+
+	UPROPERTY()
+		bool bDrawLocationWidget;
 
 	UFUNCTION()
 		void SetLocationWidget();

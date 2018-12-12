@@ -11,6 +11,7 @@
 #include "UnrealNetwork.h"
 #include "Gameplay/CustomGameState.h"
 #include "Actors/Interfaces/TeamInterface.h"
+#include "UserInterface/MainHUDWidget.h"
 //#include "Components/PrimitiveComponent.h"
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
@@ -27,9 +28,7 @@ ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& Objec
 		auto GM = UGameplayStatics::GetGameMode(GetWorld());
 		//if(GM)
 			//ClientSetHUD(GM->)
-	}
-
-		
+	}	
 }
 
 void ACustomPlayerController::SetupInputComponent()
@@ -106,6 +105,18 @@ void ACustomPlayerController::Reset()
 
 }
 
+void ACustomPlayerController::PostInitProperties()
+{
+	Super::PostInitProperties();
+}
+
+void ACustomPlayerController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+	ShowMainHUD(true);
+}
+
+
 UCustomWidget* ACustomPlayerController::AddWidgetToScreen(TSubclassOf<UCustomWidget> ClassToSpawn,FVector2D AnchorPoint, int ZOrder)
 {
 	if (!IsValid(ClassToSpawn))
@@ -144,7 +155,7 @@ void ACustomPlayerController::OnCharacterDie_Implementation()
 
 void ACustomPlayerController::PlayCutScene_Implementation()
 {
-
+	ShowMainHUD(true);
 }
 
 void ACustomPlayerController::ActorSaveDataSaved_Implementation(const FActorData &Data)
@@ -160,7 +171,9 @@ bool ACustomPlayerController::Direction2DToActor(const AActor* Actor, FVector2D&
 	const auto PlayerLoc= ((AActor*)this)->GetActorLocation();
 	//const auto WorldPos = Actor->GetActorLocation();
 	const FVector V = Actor->GetActorLocation() - PlayerLoc;
+
 	const float angleToActor = FVector::DotProduct(PlayerLoc, V);
+
 	// compare to forward vector of controller
 	if(angleToActor > 0)
 	{
@@ -178,6 +191,28 @@ bool ACustomPlayerController::Direction2DToActor(const AActor* Actor, FVector2D&
 	Out.Y = Y;
 	Out.Normalize();
 	return true;
+}
+
+bool ACustomPlayerController::ShowMainHUD(bool visibility)
+{
+	if(!HUDWidget)
+	{
+		HUDWidget = CreateWidget<UMainHUDWidget>(this, HUDWidgetClass, TEXT("Main HUD Widget"));
+		if (!HUDWidget)
+			return false;
+		HUDWidget->AddToPlayerScreen();
+	}
+	HUDWidget->SetVisibility(visibility ? ESlateVisibility::Visible: ESlateVisibility::Hidden);
+	return (visibility && HUDWidget);
+}
+
+bool ACustomPlayerController::SetMainHUD(UMainHUDWidget* HUD)
+{
+	if(HUD)
+	{
+		HUDWidget = HUD;
+	}
+	return false;
 }
 
 bool ACustomPlayerController::Server_UpdatePlayersCharacterAlly_Validate()

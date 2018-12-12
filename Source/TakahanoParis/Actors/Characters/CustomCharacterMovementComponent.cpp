@@ -8,6 +8,11 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
+UCustomCharacterMovementComponent::UCustomCharacterMovementComponent(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
+{
+	MaxStepHeight = 70.0;
+}
+
 float UCustomCharacterMovementComponent::GetSpeedDelta() const
 {
 	if(bDeltaCalculatedInBlueprint)
