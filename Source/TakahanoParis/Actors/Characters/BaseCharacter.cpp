@@ -93,7 +93,6 @@ bool ABaseCharacter::CanJumpInternal_Implementation() const
 	return Super::CanJumpInternal_Implementation() && bCanJump;
 }
 
-FTeam ABaseCharacter::I_GetTeam() const
 bool ABaseCharacter::CanRun()
 {
 	return false;
@@ -109,8 +108,6 @@ void ABaseCharacter::Run()
 	CharacterMovementComponent->bIsRunning = true;
 }
 
-
-
 FTeam ABaseCharacter::I_GetTeam() const
 {
 	if(GetController())
@@ -122,7 +119,6 @@ FTeam ABaseCharacter::I_GetTeam() const
 	}
 	return 0;
 }
-
 
 void ABaseCharacter::I_SetTeam(FTeam NewTeam)
 {
