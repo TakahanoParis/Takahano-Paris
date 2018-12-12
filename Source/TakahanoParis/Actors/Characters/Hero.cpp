@@ -18,9 +18,13 @@ AHero::AHero() : Super()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 250.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
+
 	//CameraBoom->bInheritPitch = true;
 	//CameraBoom->bInheritRoll = true;
 	//CameraBoom->bInheritYaw = true;
+
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->CameraLagSpeed = 0.5f;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));

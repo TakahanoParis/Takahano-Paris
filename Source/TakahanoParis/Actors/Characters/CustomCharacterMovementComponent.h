@@ -15,7 +15,10 @@ class TAKAHANOPARIS_API UCustomCharacterMovementComponent : public UCharacterMov
 {
 	GENERATED_BODY()
 
-public:	
+public:
+
+	UCustomCharacterMovementComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
 	/**
 	 *	@property WalkSpeedCurve
 	 *	@brief curve that define Walk/run speed based on a delta 

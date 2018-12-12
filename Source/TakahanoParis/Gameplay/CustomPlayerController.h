@@ -37,6 +37,10 @@ public:
 
 	virtual void Reset() override;
 
+	void PostInitProperties() override;
+
+
+	void ReceivedPlayer() override;
 protected:
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -212,4 +216,78 @@ public:
 	 */
 	UFUNCTION()
 		APawn* GetOtherPlayerPawn(int Num = 0) { return FriendlyPawns[Num]; }
+
+private:
+
+
+		/**
+		 *	@property HUDWidget
+		 *	@brief	The Actual HUD (as in Heads Up Display
+		*/
+		UPROPERTY()
+			class UMainHUDWidget * HUDWidget;
+
+protected:
+
+	/**
+	 *	@property HUDWidget	 *	@brief	The Actual HUD (as in Heads Up Display)
+	 *	@note, Frankly, we could just put this in the
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta=(ExposeOnSpawn = true, DisplayName = "Main HUD"))
+		class TSubclassOf<UMainHUDWidget> HUDWidgetClass;
+
+	/**
+	 *	@fn GetOtherPlayer
+	 *	@brief gets pointer to other player pawn
+	 *	@param Num as in the TArray.
+	 */
+	UFUNCTION()
+		bool ShowMainHUD(bool visibility = true);
+
+	/**
+ *	@fn GetOtherPlayer
+ *	@brief gets pointer to other player pawn
+ *	@param Num as in the TArray.
+ */
+	UFUNCTION(BlueprintCallable, meta=(DisplayName ="Show HUD"))
+		bool ShowMainHUD_BP(bool visibility = true) { return ShowMainHUD(visibility); }
+
+	/**
+	 *	@fn SetMainHUD
+	 *	@brief Sets the pointer to the MainHUD
+	 *	@param HUD the HUD you want to set as main HUD.
+	 */
+	UFUNCTION()
+		bool SetMainHUD(UMainHUDWidget * HUD);
+
+
+	/**
+	 *	@fn GetMainHUD
+	 *	@brief Gets the pointer to the MainHUD
+	 *	@return  the main HUD, or nullptr if not set
+	 */
+	UFUNCTION()
+		FORCEINLINE UMainHUDWidget * GetMainHUD() const { return HUDWidget; }
+
+
+
+	/**
+	 *	@fn GetMainHUD
+	 *	@brief Gets the pointer to the MainHUD
+	 *	@return  the main HUD, or nullptr if not set
+	 */
+	UFUNCTION(BlueprintPure, Category = "HUD", meta = (DisplayName = "Get player HUD"))
+		FORCEINLINE UMainHUDWidget * GetMainHUD_BP() const { return GetMainHUD(); }
+
+	/**
+	 *	@fn SetMainHUD
+	 *	@brief Sets the pointer to the MainHUD
+	 *	@param HUD the HUD you want to set as main HUD.
+	 *	@note for blueprint
+	 */
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set HUD"))
+		bool SetMainHUD_BP(UMainHUDWidget * HUD) { return SetMainHUD(HUD); }
+
+
+
 };
