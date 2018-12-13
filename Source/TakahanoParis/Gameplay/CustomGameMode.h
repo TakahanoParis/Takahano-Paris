@@ -44,6 +44,25 @@ public:
 public:
 
 	/**
+	*	@fn GetAllPlayerControllers
+	*	@brief Tries to mqke an Array of all valid player controllers
+	*	@param OutControllers : Output parameter made of all valid Controllers
+	*/
+	UFUNCTION()
+		void GetAllPlayerControllers(TArray<class ACustomPlayerController*> &OutControllers);
+
+	/**
+	*	@fn GetAllPlayerControllers
+	*	@brief Tries to mqke an Array of all valid player controllers
+	*	@param OutControllers : Output parameter made of all valid Controllers
+	*	@return false if encountered error, true otherwise
+	*	@note for Blueprints
+	*/
+	UFUNCTION(BlueprintPure, Category = "Players", meta =(DisplayName = "Get All Player controllers" )  )
+		void GetAllPlayerControllers_BP(TArray<class ACustomPlayerController*> &OutControllers) { GetAllPlayerControllers(OutControllers); }
+
+
+	/**
 	 *	@fn RestartGameLevel
 	 *	@brief restart level
 	 */

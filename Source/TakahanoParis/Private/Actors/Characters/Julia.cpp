@@ -115,7 +115,6 @@ void AJulia::Server_ReturnToCharacter_Implementation()
 	Controller = aPC;
 	bIsUsingObject = false;
 	UsedActor = nullptr;
-
 }
 
 bool AJulia::Server_Hack_Validate(AActor * target)

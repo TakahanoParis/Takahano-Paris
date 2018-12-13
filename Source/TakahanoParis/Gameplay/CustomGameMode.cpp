@@ -78,6 +78,18 @@ AActor * ACustomGameMode::ChoosePlayerStart_Implementation(AController * Player)
 	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
+void ACustomGameMode::GetAllPlayerControllers(TArray<ACustomPlayerController *>& OutControllers)
+{
+	const auto players = GetNumPlayers();
+	OutControllers.Empty();
+	for (int32 count = 0; count < players; count++)
+	{
+		const auto playerController = Cast<ACustomPlayerController>(UGameplayStatics::UGameplayStatics::GetPlayerController((UObject*)GetWorld(), count));
+		if (playerController)
+			OutControllers.Add(playerController);
+	}
+}
+
 void ACustomGameMode::RestartGameLevel()
 {
 	UGameplayStatics::OpenLevel((UObject*)GetWorld(), FName(*UGameplayStatics::GetCurrentLevelName(this)));

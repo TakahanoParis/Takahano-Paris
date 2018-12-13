@@ -24,7 +24,7 @@ AHero::AHero() : Super()
 	//CameraBoom->bInheritYaw = true;
 
 	CameraBoom->bEnableCameraLag = true;
-	CameraBoom->CameraLagSpeed = 0.5f;
+	CameraBoom->CameraLagSpeed = 10.f;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
