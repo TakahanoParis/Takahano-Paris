@@ -44,10 +44,64 @@ AHero::AHero() : Super()
 	bUseControllerRotationYaw = false;
 }
 
+void AHero::BeginPlay()
+{
+	Super::BeginPlay();
+	Server_SetInteractables();
+}
 
-void AHero::OnConstruction( const FTransform & Transform){
-    Super::OnConstruction(Transform);
-  }
+void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	PlayerInputComponent->BindAction("Use", IE_Released, this, &AHero::Use);
+}
+
+
+bool AHero::GetLookedAtInteractables(TArray<AActor *>& Interactables) const
+{
+		Interactables.Empty();
+		const auto aPC = Cast<APlayerController>(GetController());
+		if (aPC)
+		{
+			Interactables = InteractableActors;
+			ACustomPlayerController::GetVisibleActorsInArray(Interactables, aPC);
+		}
+		return Interactables.Num() > 0;
+
+}
+
+void AHero::Use()
+{
+	AActor * ToUse = nullptr;
+	TArray<AActor *> Interact;
+	GetLookedAtInteractables(Interact);
+	float MinDist = 0;
+	for(const auto it: Interact)
+	{
+		const auto Dist = FVector::Dist(it->GetActorLocation(), GetActorLocation());
+		if(MinDist == 0 || Dist < MinDist)
+		{
+			MinDist = Dist;
+			ToUse = it;
+		}
+	}
+	IInteractInterface::Execute_I_Server_Use(ToUse, GetController());
+	this->Use_BP(); // Calling the blueprint event;
+
+}
+
+bool AHero::Server_SetInteractables_Validate()
+{
+	return true;
+}
+
+void AHero::Server_SetInteractables_Implementation()
+{
+	InteractableActors.Empty();
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UInteractInterface::StaticClass(), InteractableActors);
+}
+
+
 
 bool AHero::TryUse(AActor * Target)
 {
@@ -104,11 +158,11 @@ void AHero::Run()
 	Super::Run();
 }
 
-
-#if 0
 // nothing is replicated in AHero
 void AHero::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+		DOREPLIFETIME(AHero, InteractableActors);
+
 }
-#endif 
+

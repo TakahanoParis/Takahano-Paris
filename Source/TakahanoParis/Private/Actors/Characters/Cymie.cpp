@@ -3,5 +3,7 @@
 #include "Cymie.h"
 
 
-
-
+void ACymie::Use()
+{
+	Super::Use();
+}

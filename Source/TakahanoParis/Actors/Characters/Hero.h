@@ -24,6 +24,10 @@ public:
 	 */
 	AHero();
 
+	void BeginPlay() override;
+
+	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
 protected:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)// meta = (AllowPrivateAccess = "true"))
@@ -33,10 +37,30 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
+	UFUNCTION()
+		virtual bool GetLookedAtInteractables(TArray<AActor* > &Interactables) const;
 
-protected :
+	UFUNCTION()
+		virtual void Use();
 
-    virtual void OnConstruction(const FTransform & Transform) override;
+	UFUNCTION(BlueprintImplementableEvent, Category = "Interactable", meta = (DisplayName = "Use"))
+		void Use_BP();
+
+
+private:
+
+	/**
+	 *	@property InteractableActors
+	 *	@brief	all interactables actors found at begin Play. Improves logic and speed to look here
+	 */
+	UPROPERTY(Replicated)
+		TArray<AActor*>	InteractableActors;
+
+
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void Server_SetInteractables();
+
 
 
 protected:

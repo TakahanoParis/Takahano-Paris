@@ -147,15 +147,21 @@ protected:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Get looked at Electronic"))
 		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const { return  GetLookedAtHackable(OutActors); }
-		
+
 private:
 
 	/**
 	 *	@property HackableActors
 	 *	@brief	all hackable actors found at begin Play. Improves logic and speed to look here
 	 */
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<AActor*>	HackableActors;
+
+
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void Server_SetHackables();
+
 	
 	
 	

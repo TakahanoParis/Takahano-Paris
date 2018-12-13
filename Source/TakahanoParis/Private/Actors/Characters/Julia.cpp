@@ -6,6 +6,7 @@
 #include "Actors/Interfaces/HackInterface.h"
 #include "UnrealNetwork.h"
 #include "TakahanoParis.h"
+#include "Kismet/GameplayStatics.h"
 
 AJulia::AJulia() : Super()
 {
@@ -46,14 +47,7 @@ void AJulia::MoveRight(float Value)
 void AJulia::BeginPlay()
 {
 	Super::BeginPlay();
-	HackableActors.Empty();
-	const auto aPC = Cast<ACustomPlayerController>(GetController());
-	if (!aPC)
-	{
-		UE_LOG(LogTakahanoParis, Error, TEXT("Cannot retrieve a pointer to a ACustomPlayerController"));
-		return;
-	}
-	const bool R = aPC->GetVisibleActorsWithInterface(HackableActors, UHackInterface::StaticClass());
+	Server_SetHackables();
 }
 
 
@@ -69,6 +63,16 @@ bool AJulia::GetLookedAtHackable(TArray<AActor*>& OutActors) const
 	return OutActors.Num() > 0;	
 }
 
+bool AJulia::Server_SetHackables_Validate()
+{
+	return true;
+}
+
+void AJulia::Server_SetHackables_Implementation()
+{
+	HackableActors.Empty();
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UHackInterface::StaticClass(), HackableActors);
+}
 
 
 bool AJulia::TryHack(AActor* target)  
