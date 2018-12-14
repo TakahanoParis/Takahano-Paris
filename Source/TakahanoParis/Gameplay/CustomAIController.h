@@ -224,8 +224,25 @@ protected:
 	 *	@param Actor  : the thing that was spotted
 	 *	@param LastSeenPosition : the last world location where the hostile was seen
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Spotted Reaction"))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Sight Lost Reaction"))
 		void OnHostileSightLost(const AActor * Actor, const FVector &LastSeenPosition);
+
+	/**
+	*	@fn OnHostileSpotted()
+	*	@brief Function handles when an enemy is spotted
+	*	@param Actor  : the thing that was spotted
+	*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Spotted Reaction"))
+		void OnFriendlySpotted(const AActor * Actor);
+
+	/**
+	*	@fn OnHostileSightLost()
+	*	@brief Function handles when an enemy is no more visible
+	*	@param Actor  : the thing that was spotted
+	*	@param LastSeenPosition : the last world location where the hostile was seen
+	*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Sight Lost Reaction"))
+		void OnFriendlySightLost(const AActor * Actor, const FVector &LastSeenPosition);
 
 
 	/**

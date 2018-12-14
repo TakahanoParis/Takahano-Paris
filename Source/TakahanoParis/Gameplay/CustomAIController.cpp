@@ -210,6 +210,16 @@ void ACustomAIController::OnHostileSightLost_Implementation(const AActor * Actor
 	UE_LOG(LogTemp, Warning, TEXT("%s lost sight of %s as hostile"), *this->GetName(), *Actor->GetName());
 }
 
+void ACustomAIController::OnFriendlySpotted_Implementation(const AActor * Actor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s sees %s as friendly"), *this->GetName(), *Actor->GetName());
+}
+
+void ACustomAIController::OnFriendlySightLost_Implementation(const AActor * Actor, const FVector &LastSeenPosition)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s lost sight of %s as friendly"), *this->GetName(), *Actor->GetName());
+}
+
 
 void ACustomAIController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
