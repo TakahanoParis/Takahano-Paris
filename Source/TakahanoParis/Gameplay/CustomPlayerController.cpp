@@ -86,7 +86,6 @@ bool ACustomPlayerController::GetVisibleActorsInArray(TArray<AActor*>& OutActors
 	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
 	Params.AddIgnoredActor(Player->GetPawn());
 	FCollisionObjectQueryParams ObjectsParam = FCollisionObjectQueryParams::DefaultObjectQueryParam;
-	OutActors.Shrink();
 	for (int32 id = OutActors.Num() - 1; id >= 0; --id)
 	{
 		Params.AddIgnoredActor(OutActors[id]);
@@ -95,6 +94,9 @@ bool ACustomPlayerController::GetVisibleActorsInArray(TArray<AActor*>& OutActors
 		if (OutHit.IsValidBlockingHit())
 			OutActors.RemoveAt(id, 1, false);	
 	}
+	if(OutActors.Num()>0)
+		OutActors.Shrink();
+
 	return OutActors.Num() > 0;
 }
 
@@ -197,6 +199,8 @@ bool ACustomPlayerController::ShowMainHUD(bool visibility)
 {
 	if(!HUDWidget)
 	{
+		if (!HUDWidgetClass.Get())
+			return false;
 		HUDWidget = CreateWidget<UMainHUDWidget>(this, HUDWidgetClass, TEXT("Main HUD Widget"));
 		if (!HUDWidget)
 			return false;

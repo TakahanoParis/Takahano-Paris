@@ -230,7 +230,8 @@ private:
 protected:
 
 	/**
-	 *	@property HUDWidget	 *	@brief	The Actual HUD (as in Heads Up Display)
+	 *	@property HUDWidget
+	 *	@brief	The Actual HUD (as in Heads Up Display)
 	 *	@note, Frankly, we could just put this in the
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD", meta=(ExposeOnSpawn = true, DisplayName = "Main HUD"))

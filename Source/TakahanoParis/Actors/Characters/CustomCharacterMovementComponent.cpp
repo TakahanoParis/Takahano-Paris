@@ -11,6 +11,7 @@
 UCustomCharacterMovementComponent::UCustomCharacterMovementComponent(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
 	MaxStepHeight = 70.0;
+	bOrientRotationToMovement = true;
 }
 
 float UCustomCharacterMovementComponent::GetSpeedDelta() const
@@ -27,7 +28,7 @@ float UCustomCharacterMovementComponent::GetSpeedDelta() const
 	B.Normalize();
 	const auto degree = 90.0 - FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(A, B)));
 	const float SlowRate = degree == 0 ? 1 : 1 / degree;
-	const float TargetSpeedDelta = (bIsRunning? 1 : NormalSpeedDelta) * SlowRate;
+	const float TargetSpeedDelta = (bIsRunning?NormalSpeedDelta : 1) * SlowRate;
 	//UE_LOG(LogTemp, Warning, TEXT("TargetSpeed is : %f"), TargetSpeedDelta);
 	return UKismetMathLibrary::FInterpTo(SpeedDelta, TargetSpeedDelta, UGameplayStatics::GetWorldDeltaSeconds(GetCharacterOwner()), 30.f);
 }
@@ -37,7 +38,7 @@ float UCustomCharacterMovementComponent::GetMaxSpeed() const
 	if (!WalkSpeedCurve)
 		return Super::GetMaxSpeed();
 	// Setup Speed Delta here
-	return (MovementMode == MOVE_Walking || MovementMode == MOVE_NavWalking) ? WalkSpeedCurve->GetFloatValue(SpeedDelta) : Super::GetMaxSpeed();
+	return (MovementMode == MOVE_Walking || MovementMode == MOVE_NavWalking)? Super::GetMaxSpeed() : WalkSpeedCurve->GetFloatValue(SpeedDelta);
 }
 
 void UCustomCharacterMovementComponent::PerformMovement(float DeltaTime)

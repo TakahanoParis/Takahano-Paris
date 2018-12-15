@@ -9,7 +9,7 @@
 #include "Actors/Interfaces/InteractInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gameplay/CustomPlayerState.h"
-
+#include "Kismet/GameplayStatics.h"
 
 AHero::AHero() : Super()
 {
@@ -24,7 +24,7 @@ AHero::AHero() : Super()
 	//CameraBoom->bInheritYaw = true;
 
 	CameraBoom->bEnableCameraLag = true;
-	CameraBoom->CameraLagSpeed = 0.5f;
+	CameraBoom->CameraLagSpeed = 10.f;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -44,64 +44,32 @@ AHero::AHero() : Super()
 	bUseControllerRotationYaw = false;
 }
 
+
 void AHero::BeginPlay()
 {
 	Super::BeginPlay();
-	Server_SetInteractables();
+	SetInteractableActors();
 }
 
-void AHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AHero::Tick(float DeltaSeconds)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Use", IE_Released, this, &AHero::Use);
-}
-
-
-bool AHero::GetLookedAtInteractables(TArray<AActor *>& Interactables) const
-{
-		Interactables.Empty();
-		const auto aPC = Cast<APlayerController>(GetController());
-		if (aPC)
-		{
-			Interactables = InteractableActors;
-			ACustomPlayerController::GetVisibleActorsInArray(Interactables, aPC);
-		}
-		return Interactables.Num() > 0;
-
+	Super::Tick(DeltaSeconds);
+	//SetVisibleInteractableActors();
 }
 
 void AHero::Use()
 {
-	AActor * ToUse = nullptr;
-	TArray<AActor *> Interact;
-	GetLookedAtInteractables(Interact);
-	float MinDist = 0;
-	for(const auto it: Interact)
-	{
-		const auto Dist = FVector::Dist(it->GetActorLocation(), GetActorLocation());
-		if(MinDist == 0 || Dist < MinDist)
-		{
-			MinDist = Dist;
-			ToUse = it;
-		}
-	}
-	IInteractInterface::Execute_I_Server_Use(ToUse, GetController());
-	this->Use_BP(); // Calling the blueprint event;
-
+	SetVisibleInteractableActors();
+	Use_BP();
 }
 
-bool AHero::Server_SetInteractables_Validate()
+void AHero::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 {
-	return true;
+	check(PlayerInputComponent);
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &AHero::Use);
 }
-
-void AHero::Server_SetInteractables_Implementation()
-{
-	InteractableActors.Empty();
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UInteractInterface::StaticClass(), InteractableActors);
-}
-
-
 
 bool AHero::TryUse(AActor * Target)
 {
@@ -158,11 +126,28 @@ void AHero::Run()
 	Super::Run();
 }
 
+void AHero::SetInteractableActors()
+{
+	if(GetWorld())
+		UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UInteractInterface::StaticClass(), InteractableActors);
+}
+
+void AHero::SetVisibleInteractableActors()
+{
+	const auto aPC = Cast<ACustomPlayerController>(GetController());
+	if(aPC)
+	{
+		VisibleInteractableActors.Empty();
+		VisibleInteractableActors = InteractableActors;
+		ACustomPlayerController::GetVisibleActorsInArray(VisibleInteractableActors, aPC);
+	}
+
+}
+
+#if 0
 // nothing is replicated in AHero
 void AHero::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-		DOREPLIFETIME(AHero, InteractableActors);
-
 }
-
+#endif 

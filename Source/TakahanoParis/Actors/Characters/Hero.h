@@ -24,9 +24,25 @@ public:
 	 */
 	AHero();
 
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 
-	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void Tick(float DeltaSeconds) override;
+
+	/**
+	 *	@fn Use
+	 *	@brief thw use action called by keyboard or gamepad action
+	 */
+	UFUNCTION()
+	virtual void Use();
+
+	/**
+	 *	@fn Use_BP
+	 *	@brief Use Blueprint Event
+	 */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Interactable", meta = (DisplayName = "Use"))
+		void Use_BP();
+
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 protected:
 	/** Camera boom positioning the camera behind the character */
@@ -36,32 +52,6 @@ protected:
 	/** Follow camera */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
-
-	UFUNCTION()
-		virtual bool GetLookedAtInteractables(TArray<AActor* > &Interactables) const;
-
-	UFUNCTION()
-		virtual void Use();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Interactable", meta = (DisplayName = "Use"))
-		void Use_BP();
-
-
-private:
-
-	/**
-	 *	@property InteractableActors
-	 *	@brief	all interactables actors found at begin Play. Improves logic and speed to look here
-	 */
-	UPROPERTY(Replicated)
-		TArray<AActor*>	InteractableActors;
-
-
-
-	UFUNCTION(Server, Reliable, WithValidation)
-		void Server_SetInteractables();
-
-
 
 protected:
 
@@ -87,5 +77,27 @@ protected:
 	virtual bool CanRun() override;
 public:
 	virtual void Run() override;
-		
+
+
+protected :
+
+
+	FORCEINLINE TArray<AActor *>  GetVisibleInteractableActors() const { return VisibleInteractableActors; }
+
+	UFUNCTION(BlueprintPure, Category = "Interactable", meta = (DisplayName = "GetVisibleInteractables"))
+		TArray<AActor *>  GetVisibleInteractableActors_BP() const { return GetVisibleInteractableActors(); }
+
+private :
+
+	UPROPERTY()
+		TArray<AActor *> InteractableActors;
+
+	UFUNCTION()
+		void SetInteractableActors();
+
+	UPROPERTY()
+		TArray<AActor *> VisibleInteractableActors;
+
+	UFUNCTION()
+		void SetVisibleInteractableActors();
 };

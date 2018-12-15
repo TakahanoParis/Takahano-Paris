@@ -13,9 +13,8 @@ UCLASS()
 class ACymie : public AHero
 {
 	GENERATED_BODY()
-
-public:
-	/** Override of Use function to add interactables action	 */
-	virtual void Use() override;
+	
+	
+	
 	
 };

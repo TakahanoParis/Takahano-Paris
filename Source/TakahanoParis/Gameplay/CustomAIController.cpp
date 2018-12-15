@@ -17,6 +17,7 @@
 #include "Gameplay/CustomGameMode.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Actors/Characters/AICharacter.h"
+#include "BrainComponent.h"
 
 
 ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -172,6 +173,27 @@ FTeam ACustomAIController::I_GetTeam() const
 	return 0;
 }
 
+bool ACustomAIController::Server_StopAILogic_Validate(bool bStop)
+{
+	return true;
+}
+
+void ACustomAIController::Server_StopAILogic_Implementation(bool bStop)
+{
+	bLogicIsDisabled = bStop;
+}
+
+void ACustomAIController::OnRep_DisableLogic()
+{
+	if (bLogicIsDisabled)
+	{
+		BrainComponent->PauseLogic(FString("Disabled"));
+		return;
+	}
+	BrainComponent->ResumeLogic(FString("Enabled"));
+}
+
+
 void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (!GetBlackboardComponent())
@@ -210,6 +232,16 @@ void ACustomAIController::OnHostileSightLost_Implementation(const AActor * Actor
 	UE_LOG(LogTemp, Warning, TEXT("%s lost sight of %s as hostile"), *this->GetName(), *Actor->GetName());
 }
 
+void ACustomAIController::OnFriendlySpotted_Implementation(const AActor * Actor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s sees %s as friendly"), *this->GetName(), *Actor->GetName());
+}
+
+void ACustomAIController::OnFriendlySightLost_Implementation(const AActor * Actor, const FVector &LastSeenPosition)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s lost sight of %s as friendly"), *this->GetName(), *Actor->GetName());
+}
+
 
 void ACustomAIController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
@@ -218,4 +250,5 @@ void ACustomAIController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	DOREPLIFETIME(ACustomAIController, TimerDelay);
 	DOREPLIFETIME(ACustomAIController, PathDistanceDelta);
 	DOREPLIFETIME(ACustomAIController, PathAcceptanceRadius);
+	DOREPLIFETIME(ACustomAIController, bLogicIsDisabled);
 }

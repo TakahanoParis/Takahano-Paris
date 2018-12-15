@@ -118,15 +118,13 @@ protected:
 	UFUNCTION(BlueprintPure)
 		bool GetIsUsingObject() const { return bIsUsingObject; }
 
-	/**
-	 *	@property Hackables
-	 *	@brief Array containing all the currently visible Actors having the IHackInterface
-	 *	@see IHackInterface
-	 */
-	UPROPERTY(Replicated, BlueprintReadWrite, Category = "Julia|Hack", meta = (DisplayName = "LookedAtElectronics"))
-		TArray< AActor *> Hackables;
 
 
+	FORCEINLINE TArray< AActor *>  GetVisibleHackables() const { return VisibleHackables; }
+
+
+	UFUNCTION(BlueprintPure, Category = "Interactable|Hackables", meta = (DisplayName = "GetVisibleHackables"))
+	FORCEINLINE TArray< AActor *>  GetVisibleHackables_BP() const { return  GetVisibleHackables(); }
 
 	/**
 	 * @fn GetLookedAtElectronic()
@@ -136,7 +134,7 @@ protected:
 	 * @see ACustomPlayerController
 	 */
 	UFUNCTION()
-		bool GetLookedAtHackable(TArray<class AActor*> &OutActors) const;
+		bool SetVisibleHackables();
 
 	/**
 	 * @fn GetLookedAtElectronic()
@@ -145,9 +143,9 @@ protected:
 	 * @return true if found something, false otherwise.
 	 * @see ACustomPlayerController
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Get looked at Electronic"))
-		bool GetLookedAtHackable_BP(TArray<class AActor*> &OutActors) const { return  GetLookedAtHackable(OutActors); }
-
+	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Get looked at Hackables"))
+		bool SetVisibleHackables_BP() { return  SetVisibleHackables(); }
+		
 private:
 
 	/**
@@ -155,14 +153,15 @@ private:
 	 *	@brief	all hackable actors found at begin Play. Improves logic and speed to look here
 	 */
 	UPROPERTY(Replicated)
-	TArray<AActor*>	HackableActors;
+	TArray<AActor*>	Hackables;
 
-
-
-	UFUNCTION(Server, Reliable, WithValidation)
-		void Server_SetHackables();
-
-	
+	/**
+ *	@property Hackables
+ *	@brief Array containing all the currently visible Actors having the IHackInterface
+ *	@see IHackInterface
+ */
+	UPROPERTY(Replicated)
+		TArray< AActor *> VisibleHackables;
 	
 	
 };

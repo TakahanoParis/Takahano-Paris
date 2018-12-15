@@ -13,6 +13,7 @@
 #include "Gameplay/CustomSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "TakahanoParis.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,8 +109,6 @@ void ABaseCharacter::Run()
 	CharacterMovementComponent->bIsRunning = true;
 }
 
-
-
 FTeam ABaseCharacter::I_GetTeam() const
 {
 	if(GetController())
@@ -121,7 +120,6 @@ FTeam ABaseCharacter::I_GetTeam() const
 	}
 	return 0;
 }
-
 
 void ABaseCharacter::I_SetTeam(FTeam NewTeam)
 {
@@ -171,31 +169,18 @@ void ABaseCharacter::MoveForward(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const auto Rotation = FRotator(0.f, GetControlRotation().Yaw, 0.f);
+		const FVector Direction = UKismetMathLibrary::GetForwardVector(Rotation);
 		AddMovementInput(Direction, Value);
-	}
-	if(Controller == NULL)
-	{
-		UE_LOG(LogTemp, Warning, TEXT(" Fuck you !"));
 	}
 }
 
 void ABaseCharacter::MoveRight(float Value)
 {
-	if ( (Controller != NULL) && (Value != 0.0f) )
+	if ((Controller != NULL) && (Value != 0.0f))
 	{
-		// find out which way is right
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get right vector 
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
+		const auto Rotation = FRotator(0.f, GetControlRotation().Yaw, 0.f);
+		const FVector Direction = UKismetMathLibrary::GetRightVector(Rotation);
 		AddMovementInput(Direction, Value);
 	}
 }

@@ -19,6 +19,7 @@ class UCustomSaveGame;
 * @brief The base class of all heroes and controller character of TakahanoParis.
 */
 UCLASS(ClassGroup = (Character), config=Game)
+
 class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface, public ISaveableActorInterface
 {
     GENERATED_BODY()
@@ -89,7 +90,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = Character)
 		bool bCanJump;
-
 
 private:
 	virtual bool CanJumpInternal_Implementation() const override;
