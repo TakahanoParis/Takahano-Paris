@@ -17,6 +17,7 @@
 #include "Gameplay/CustomGameMode.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Actors/Characters/AICharacter.h"
+#include "BrainComponent.h"
 
 
 ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -172,6 +173,27 @@ FTeam ACustomAIController::I_GetTeam() const
 	return 0;
 }
 
+bool ACustomAIController::Server_StopAILogic_Validate(bool bStop)
+{
+	return true;
+}
+
+void ACustomAIController::Server_StopAILogic_Implementation(bool bStop)
+{
+	bLogicIsDisabled = bStop;
+}
+
+void ACustomAIController::OnRep_DisableLogic()
+{
+	if (bLogicIsDisabled)
+	{
+		BrainComponent->PauseLogic(FString("Disabled"));
+		return;
+	}
+	BrainComponent->ResumeLogic(FString("Enabled"));
+}
+
+
 void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (!GetBlackboardComponent())
@@ -228,4 +250,5 @@ void ACustomAIController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	DOREPLIFETIME(ACustomAIController, TimerDelay);
 	DOREPLIFETIME(ACustomAIController, PathDistanceDelta);
 	DOREPLIFETIME(ACustomAIController, PathAcceptanceRadius);
+	DOREPLIFETIME(ACustomAIController, bLogicIsDisabled);
 }

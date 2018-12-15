@@ -11,6 +11,7 @@
 UCustomCharacterMovementComponent::UCustomCharacterMovementComponent(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
 	MaxStepHeight = 70.0;
+	bOrientRotationToMovement = true;
 }
 
 float UCustomCharacterMovementComponent::GetSpeedDelta() const

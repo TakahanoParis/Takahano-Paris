@@ -279,4 +279,35 @@ protected:
 	virtual void I_SetTeam(FTeam NewTeam) override;
 	virtual FTeam I_GetTeam() const;
 
+
+protected:
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		virtual void Server_StopAILogic(bool bStop);
+
+public:
+
+	FORCEINLINE void StopAILogic() { Server_StopAILogic(true); }
+	FORCEINLINE void StartAILogic() { Server_StopAILogic(false); }
+
+
+	UFUNCTION(BlueprintCallable, Category = "AI", meta = (DisplayName = "StopLogic"))
+		void StopAILogic_BP() { StopAILogic(); }
+	UFUNCTION(BlueprintCallable, Category = "AI", meta = (DisplayName = "SartLogic"))
+		void StartAILogic_BP() { StartAILogic(); }
+
+
+	UFUNCTION()
+		void OnRep_DisableLogic();
+private:
+
+	/**
+	 *	@property bIsDisabled
+	 *	@brief How wide it sees
+	 */
+	UPROPERTY(ReplicatedUsing = OnRep_DisableLogic)
+		bool bLogicIsDisabled;
+
+
+
 };

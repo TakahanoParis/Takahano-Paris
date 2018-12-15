@@ -24,6 +24,26 @@ public:
 	 */
 	AHero();
 
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	/**
+	 *	@fn Use
+	 *	@brief thw use action called by keyboard or gamepad action
+	 */
+	UFUNCTION()
+	virtual void Use();
+
+	/**
+	 *	@fn Use_BP
+	 *	@brief Use Blueprint Event
+	 */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Interactable", meta = (DisplayName = "Use"))
+		void Use_BP();
+
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
 protected:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)// meta = (AllowPrivateAccess = "true"))
@@ -32,12 +52,6 @@ protected:
 	/** Follow camera */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
-
-
-protected :
-
-    virtual void OnConstruction(const FTransform & Transform) override;
-
 
 protected:
 
@@ -63,5 +77,27 @@ protected:
 	virtual bool CanRun() override;
 public:
 	virtual void Run() override;
-		
+
+
+protected :
+
+
+	FORCEINLINE TArray<AActor *>  GetVisibleInteractableActors() const { return VisibleInteractableActors; }
+
+	UFUNCTION(BlueprintPure, Category = "Interactable", meta = (DisplayName = "GetVisibleInteractables"))
+		TArray<AActor *>  GetVisibleInteractableActors_BP() const { return GetVisibleInteractableActors(); }
+
+private :
+
+	UPROPERTY()
+		TArray<AActor *> InteractableActors;
+
+	UFUNCTION()
+		void SetInteractableActors();
+
+	UPROPERTY()
+		TArray<AActor *> VisibleInteractableActors;
+
+	UFUNCTION()
+		void SetVisibleInteractableActors();
 };

@@ -9,7 +9,7 @@
 #include "Actors/Interfaces/InteractInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gameplay/CustomPlayerState.h"
-
+#include "Kismet/GameplayStatics.h"
 
 AHero::AHero() : Super()
 {
@@ -45,9 +45,31 @@ AHero::AHero() : Super()
 }
 
 
-void AHero::OnConstruction( const FTransform & Transform){
-    Super::OnConstruction(Transform);
-  }
+void AHero::BeginPlay()
+{
+	Super::BeginPlay();
+	SetInteractableActors();
+}
+
+void AHero::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	//SetVisibleInteractableActors();
+}
+
+void AHero::Use()
+{
+	SetVisibleInteractableActors();
+	Use_BP();
+}
+
+void AHero::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
+{
+	check(PlayerInputComponent);
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &AHero::Use);
+}
 
 bool AHero::TryUse(AActor * Target)
 {
@@ -104,6 +126,23 @@ void AHero::Run()
 	Super::Run();
 }
 
+void AHero::SetInteractableActors()
+{
+	if(GetWorld())
+		UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UInteractInterface::StaticClass(), InteractableActors);
+}
+
+void AHero::SetVisibleInteractableActors()
+{
+	const auto aPC = Cast<ACustomPlayerController>(GetController());
+	if(aPC)
+	{
+		VisibleInteractableActors.Empty();
+		VisibleInteractableActors = InteractableActors;
+		ACustomPlayerController::GetVisibleActorsInArray(VisibleInteractableActors, aPC);
+	}
+
+}
 
 #if 0
 // nothing is replicated in AHero
