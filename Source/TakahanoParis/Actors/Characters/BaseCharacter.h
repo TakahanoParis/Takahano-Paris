@@ -103,14 +103,23 @@ protected:
 	UFUNCTION()
 	virtual bool CanRun();
 
-
-public:
-
 	/**
 	 *	@fn Run
 	 *	@brief Apply the necessary changes to be running
 	 */
 	UFUNCTION()
 		virtual void Run();
+
+
+	/**
+	 *	@fn StopRun
+	 *	@brief Apply the necessary changes to be running
+	 */
+	UFUNCTION()
+		virtual void StopRunning();
+
+	UFUNCTION()
+		virtual float GetRunStaminaDrain();
+
 
 };

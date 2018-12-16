@@ -14,6 +14,7 @@
 #include "UserInterface/MainHUDWidget.h"
 #include "CustomAIController.h"
 #include "CustomPlayerState.h"
+#include "Kismet/KismetMathLibrary.h"
 //#include "Components/PrimitiveComponent.h"
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
@@ -90,9 +91,26 @@ bool ACustomPlayerController::GetVisibleActorsInArray(TArray<AActor*>& OutActors
 	FCollisionObjectQueryParams ObjectsParam = FCollisionObjectQueryParams::DefaultObjectQueryParam;
 	for (int32 id = OutActors.Num() - 1; id >= 0; --id)
 	{
-		Params.AddIgnoredActor(OutActors[id]);
+		const auto it = OutActors[id];
+			
+		FVector ViewLocation;
+		FRotator ViewRotator;
+		Player->GetPlayerViewPoint(ViewLocation, ViewRotator);
+		const FVector ViewVector = UKismetMathLibrary::GetForwardVector(ViewRotator);
+		FVector ToOtherActor = it->GetActorLocation() - ViewLocation;
+		ToOtherActor.Normalize();
+
+		// Forget about acotrs behind us :
+		if (FVector::DotProduct(ToOtherActor,ViewVector) < 0)
+		{
+			OutActors.RemoveAt(id, 1, false);
+			continue;
+		}
+
 		struct FHitResult OutHit;
-		Player->GetWorld()->LineTraceSingleByObjectType(OutHit, OutActors[id]->GetActorLocation(), Player->GetPawn()->GetActorLocation(), ObjectsParam, Params);
+		Params.AddIgnoredActor(it);
+		
+		Player->GetWorld()->LineTraceSingleByObjectType(OutHit,it->GetActorLocation(), ViewLocation, ObjectsParam, Params);
 		if (OutHit.IsValidBlockingHit())
 			OutActors.RemoveAt(id, 1, false);	
 	}

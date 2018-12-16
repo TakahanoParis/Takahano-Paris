@@ -48,7 +48,8 @@ void ABaseCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("Run", IE_Released, this, &ABaseCharacter::Run);
+	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ABaseCharacter::Run);
+	PlayerInputComponent->BindAction("Run", IE_Released, this, &ABaseCharacter::StopRunning);
 
 	// Hero Abilities
 	//PlayerInputComponent->BindAction("Attack",			IE_Pressed, this, &ABaseCharacter::Attack);
@@ -96,7 +97,10 @@ bool ABaseCharacter::CanJumpInternal_Implementation() const
 
 bool ABaseCharacter::CanRun()
 {
-	return false;
+	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
+	if (!aPS)
+		return false;
+	return aPS->GetStamina() >= 0;
 }
 
 void ABaseCharacter::Run()
@@ -107,6 +111,19 @@ void ABaseCharacter::Run()
 	if (!CharacterMovementComponent)
 		return;
 	CharacterMovementComponent->bIsRunning = true;
+}
+
+void ABaseCharacter::StopRunning()
+{
+	UCustomCharacterMovementComponent *  CharacterMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	if (!CharacterMovementComponent)
+		return;
+	CharacterMovementComponent->bIsRunning = false;
+}
+
+float ABaseCharacter::GetRunStaminaDrain()
+{
+	return 0;
 }
 
 FTeam ABaseCharacter::I_GetTeam() const

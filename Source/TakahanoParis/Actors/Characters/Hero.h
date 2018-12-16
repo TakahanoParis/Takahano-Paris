@@ -73,11 +73,6 @@ public:
 	// inherit via ILifeInterface
 	virtual bool I_TakeDamage(const float& DamageAmount, AActor* Instigator) override;
 
-protected:
-	virtual bool CanRun() override;
-public:
-	virtual void Run() override;
-
 
 protected :
 

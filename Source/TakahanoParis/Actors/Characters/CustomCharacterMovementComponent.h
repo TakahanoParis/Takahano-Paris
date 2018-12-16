@@ -23,42 +23,42 @@ public:
 	 *	@property WalkSpeedCurve
 	 *	@brief curve that define Walk/run speed based on a delta 
 	 */
-	UPROPERTY(Category = "Character Movement: Walking | curve", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Character Movement: Walking|curve", EditAnywhere, BlueprintReadWrite)
 		UCurveFloat* WalkSpeedCurve;
 
 	/**
 	 *	@property bDeltaCalculatedInBlueprint
 	 *	@brief boolean flag that show that SpeedDelta is calculated through the BP implementable event
 	 */
-	UPROPERTY(Category = "Character Movement: Walking | curve", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = "Character Movement: Walking|curve", EditAnywhere, BlueprintReadWrite)
 		bool bDeltaCalculatedInBlueprint = false;
 
 	/**
 	 *	@property SpeedDelta
 	 *	@brief The Speed Delta calculated by @see GetSpeedDelta() function
 	 */
-	UPROPERTY(Replicated, Category = "Character Movement: Walking | curve", VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(Replicated, Category = "Character Movement: Walking|curve", VisibleAnywhere, BlueprintReadOnly)
 		float SpeedDelta;
 
 	/**
 	 *	@property NormalSpeedDelta
 	 *	@brief The Speed Delta to use when moving at normal speed
 	 */
-	UPROPERTY(Replicated, Category = "Character Movement: Walking | curve", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Replicated, Category = "Character Movement: Walking|curve", EditAnywhere, BlueprintReadOnly)
 		float NormalSpeedDelta = 0.5;
 
 	/**
 	 *	@property bIsRunning
 	 *	@brief Boolean flag telling to use max speed (ie. 1.0 Delta)
 	 */
-	UPROPERTY(Replicated, Category = "Character Movement: Walking | curve", EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Replicated, Category = "Character Movement: Walking|curve", EditAnywhere, BlueprintReadWrite)
 		bool bIsRunning = false;
 
 	/**
 	 *	@property bIsRunning
 	 *	@brief how fast we change from one value to the next.
 	 */
-	UPROPERTY(Replicated, Category = "Character Movement: Walking | curve", EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(Replicated, Category = "Character Movement: Walking|curve", EditAnywhere, BlueprintReadOnly)
 		float RunInterpolationSpeed = 1.0;
 
 

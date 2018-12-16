@@ -13,8 +13,18 @@ UCLASS()
 class AMedusaRobot : public AAICharacter
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+
+
+public :
+	AMedusaRobot();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Medusa")
+		int Group;
+
+	UFUNCTION()
+		void SetAIEnable(bool bEnable = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Medusa", meta =(DisplayName = "Enable"))
+		void SetAIEnable_BP(bool bEnable = false) { SetAIEnable(bEnable); }
+		
 };
