@@ -18,7 +18,7 @@ enum class EInteractableState : uint8
 };
 
 // This class does not need to be modified.
-UINTERFACE(MinimalApi, meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalApi)
 class UInteractInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -43,19 +43,6 @@ public:
 	UFUNCTION()
 		virtual EInteractableState I_GetInteractState() const = 0;
 
-
-	/**
-	* @brief I_GetInteractState_BP function.
-	* @return a EInteractableState describing the object interaction possibilities.
-	* @param NewTeam the index of the team you want to be in
-	* @note  for Blueprint, no need to implement it in your classes
-	*/
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Interactable State"))
-		virtual EInteractableState I_GetInteractState_BP() { return I_GetInteractState(); }
-
-
-
-
 	/**
 	 *	@fn I_Use function
 	 *	@return true if it was activated.
@@ -72,9 +59,9 @@ public:
 	 *	@return true if it was activated. false otherwise
 	 *	@note  for Blueprint, no need to implement it in your classes
 	 */
-	UFUNCTION(BlueprintCallable,  meta = (DisplayName = "Use"))
-		virtual bool I_Use_BP(class AController * User) { return I_Use(User); }
-
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Use"))
+		bool I_Use_BP(class AController * User);
+	virtual bool I_Use_BP_Implementation(class AController * User);
 
 	/**
 	 *	@fn I_Server_Use()

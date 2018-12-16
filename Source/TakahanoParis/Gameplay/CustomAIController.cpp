@@ -54,7 +54,9 @@ void ACustomAIController::BeginPlay()
 	Super::BeginPlay();
 
 	// Set up team ID
-	const auto aGM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(ACustomAIController::GetWorld()));
+	if (!GetWorld())
+		return;
+	const auto aGM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (aGM)
 		ACustomAIController::Execute_I_Server_SetTeam(this, FTeam(aGM->GetDefaultAITeamID()));
 
@@ -198,10 +200,12 @@ void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAI
 {
 	if (!GetBlackboardComponent())
 		return;
+
 	const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(Actor, this);
 	switch (T)
 	{
 	case ETeamAttitudeEnum::TAE_Hostile:
+		UE_LOG(LogTemp, Display, TEXT("Perceprion event received : %s seen as hostile"), *Actor->GetName());
 		if (Stimulus.SensingSucceeded)
 		{
 			GetBlackboardComponent()->SetValueAsObject(TEXT("ActorPerceived"), Actor);
@@ -212,10 +216,16 @@ void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAI
 
 		break;
 	case ETeamAttitudeEnum::TAE_Friendly:
-		// Implements friendly behaviour here
+		UE_LOG(LogTemp, Display, TEXT("Perceprion event received : %s seen as Friendly"), *Actor->GetName());
+		if (Stimulus.SensingSucceeded)
+		{
+			OnFriendlySpotted(this);
+			break;
+		}
+		OnFriendlySightLost(this, Stimulus.StimulusLocation);
 		break;
 	case ETeamAttitudeEnum::TAE_Neutral:
-		// Implements friendly behaviour here
+		UE_LOG(LogTemp, Display, TEXT("Perceprion event received : %s seen as neutral"), *Actor->GetName());
 		break;
 	}
 }
@@ -234,12 +244,12 @@ void ACustomAIController::OnHostileSightLost_Implementation(const AActor * Actor
 
 void ACustomAIController::OnFriendlySpotted_Implementation(const AActor * Actor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s sees %s as friendly"), *this->GetName(), *Actor->GetName());
+	UE_LOG(LogTemp, Display, TEXT("%s sees %s as friendly"), *this->GetName(), *Actor->GetName());
 }
 
 void ACustomAIController::OnFriendlySightLost_Implementation(const AActor * Actor, const FVector &LastSeenPosition)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s lost sight of %s as friendly"), *this->GetName(), *Actor->GetName());
+	UE_LOG(LogTemp, Display, TEXT("%s lost sight of %s as friendly"), *this->GetName(), *Actor->GetName());
 }
 
 

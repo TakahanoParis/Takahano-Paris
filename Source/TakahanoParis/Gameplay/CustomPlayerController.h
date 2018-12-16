@@ -6,10 +6,12 @@
 #include "GameFramework/PlayerController.h"
 #include "Engine/EngineTypes.h"
 #include "Actors/Interfaces/SaveableActorInterface.h"
+#include "Actors/Interfaces/TeamInterface.h"
 #include "CustomPlayerController.generated.h"
 
 
 // Forward Declaration
+
 class UCustomWidget;
 
 /**
@@ -17,7 +19,7 @@ class UCustomWidget;
  *	the base class for every player controller in Project centauri.
  */
 UCLASS()
-class TAKAHANOPARIS_API ACustomPlayerController : public APlayerController, public ISaveableActorInterface
+class TAKAHANOPARIS_API ACustomPlayerController : public APlayerController, public ISaveableActorInterface, public ITeamInterface 
 {
 	GENERATED_BODY()
 	
@@ -37,10 +39,11 @@ public:
 
 	virtual void Reset() override;
 
-	void PostInitProperties() override;
+	virtual void PostInitProperties() override;
 
+	virtual void ReceivedPlayer() override;
 
-	void ReceivedPlayer() override;
+	virtual void BeginPlay() override;
 protected:
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -290,5 +293,8 @@ protected:
 		bool SetMainHUD_BP(UMainHUDWidget * HUD) { return SetMainHUD(HUD); }
 
 
-
+public:
+	FTeam I_GetTeam() const override;
+protected:
+	void I_SetTeam(FTeam NewTeam) override;
 };

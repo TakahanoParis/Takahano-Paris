@@ -12,6 +12,8 @@
 #include "Gameplay/CustomGameState.h"
 #include "Actors/Interfaces/TeamInterface.h"
 #include "UserInterface/MainHUDWidget.h"
+#include "CustomAIController.h"
+#include "CustomPlayerState.h"
 //#include "Components/PrimitiveComponent.h"
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
@@ -118,6 +120,15 @@ void ACustomPlayerController::ReceivedPlayer()
 	ShowMainHUD(true);
 }
 
+void ACustomPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	// Set up team ID
+	const auto aGM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (aGM)
+		ACustomPlayerController::Execute_I_Server_SetTeam(this, FTeam(aGM->GetDefaultPlayerTeamID()));
+}
+
 
 UCustomWidget* ACustomPlayerController::AddWidgetToScreen(TSubclassOf<UCustomWidget> ClassToSpawn,FVector2D AnchorPoint, int ZOrder)
 {
@@ -217,6 +228,21 @@ bool ACustomPlayerController::SetMainHUD(UMainHUDWidget* HUD)
 		HUDWidget = HUD;
 	}
 	return false;
+}
+
+FTeam ACustomPlayerController::I_GetTeam() const
+{
+	const auto aPS = Cast <ACustomPlayerState>(PlayerState);
+	if (aPS)
+		return aPS->I_GetTeam();
+	return FTeam::NoTeam;
+}
+
+void ACustomPlayerController::I_SetTeam(FTeam NewTeam)
+{
+	const auto aPS = Cast <ACustomPlayerState>(PlayerState);
+	if (aPS)
+		return aPS->I_SetTeam(NewTeam);
 }
 
 bool ACustomPlayerController::Server_UpdatePlayersCharacterAlly_Validate()
