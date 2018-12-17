@@ -5,15 +5,9 @@
 #include "Perception/AIPerceptionComponent.h"
 
 
-void AAICharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
-{
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AAICharacter, PatrolPath);
 
 
-}
-
-AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
+AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer) , AttackRate(1.f), AttackRange(100.f)
 {
 	AIControllerClass = ACustomAIController::StaticClass();
 }
@@ -29,6 +23,19 @@ void AAICharacter::BeginPlay()
 	}
 }
 
-void AAICharacter::Attack_Implementation(AActor* Target)
+void AAICharacter::Attack(AActor* Target)
 {
+	const auto aAIC = GetCustomAIController();
+	if(Target)
+	{
+		Attack_BP(Target);
+	}
+}
+
+void AAICharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AAICharacter, PatrolPath);
+
+
 }

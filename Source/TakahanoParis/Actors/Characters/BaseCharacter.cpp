@@ -77,6 +77,7 @@ float ABaseCharacter::I_GetLifePoints() const
 
 bool ABaseCharacter::I_TakeDamage(const float& DamageAmount, AActor* Instigator)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Character %s Taking %f damages"), *GetName(), DamageAmount);
 	const auto aPS = Cast<ACustomPlayerState>(GetController()->PlayerState);
 	if (aPS)
 		return aPS->I_TakeDamage(DamageAmount,Instigator);

@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MedusaRobot.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 AMedusaRobot::AMedusaRobot() :Super() 
@@ -19,4 +20,16 @@ void AMedusaRobot::SetAIEnable(bool bEnable)
 		}
 		aAIC->StopAILogic();
 	}
+}
+
+// @todo Set correct Damage types
+void AMedusaRobot::Attack(AActor* Target)
+{
+	FDamageEvent Damage;
+	Damage.IsOfType(0);
+
+	if(GetController())
+		Target->TakeDamage(AttackPoints, Damage, GetController(), this);
+
+	Super::Attack(Target);
 }

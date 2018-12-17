@@ -19,6 +19,7 @@ bool ACustomPlayerState::I_TakeDamage(const float &DamageAmount, AActor* Instiga
 {
 	if (!Instigator)
 		return false;
+	Server_TakeDamage(DamageAmount);
 	return true;
 }
 
@@ -47,7 +48,6 @@ bool ACustomPlayerState::Server_TakeDamage_Validate(const float& DamageAmount)
 void ACustomPlayerState::Server_TakeDamage_Implementation(const float& DamageAmount)
 {
 	PlayerLife -= DamageAmount;
-	Server_TakeDamage(DamageAmount);
 	if (PlayerLife <= 0)
 	{
 		const auto aPC = Cast<ACustomPlayerController>(Owner);

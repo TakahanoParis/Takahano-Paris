@@ -158,6 +158,12 @@ UCustomWidget* ACustomPlayerController::AddWidgetToScreen(TSubclassOf<UCustomWid
 	return NewWidget;
 }
 
+void ACustomPlayerController::OnCharacterDie()
+{
+	Server_OnCharacterDie();
+	OnCharacterDie_BP();
+}
+
 
 bool ACustomPlayerController::Server_OnCharacterDie_Validate()
 {
@@ -177,11 +183,6 @@ void ACustomPlayerController::Server_OnCharacterDie_Implementation()
 		// Load Game
 	}
 	
-}
-
-void ACustomPlayerController::OnCharacterDie_Implementation()
-{
-	Server_OnCharacterDie();
 }
 
 void ACustomPlayerController::PlayCutScene_Implementation()
