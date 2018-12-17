@@ -156,11 +156,18 @@ public:
 
 	/**
 	 *	@fn OnCharacterDie()
-	 *	@brief Event to handle the death of a character
-	 *	@note: this can be implemented and overriden in Blueprint
+	 *	@brief function to handle the death of a character
 	 */
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
+	UFUNCTION()
 		void OnCharacterDie();
+
+	/**
+	 *	@fn OnCharacterDie_BP()
+	 *	@brief Event called when character dies
+	 *	@note: this can be implemented in Blueprint
+	 */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "On Character Die"))
+		void OnCharacterDie_BP();
 
 protected:
 

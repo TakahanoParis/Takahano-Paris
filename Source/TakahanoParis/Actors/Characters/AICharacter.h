@@ -51,10 +51,49 @@ public:
 	UFUNCTION(BlueprintPure, Category="AI", meta = (DisplayName = "Get Custom AI Controller"))
 		ACustomAIController * GetCustomAIController_BP() const {return GetCustomAIController();}
 
-	UFUNCTION(BlueprintNativeEvent, Category = "IA")
-		void Attack(AActor * Target);
-		virtual void Attack_Implementation(AActor * Target);
+	/**
+	 *	@fn	Attack()
+	 *	@brief Attack event for the Character
+	 */
+	UFUNCTION()
+	virtual void Attack(AActor * Target);
 
+	/**
+	 *	@fn	Attack()
+	 *	@brief Attack event for the Character
+	 *	@note For blueprints
+	 */
+	UFUNCTION(BlueprintImplementableEvent , Category = "AI|Attack", meta = (DisplayName = "Attack"))
+		void Attack_BP(AActor * Target);
+
+
+protected:
+
+	/**
+	 *	@property Range
+	 *	@brief Attack Range of the character
+	 */
+	UPROPERTY(EditAnywhere, Category = "AI|Attack")
+			float AttackRange;
+
+
+	/**
+	 *	@property Range
+	 *	@brief Attack Range of the character
+	 */
+	UPROPERTY(EditAnywhere, Category = "AI|Attack")
+		float AttackRate;
+
+public:
+
+	FORCEINLINE float GetRange() const { return AttackRange; }
+	FORCEINLINE float GetRate() const { return AttackRange; }
+
+	UFUNCTION(BlueprintPure, Category = "AI|Attack", meta = (DisplayName = "Get Attack Range") )
+		FORCEINLINE float GetRange_BP() const { return GetRange(); }
+
+	UFUNCTION(BlueprintPure, Category = "AI|Attack", meta = (DisplayName = "Get Attack Rate"))
+		FORCEINLINE float GetRate_BP() const { return GetRate(); }
 
 
 };

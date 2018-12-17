@@ -8,6 +8,8 @@
 #include "Actors/Interfaces/TeamInterface.h"
 #include "CustomAIController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskFinished, bool, bSuccess);
+
 
 class ASplinePathActor;
 
@@ -27,7 +29,9 @@ public:
 	ACustomAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// called at game start
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	// Called when starting to take control of pawn
 	virtual void OnPossess_Implementation(APawn* PossessedPawn);
@@ -122,6 +126,9 @@ protected:
 	UFUNCTION()
 		virtual bool AttackActor(AActor * Target);
 
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable, Category = "AI")
+		FTaskFinished OnFinishedAttack;
+
 	/**
 	 *	@fn Attack_BP()
 	 *	@brief Order the controlled pawn to attack
@@ -205,16 +212,13 @@ protected:
 	class UAISenseConfig_Sight * SightConfig;
 
 
-
-
-
 	/**
 	 *	@fn OnPerceptionReceived()
 	 *	@brief Function handles the arrival of a Stimuli on the perception component
 	 *	@param Target  : the thing that was spotted
 	 *	@param Stimulus : the structy containing details about that perception
 	 */
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION()
 		void OnPerceptionReceived(AActor * Actor, FAIStimulus Stimulus);
 
 	/**
@@ -241,7 +245,7 @@ protected:
 	 *	@param LastSeenPosition : the last world location where the hostile was seen
 	 */
 	UFUNCTION()
-		void OnHostileSightLost(const AActor * Actor, const FVector &LastSeenPosition);
+		void OnHostileSightLost(AActor*const Actor, const FVector& LastSeenPosition);
 
 	/**
 	 *	@fn OnHostileSightLost_BP()
@@ -291,29 +295,29 @@ protected:
 	 *	@property AISightRadius
 	 *	@brief How far it can see you
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI|Perception", meta = (DisplayName = "Sight Age"))
-		float AISightRadius = 500.0f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI|Perception", meta = (DisplayName = "Sight Radius"))
+		float AISightRadius = 3000.0f;
 
 	/**
 	 *	@property AISightAge
 	 *	@brief How long he remember seeing you
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI|Perception", meta = (DisplayName = "Sight Age"))
-		float AISightAge = 5.0f;
+		float AISightAge = 10.0f;
 
 	/**
 	 *	@property AILoseSightRadius
 	 *	@brief At which point you're not into view anymore 
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI|Perception", meta = (DisplayName = "Lose Sight Radius"))
-		float AILoseSightRadius = AISightRadius + 50.0f;
+		float AILoseSightRadius = AISightRadius + 1000.0f;
 
 	/**
 	 *	@property AIFieldOfView
 	 *	@brief How wide it sees
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI|Perception", meta = (DisplayName = "Field Of View"))
-		float AIFieldOfView = 90.0f;
+		float AIFieldOfView = 180.0f;
 
 
 
@@ -350,6 +354,25 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_DisableLogic)
 		bool bLogicIsDisabled;
 
+	UPROPERTY()
+		TArray<AActor *> PerceivedActors;
+
+	UFUNCTION()
+		void CheckLastPerception();
+
+
+	UFUNCTION()
+		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+
+	UFUNCTION()
+		void OnActorPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+
+public :
+
+
+	UFUNCTION()
+		void SwitchToDisabledState(const bool &bNewState);
 
 
 };

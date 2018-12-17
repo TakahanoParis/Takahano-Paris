@@ -24,7 +24,12 @@ public :
 	UFUNCTION()
 		void SetAIEnable(bool bEnable = true);
 
-	UFUNCTION(BlueprintCallable, Category = "Medusa", meta =(DisplayName = "Enable"))
+	UFUNCTION(BlueprintCallable, Category = "AI|Medusa", meta =(DisplayName = "Enable"))
 		void SetAIEnable_BP(bool bEnable = false) { SetAIEnable(bEnable); }
-		
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Medusa", meta = (DisplayName = "Damage"))
+		float AttackPoints;
+
+	virtual void Attack(AActor* Target) override;
 };

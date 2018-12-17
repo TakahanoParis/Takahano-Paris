@@ -19,6 +19,7 @@
 #include "Actors/Characters/AICharacter.h"
 #include "BrainComponent.h"
 #include "Actors/Characters/Hero.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -43,6 +44,8 @@ ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitial
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
 	GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
+	//GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &ACustomAIController::OnPerceptionReceived);
+	//GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &ACustomAIController::OnPerceptionUpdated);
 	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &ACustomAIController::OnPerceptionReceived);
 	GetPerceptionComponent()->ConfigureSense(*SightConfig);
 
@@ -61,8 +64,6 @@ void ACustomAIController::BeginPlay()
 	if (aGM)
 		ACustomAIController::Execute_I_Server_SetTeam(this, FTeam(aGM->GetDefaultAITeamID()));
 
-
-
 	// Setup blackboard
 	const bool IsBlackboardValid =  UseBlackboard(AIBlackboard, Blackboard);
 	InitializeBlackboardValues(); // Anything could happen here, as blueprint can override this function
@@ -72,14 +73,34 @@ void ACustomAIController::BeginPlay()
 		RunBehaviorTree(BehaviourTreeAsset);
 
 	if(IsBlackboardValid)
+	{
 		GetBlackboardComponent()->SetValueAsObject(TEXT("SelfActor"), this);
+	}
+
+}
+
+void ACustomAIController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	//CheckLastPerception();
 }
 
 void ACustomAIController::OnPossess_Implementation(APawn* PossessedPawn)
 {
+	GetBlackboardComponent()->SetValueAsBool(TEXT("Enable"), true);
+	GetBlackboardComponent()->SetValueAsFloat(TEXT("AttackRate"), 1.f);
+	GetBlackboardComponent()->SetValueAsFloat(TEXT("AttackRange"), 10.f);
 	const bool IsBlackboardValid =  UseBlackboard(AIBlackboard, Blackboard);
 	InitializeBlackboardValues(); // Anything could happen here, as blueprint can override this function
-
+	if (IsBlackboardValid)
+	{
+		const auto Pawn = Cast<AAICharacter>(PossessedPawn);
+		if(Pawn)
+		{
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("AttackRate"), Pawn->GetRate());
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("AttackRange"), Pawn->GetRange());
+		}
+	}
 }
 
 void ACustomAIController::StartPatrol()
@@ -185,10 +206,12 @@ bool ACustomAIController::Server_StopAILogic_Validate(bool bStop)
 void ACustomAIController::Server_StopAILogic_Implementation(bool bStop)
 {
 	bLogicIsDisabled = bStop;
+	SwitchToDisabledState(bLogicIsDisabled);
 }
 
 void ACustomAIController::OnRep_DisableLogic()
 {
+
 	if (bLogicIsDisabled)
 	{
 		BrainComponent->PauseLogic(FString("Disabled"));
@@ -197,34 +220,117 @@ void ACustomAIController::OnRep_DisableLogic()
 	BrainComponent->ResumeLogic(FString("Enabled"));
 }
 
+void ACustomAIController::CheckLastPerception()
+{
 
-void ACustomAIController::OnPerceptionReceived_Implementation(AActor* Actor, FAIStimulus Stimulus)
+	if (!GetPerceptionComponent())
+		return;
+
+	if (PerceivedActors.Num() == 0)
+		return;
+
+	for (int id = PerceivedActors.Num() -1; id >= 0; --id)
+	{
+		auto it = PerceivedActors[id];
+		FActorPerceptionBlueprintInfo Info;
+		GetPerceptionComponent()->GetActorsPerception(it, Info);
+		const auto Stimulus = Info.LastSensedStimuli[0];
+		if (!Stimulus.IsExpired())
+			continue;
+		UE_LOG(LogTemp, Display, TEXT("stimulus died of age : %f "), Stimulus.GetAge());
+
+		const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(it, this);
+		switch (T)
+		{
+		case ETeamAttitudeEnum::TAE_Hostile:
+			OnHostileSightLost(it, Stimulus.StimulusLocation);
+			break;
+
+		case ETeamAttitudeEnum::TAE_Friendly:
+			OnFriendlySightLost(it, Stimulus.StimulusLocation);
+			break;
+
+		case ETeamAttitudeEnum::TAE_Neutral:
+			break;
+		}
+
+
+		PerceivedActors.RemoveAt(id);
+	}
+}
+
+void ACustomAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+{
+#if 0
+	auto it = PerceivedActors[id];
+	FActorPerceptionBlueprintInfo Info;
+	GetPerceptionComponent()->GetActorsPerception(it, Info);
+	const auto Stimulus = Info.LastSensedStimuli[0];
+	if (!Stimulus.IsExpired())
+		continue;
+	UE_LOG(LogTemp, Display, TEXT("stimulus died of age : %f "), Stimulus.GetAge());
+
+	const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(it, this);
+	switch (T)
+	{
+	case ETeamAttitudeEnum::TAE_Hostile:
+		OnHostileSightLost(it, Stimulus.StimulusLocation);
+		break;
+
+	case ETeamAttitudeEnum::TAE_Friendly:
+		OnFriendlySightLost(it, Stimulus.StimulusLocation);
+		break;
+
+	case ETeamAttitudeEnum::TAE_Neutral:
+		break;
+	};
+#endif
+}
+
+void ACustomAIController::SwitchToDisabledState(const bool &bNewState )
+{
+	if (!GetBlackboardComponent())
+		return;
+	GetBlackboardComponent()->SetValueAsBool(TEXT("Enable"), bNewState);
+}
+
+
+void ACustomAIController::OnPerceptionReceived(AActor* Actor, FAIStimulus Stimulus)
 {
 	if (!GetBlackboardComponent())
 		return;
 
+	if (!Stimulus.WasSuccessfullySensed())
+	{
+		const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(Actor, this);
+		switch (T)
+		{
+		case ETeamAttitudeEnum::TAE_Hostile:
+			OnHostileSightLost(Actor, Actor->GetActorLocation());
+			break;
+
+		case ETeamAttitudeEnum::TAE_Friendly:
+			OnFriendlySightLost(Actor, Actor->GetActorLocation());
+			break;
+
+		case ETeamAttitudeEnum::TAE_Neutral:
+			break;
+		};
+		return;
+	}
+
+
+	if (!PerceivedActors.Contains(Actor))
+		PerceivedActors.Add(Actor);
 	const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(Actor, this);
 	switch (T)
 	{
 	case ETeamAttitudeEnum::TAE_Hostile:
-		if (Stimulus.WasSuccessfullySensed())
-		{
-			GetBlackboardComponent()->SetValueAsObject(TEXT("ActorPerceived"), Actor);
-			OnHostileSpotted(Actor);
-			break;
-		}
-		OnHostileSightLost(this, Stimulus.StimulusLocation);
+		OnHostileSpotted(Actor);
 		break;
-
 	case ETeamAttitudeEnum::TAE_Friendly:
-		if (Stimulus.WasSuccessfullySensed())
-		{
-			OnFriendlySpotted(this);
-			break;
-		}
-		OnFriendlySightLost(this, Stimulus.StimulusLocation);
+		OnFriendlySpotted(this);
 		break;
-
 	case ETeamAttitudeEnum::TAE_Neutral:
 		break;
 	}
@@ -237,17 +343,26 @@ void ACustomAIController::OnHostileSpotted(const AActor * Actor)
 	GetBlackboardComponent()->SetValueAsBool(TEXT("HasSpottedHostile"), true);
 	const auto PlayerHero = Cast<AHero>(Actor);
 	if (PlayerHero)
+	{
 		GetBlackboardComponent()->SetValueAsObject(TEXT("ActorPerceived"), (UObject*)PlayerHero);
+		GetBlackboardComponent()->SetValueAsVector(TEXT("EnemyActorLocation"), PlayerHero->GetActorLocation());
+		GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), (UObject*)PlayerHero);
+	}
+
 	// call blueprint function
 	OnHostileSpotted_BP(Actor);
 }
 
-void ACustomAIController::OnHostileSightLost(const AActor * Actor, const FVector &LastSeenPosition)
+void ACustomAIController::OnHostileSightLost(AActor*const Actor, const FVector& LastSeenPosition)
 {
-	GetBlackboardComponent()->SetValueAsBool(TEXT("HasSpottedHostile"), false);
 	UE_LOG(LogTemp, Warning, TEXT("%s lost sight of %s as hostile"), *this->GetName(), *Actor->GetName());
-	GetBlackboardComponent()->SetValueAsObject(TEXT("ActorPerceived"), nullptr);
+	GetBlackboardComponent()->SetValueAsBool(TEXT("HasSpottedHostile"), false);
 
+	GetBlackboardComponent()->SetValueAsObject(TEXT("ActorPerceived"), nullptr);
+	GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), nullptr);
+	GetBlackboardComponent()->SetValueAsVector(TEXT("EnemyActorLocation"), LastSeenPosition);
+
+	GetBlackboardComponent()->SetValueAsBool(TEXT("RecentlySighted"), true);
 	// call blueprint function
 	OnHostileSightLost_BP(Actor, LastSeenPosition);
 }
@@ -265,9 +380,22 @@ void ACustomAIController::OnFriendlySightLost(const AActor * Actor, const FVecto
 }
 
 
+
+void ACustomAIController::OnActorPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+{
+	if (!GetBlackboardComponent())
+		return;
+
+		if(!Stimulus.WasSuccessfullySensed())
+		{
+			GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), nullptr);
+		}
+}
+
+
 void ACustomAIController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACustomAIController, PatrolPath);
 	DOREPLIFETIME(ACustomAIController, TimerDelay);
 	DOREPLIFETIME(ACustomAIController, PathDistanceDelta);
