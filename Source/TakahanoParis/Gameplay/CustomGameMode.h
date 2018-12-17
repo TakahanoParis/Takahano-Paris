@@ -94,7 +94,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayState", meta = (DisplayName = "Game Over"))
 		void SetGameOver_BP(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> GameOverReason){ SetGameOver(GameOverMessage,GameOverReason); }
 
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Game Over"))
+		void OnGameOver_BP();
 
+
+	UFUNCTION()
+		void LoadLastSave();
+
+	UFUNCTION(BlueprintCallable, Category = "PlayState", meta = (DisplayName = "LoadSaveGame"))
+		void LoadLastSave_BP() { LoadLastSave(); }
+
+	
 	/**
 	 *	@fn PauseGame
 	 *	@brief Pause Game

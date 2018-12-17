@@ -110,22 +110,6 @@ bool AHero::I_TakeDamage(const float& DamageAmount, AActor* Instigator)
 	return true;
 }
 
-bool AHero::CanRun()
-{
-	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
-	if (!aPS)
-		return false;
-	return aPS->GetStamina() >= 0;
-}
-
-void AHero::Run()
-{
-	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
-	if (!aPS)
-		return;
-	Super::Run();
-}
-
 void AHero::SetInteractableActors()
 {
 	if(GetWorld())

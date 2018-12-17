@@ -60,8 +60,11 @@ public:
 	 *	@note  for Blueprint, no need to implement it in your classes
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Use"))
-		bool I_Use_BP(class AController * User);
-	virtual bool I_Use_BP_Implementation(class AController * User);
+		void I_Use_BP(class AController * User);
+	virtual void I_Use_BP_Implementation(class AController * User);
+
+	//UFUNCTION(BlueprintImplementable, meta = (DisplayName = "On Use"))
+	
 
 	/**
 	 *	@fn I_Server_Use()

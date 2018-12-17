@@ -122,6 +122,13 @@ protected:
 	UFUNCTION()
 		virtual bool AttackActor(AActor * Target);
 
+	/**
+	 *	@fn Attack_BP()
+	 *	@brief Order the controlled pawn to attack
+	 *	@param Target : Who you wanna Attack
+	 */
+	UFUNCTION(BlueprintCallable, Category = "", meta = (DisplayName = "Attack"))
+		void Attack_BP(AActor * Target) { AttackActor(Target); }
 	
 private:
 	
@@ -215,8 +222,17 @@ protected:
 	 *	@brief Function handles when an enemy is spotted
 	 *	@param Actor  : the thing that was spotted
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Spotted Reaction"))
+	UFUNCTION()
 		void OnHostileSpotted(const AActor * Actor);
+
+	/**
+	 *	@fn OnHostileSpotted()
+	 *	@brief Blueprint Event called when hostile seen
+	 *	@param Actor  : the thing that was spotted
+	 */
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hostile Spotted Reaction"))
+		void OnHostileSpotted_BP(const AActor * Actor);
+
 
 	/**
 	 *	@fn OnHostileSightLost()
@@ -224,25 +240,51 @@ protected:
 	 *	@param Actor  : the thing that was spotted
 	 *	@param LastSeenPosition : the last world location where the hostile was seen
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Sight Lost Reaction"))
+	UFUNCTION()
 		void OnHostileSightLost(const AActor * Actor, const FVector &LastSeenPosition);
+
+	/**
+	 *	@fn OnHostileSightLost_BP()
+	 *	@brief Blueprint Event called when hostile lost
+	 *	@param Actor  : the thing that was spotted
+	 *	@param LastSeenPosition : the last world location where the hostile was seen
+	 */
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Hostile Sight Lost Reaction"))
+		void OnHostileSightLost_BP(const AActor * Actor, const FVector &LastSeenPosition);
 
 	/**
 	*	@fn OnHostileSpotted()
 	*	@brief Function handles when an enemy is spotted
 	*	@param Actor  : the thing that was spotted
 	*/
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Spotted Reaction"))
+	UFUNCTION()
 		void OnFriendlySpotted(const AActor * Actor);
 
 	/**
-	*	@fn OnHostileSightLost()
-	*	@brief Function handles when an enemy is no more visible
-	*	@param Actor  : the thing that was spotted
-	*	@param LastSeenPosition : the last world location where the hostile was seen
-	*/
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Hostile Sight Lost Reaction"))
+	 *	@fn OnHostileSpotted()
+	 *	@brief Blueprint Event called when Friendly seen
+	 *	@param Actor  : the thing that was spotted
+	 */
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Friendly Spotted Reaction"))
+		void OnFriendlySpotted_BP(const AActor * Actor);
+
+	/**
+	 *	@fn OnHostileSightLost()
+	 *	@brief Function handles when an enemy is no more visible
+	 *	@param Actor  : the thing that was spotted
+	 *	@param LastSeenPosition : the last world location where the hostile was seen
+	 */
+	UFUNCTION()
 		void OnFriendlySightLost(const AActor * Actor, const FVector &LastSeenPosition);
+
+	/**
+	 *	@fn OnHostileSightLost()
+	 *	@brief Blueprint Event called when Friendly Lost
+	 *	@param Actor  : the thing that was spotted
+	 *	@param LastSeenPosition : the last world location where the hostile was seen
+	 */
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Friendly Sight Lost Reaction"))
+		void OnFriendlySightLost_BP(const AActor * Actor, const FVector &LastSeenPosition);
 
 
 	/**

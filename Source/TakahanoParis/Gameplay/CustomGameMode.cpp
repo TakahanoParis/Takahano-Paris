@@ -90,9 +90,11 @@ void ACustomGameMode::GetAllPlayerControllers(TArray<ACustomPlayerController *>&
 	}
 }
 
+// @todo Implements OpenLevel
 void ACustomGameMode::RestartGameLevel()
 {
-	UGameplayStatics::OpenLevel((UObject*)GetWorld(), FName(*UGameplayStatics::GetCurrentLevelName(this)));
+	//UGameplayStatics::OpenLevel((UObject*)GetWorld(), FName(*UGameplayStatics::GetCurrentLevelName(this)));
+	OnGameOver_BP();
 }
 
 void ACustomGameMode::SetGameOver(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> &GameOverReason)
@@ -103,6 +105,15 @@ void ACustomGameMode::SetGameOver(FString &GameOverMessage, const TEnumAsByte<EG
 }
 
 
+
+void ACustomGameMode::LoadLastSave()
+{
+	const auto gameState = Cast<ACustomGameState>(UGameplayStatics::GetGameState(this));
+	if (gameState)
+	{
+		gameState->LoadGame();
+	}
+}
 
 void ACustomGameMode::PauseGame()
 {
