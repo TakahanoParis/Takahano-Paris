@@ -6,6 +6,7 @@
 
 AMedusaRobot::AMedusaRobot() :Super() 
 {
+	AttackPoints = 100;
 }
 
 void AMedusaRobot::SetAIEnable(bool bEnable)
