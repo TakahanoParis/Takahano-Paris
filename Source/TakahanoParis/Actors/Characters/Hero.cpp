@@ -102,7 +102,6 @@ bool AHero::TryUse(AActor * Target)
 
 bool AHero::I_TakeDamage(const float& DamageAmount, AActor* Instigator)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Take Tamage"));
 	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
 	if (!aPS)
 		return false;

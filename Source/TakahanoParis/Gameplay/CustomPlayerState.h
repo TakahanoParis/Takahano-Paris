@@ -28,8 +28,6 @@ public :
 	/**	@see APlayerState */
 	void ClientInitialize(AController* C) override;
 
-private :
-	AController * Owner;
 
 protected:
 

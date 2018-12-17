@@ -47,10 +47,11 @@ bool ACustomPlayerState::Server_TakeDamage_Validate(const float& DamageAmount)
 
 void ACustomPlayerState::Server_TakeDamage_Implementation(const float& DamageAmount)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s Take %f Tamage, Life is %f"), *GetName(), DamageAmount, PlayerLife);
 	PlayerLife -= DamageAmount;
 	if (PlayerLife <= 0)
 	{
-		const auto aPC = Cast<ACustomPlayerController>(Owner);
+		const auto aPC = Cast<ACustomPlayerController>(GetOwner());
 		if (!aPC)
 			return;
 		aPC->OnCharacterDie();
