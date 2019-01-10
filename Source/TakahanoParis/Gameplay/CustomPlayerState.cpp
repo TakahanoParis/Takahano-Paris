@@ -12,7 +12,6 @@ ACustomPlayerState::ACustomPlayerState(): PlayerLife(100), MaxPlayerLife(300), P
 void ACustomPlayerState::ClientInitialize(AController* C)
 {
 	Super::ClientInitialize(C);
-	Owner = C;
 }
 
 bool ACustomPlayerState::I_TakeDamage(const float &DamageAmount, AActor* Instigator)
