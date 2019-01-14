@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameMapsSettings.h"
 #include "UserInterface/MainMenuWidget.h"
+#include "Gameplay/CustomGameState.h"
 #include "UserInterface/OptionMenuWidget.h"
 
 
@@ -515,6 +516,17 @@ void UCustomGameInstance::OnDestroySessionComplete(FName SessionName, bool bWasS
 			}
 		}
 	}
+}
+
+void UCustomGameInstance::OpenLevelAndLoadSave(const FName & LevelName)
+{
+	UGameplayStatics::OpenLevel((UObject*)GetWorld(), LevelName);
+	const auto gameState = Cast<ACustomGameState>(UGameplayStatics::GetGameState(this));
+	if (gameState)
+	{
+		gameState->LoadGame();
+	}
+
 }
 
 

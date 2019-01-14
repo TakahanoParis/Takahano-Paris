@@ -78,6 +78,7 @@ AActor * ACustomGameMode::ChoosePlayerStart_Implementation(AController * Player)
 	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
+
 void ACustomGameMode::GetAllPlayerControllers(TArray<ACustomPlayerController *>& OutControllers)
 {
 	const auto players = GetNumPlayers();
@@ -93,15 +94,17 @@ void ACustomGameMode::GetAllPlayerControllers(TArray<ACustomPlayerController *>&
 // @todo Implements OpenLevel
 void ACustomGameMode::RestartGameLevel()
 {
-	//UGameplayStatics::OpenLevel((UObject*)GetWorld(), FName(*UGameplayStatics::GetCurrentLevelName(this)));
-	OnGameOver_BP();
+	const auto  aGI = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (aGI)
+		aGI->OpenLevelAndLoadSave(FName(*UGameplayStatics::GetCurrentLevelName(this)));
+	
 }
 
 void ACustomGameMode::SetGameOver(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> &GameOverReason)
 {
 	PlayState = EPlayStateEnum::PSE_GameOver;
 	GameOverMessage = TEXT("Game Over");
-	(GameOverReason == EGameOverEnum::GOE_Defeat) ? RestartGameLevel() : EndGameToMainMenuMap();
+	(GameOverReason == EGameOverEnum::GOE_Defeat) ? OnGameOver_BP() : EndGameToMainMenuMap();
 }
 
 

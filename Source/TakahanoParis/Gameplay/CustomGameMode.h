@@ -286,6 +286,7 @@ private:
 public :
 	virtual class AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	virtual bool ShouldSpawnAtStartSpot(AController* Player) override { return false; }
+
 };
 
 

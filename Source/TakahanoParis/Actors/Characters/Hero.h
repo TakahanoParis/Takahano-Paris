@@ -74,13 +74,23 @@ public:
 	virtual bool I_TakeDamage(const float& DamageAmount, AActor* Instigator) override;
 
 
-protected :
+public :
 
 
 	FORCEINLINE TArray<AActor *>  GetVisibleInteractableActors() const { return VisibleInteractableActors; }
+	FORCEINLINE TArray<AActor *>  GetAllInteractableActors() const { return InteractableActors; }
+
+	UFUNCTION()
+		AActor * GetClosestInteractableActor(float &Distance) const;
+
+	UFUNCTION(BlueprintPure, Category = "Interactable", meta = (DisplayName = "Get Closest Interactable"))
+		AActor * GetClosestInteractableActor_BP(float &Distance) const { return GetClosestInteractableActor(Distance); }
 
 	UFUNCTION(BlueprintPure, Category = "Interactable", meta = (DisplayName = "GetVisibleInteractables"))
 		TArray<AActor *>  GetVisibleInteractableActors_BP() const { return GetVisibleInteractableActors(); }
+
+	UFUNCTION(BlueprintPure, Category = "Interactable", meta = (DisplayName = "GetAllInteractables"))
+		TArray<AActor *>  GetAllInteractableActors_BP() const { return GetAllInteractableActors(); }
 
 private :
 

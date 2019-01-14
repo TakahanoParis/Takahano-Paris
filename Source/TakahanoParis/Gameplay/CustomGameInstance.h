@@ -10,7 +10,6 @@
 #include "CustomGameInstance.generated.h"
 
 
-
 USTRUCT(Blueprintable)
 struct FServerSettings
 {
@@ -403,5 +402,13 @@ private:
 	*	@param bWasSuccessful true if the async action completed without error, false if there was an error
 	*/
 	virtual void OnDestroySessionComplete(FName SessionName, bool bWasSuccessful);
+
+
+	
+
+	/// testing d o not use in production
+public:
+	UFUNCTION()
+		void OpenLevelAndLoadSave(const FName &LevelName);
 
 };

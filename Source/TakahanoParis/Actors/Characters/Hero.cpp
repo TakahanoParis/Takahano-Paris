@@ -109,6 +109,24 @@ bool AHero::I_TakeDamage(const float& DamageAmount, AActor* Instigator)
 	return true;
 }
 
+AActor * AHero::GetClosestInteractableActor(float &Distance) const
+{
+	const auto Actors = GetAllInteractableActors();
+	Distance = FVector::Distance(GetActorLocation(), Actors[0]->GetActorLocation());
+	auto OutActor = Actors[0];
+	for (auto it : Actors)
+	{
+		const auto T = FVector::Distance(GetActorLocation(), it->GetActorLocation());
+		if (T < Distance)
+		{
+			Distance = T;
+			OutActor = it;
+		}
+		
+	}
+	return OutActor;
+}
+
 void AHero::SetInteractableActors()
 {
 	if(GetWorld())
