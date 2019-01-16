@@ -50,6 +50,13 @@ const ETeamAttitudeEnum FTeam::GetAttitude(const AActor* A, const AActor* B)
 	return GetAttitude(ATeam->I_GetTeam(), BTeam->I_GetTeam());
 }
 
+const ETeamAttitudeEnum FTeam::GetAttitude(const AActor* A, const FTeam TeamB)
+{
+	const auto ATeam = Cast<ITeamInterface>(A);
+	if (!ATeam)
+		return ETeamAttitudeEnum::TAE_Neutral;
+	return GetAttitude(ATeam->I_GetTeam(), TeamB);
+}
 
 FTeam::FTeamAttitudeSolverFunction* FTeam::AttitudeSolverImpl = &DefaultTeamAttitudeSolver;
 

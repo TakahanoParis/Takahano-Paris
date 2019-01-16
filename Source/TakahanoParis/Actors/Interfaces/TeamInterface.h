@@ -53,6 +53,7 @@ public:
 	
 	static FTeam GetTeamIdentifier(const AActor* TeamMember);
 	static const ETeamAttitudeEnum GetAttitude(const AActor* A, const AActor* B);
+	static const ETeamAttitudeEnum GetAttitude(const AActor* A, const FTeam TeamB);
 	static const ETeamAttitudeEnum GetAttitude(const FTeam TeamA,const FTeam TeamB)
 	{
 		return AttitudeSolverImpl ? (*AttitudeSolverImpl)(TeamA, TeamB) : ETeamAttitudeEnum::TAE_Neutral;

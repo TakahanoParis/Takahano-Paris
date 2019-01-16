@@ -8,6 +8,7 @@
 #include "Actors/Interfaces/TeamInterface.h"
 #include "CustomAIController.generated.h"
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskFinished, bool, bSuccess);
 
 
@@ -204,12 +205,22 @@ protected:
 
 protected:
 
+	///AI Perception 
+#if 0
+	/**
+	 *	@property AIPerception
+	 *	@brief the perceptionComponent
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Perception", meta = (AllowPrivateAccess = "true"))
+		class UAIPerceptionComponent * AIPerception;
+
 	/**
 	 *	@property sightConfig
 	 *	@brief the config for the view detection for the controller
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI|Perception", meta = (AllowPrivateAccess = "true"))
 	class UAISenseConfig_Sight * SightConfig;
+
 
 
 	/**
@@ -291,6 +302,23 @@ protected:
 		void OnFriendlySightLost_BP(const AActor * Actor, const FVector &LastSeenPosition);
 
 
+
+	UPROPERTY()
+		TArray<AActor *> PerceivedActors;
+
+	UFUNCTION()
+		void CheckLastPerception();
+
+
+	UFUNCTION()
+		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+
+	UFUNCTION()
+		void OnActorPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+#endif  //PERCEPTION_AI
+
+
 	/**
 	 *	@property AISightRadius
 	 *	@brief How far it can see you
@@ -320,10 +348,80 @@ protected:
 		float AIFieldOfView = 180.0f;
 
 
-
+	/// Team
 	// inherited via @see ITeamInterface
 	virtual void I_SetTeam(FTeam NewTeam) override;
 	virtual FTeam I_GetTeam() const;
+
+	/**
+	 *	@fn GetHostilesInMap()
+	 *	@brief Finds all the Enemies on The map
+	 *	@param Out  : The Enemies Found
+	 *	@param WorldContext  : An Actor Providing World
+	 *	@param FriendlyTeam  : the Team that's finding all the enemies
+	 */
+	UFUNCTION()
+	static void GetHostilesInMap(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam ) ;
+
+	/**
+	 *	@fn GetHostilesInMap_BP()
+	 *	@brief Return (via parameter) an Array of actors having enemy team
+	 *	@param Out  : The Enemies Found
+	 *	@note for blueprint
+	 */
+	UFUNCTION(BlueprintCallable, Category = "AI|Team", meta = (DisplayName = "GetAllHostiles"))
+		static void GetHostilesInMap_BP(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam) { GetHostilesInMap(Out, WorldContext,FriendlyTeam); }
+
+
+	/**
+	 *	@fn GetFullyVisibleActorsInArray_BP()
+	 *	@brief Retrun the SubArray of visible actors in Array
+	 *	@param Out  : The Enemies Found
+	 *	@param Controller  : A valid Controller to see from
+	 */
+	UFUNCTION()
+		bool ActorIsFullyVisible(const AActor* In);
+
+
+	/**
+	 *	@fn GetFullyVisibleActorsInArray_BP()
+	 *	@brief Retrun the SubArray of visible actors in Array
+	 *	@param Out  : The Enemies Found
+	 *	@param Controller  : A valid Controller to see from
+	 *	@note for blueprint
+	 */
+	UFUNCTION(BlueprintCallable, Category = "AI|Vision", meta = (DisplayName = "Actor Is Fully Visible"))
+		bool ActorIsFullyVisible_BP(const AActor* In) { return ActorIsFullyVisible(In); }
+	
+	
+	
+	/**
+	 *	@fn GetFullyVisibleActorsInArray_BP()
+	 *	@brief Retrun the SubArray of visible actors in Array
+	 *	@param In  : The Actors we want to check
+	 *	@return Array Of actor
+	 */
+	UFUNCTION()
+		TArray<AActor*> GetFullyVisibleActorsInArray(const TArray<AActor*> &In);
+
+
+	/**
+	 *	@fn GetFullyVisibleActorsInArray_BP()
+	 *	@brief Retrun the SubArray of visible actors in Array
+	 *	@param Out  : The Enemies Found
+	 *	@param Controller  : A valid Controller to see from
+	 *	@note for blueprint
+	 */
+	UFUNCTION(BlueprintPure, Category = "AI|Vision", meta = (DisplayName = "Get Visible Actors In Array"))
+		TArray<AActor*> GetFullyVisibleActorsInArray_BP(const TArray<AActor*> &In) { return GetFullyVisibleActorsInArray(In); }
+
+
+	/**
+	 *	@property AIFieldOfView
+	 *	@brief How wide it sees
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI|Vision", meta = (DisplayName = "Field Of View"))
+		float FieldOfView = 180.0f;
 
 
 protected:
@@ -354,18 +452,6 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_DisableLogic)
 		bool bLogicIsDisabled;
 
-	UPROPERTY()
-		TArray<AActor *> PerceivedActors;
-
-	UFUNCTION()
-		void CheckLastPerception();
-
-
-	UFUNCTION()
-		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
-
-	UFUNCTION()
-		void OnActorPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 
 
 public :
@@ -373,6 +459,8 @@ public :
 
 	UFUNCTION()
 		void SwitchToDisabledState(const bool &bNewState);
+
+
 
 
 };
