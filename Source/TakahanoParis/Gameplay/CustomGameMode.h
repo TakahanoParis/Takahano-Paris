@@ -24,7 +24,8 @@ UENUM(BlueprintType)
 enum class EGameOverEnum : uint8
 {
 	GOE_Victory		UMETA(DisplayName = "Victory"),
-	GOE_Defeat		UMETA(DisplayName = "Defeat")
+	GOE_Defeat		UMETA(DisplayName = "Defeat"),
+	GOE_StopPlay	UMETA(DisplayName = "End Of Play")
 };
 
 
@@ -94,6 +95,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "PlayState", meta = (DisplayName = "Game Over"))
 		void SetGameOver_BP(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> GameOverReason){ SetGameOver(GameOverMessage,GameOverReason); }
 
+
+	/**
+	*	@fn OnGameOver_BP
+	*	@brief End Level related event
+	*	@note For Blueprints
+	*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Game Over"))
 		void OnGameOver_BP();
 
@@ -286,7 +293,6 @@ private:
 public :
 	virtual class AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	virtual bool ShouldSpawnAtStartSpot(AController* Player) override { return false; }
-
 };
 
 

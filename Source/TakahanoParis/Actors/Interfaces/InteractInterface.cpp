@@ -4,9 +4,9 @@
 #include "GameFramework/Controller.h"
 
 
-void IInteractInterface::I_Use_BP_Implementation(AController* User)
+bool IInteractInterface::I_Use_BP_Implementation(AController* User)
 {
-	I_Use(User);
+	return I_Use(User);
 }
 
 bool IInteractInterface::I_Server_Use_Validate(AController * User)

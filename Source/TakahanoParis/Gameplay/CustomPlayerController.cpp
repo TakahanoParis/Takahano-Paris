@@ -175,16 +175,12 @@ bool ACustomPlayerController::Server_OnCharacterDie_Validate()
 void ACustomPlayerController::Server_OnCharacterDie_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Died"));
-	FString GameOverMessage = FString("You Died");
 	const auto gameState = Cast<ACustomGameState>(UGameplayStatics::GetGameState(this));
 	if(gameState)
 	{
 		PlayCutScene();
-		const auto aGM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(this));
-		if(aGM)
-		{
-			aGM->SetGameOver(GameOverMessage, EGameOverEnum::GOE_Defeat);
-		}
+		gameState->LoadGame();
+		// Load Game
 	}
 	
 }

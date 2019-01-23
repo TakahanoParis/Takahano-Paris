@@ -121,24 +121,10 @@ protected:
 
 
 	FORCEINLINE TArray< AActor *>  GetVisibleHackables() const { return VisibleHackables; }
-	FORCEINLINE TArray< AActor *>  GetAllHackables() const { return VisibleHackables; }
 
 
 	UFUNCTION(BlueprintPure, Category = "Interactable|Hackables", meta = (DisplayName = "GetVisibleHackables"))
 	FORCEINLINE TArray< AActor *>  GetVisibleHackables_BP() const { return  GetVisibleHackables(); }
-
-	UFUNCTION(BlueprintPure, Category = "Interactable|Hackables", meta = (DisplayName = "GetAllHackables"))
-	FORCEINLINE TArray< AActor *>  GetAllHackables_BP() const { return  GetAllHackables(); }
-
-	/**
-	 * @fn Server_SetVisibleHackables()
-	 * @brief Find all actors in center of screen provided by the player controller
-	 * @param OutActors : the array that will be filled with the actors given by the player controller
-	 * @return true if found something, false otherwise.
-	 * @see ACustomPlayerController
-	 */
-	UFUNCTION(Server, Reliable, WithValidation)
-		void Server_SetVisibleHackables();
 
 	/**
 	 * @fn GetLookedAtElectronic()
@@ -147,8 +133,18 @@ protected:
 	 * @return true if found something, false otherwise.
 	 * @see ACustomPlayerController
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Set looked at Hackables"))
-		void SetVisibleHackables_BP() { Server_SetVisibleHackables(); }
+	UFUNCTION()
+		bool SetVisibleHackables();
+
+	/**
+	 * @fn GetLookedAtElectronic()
+	 * @brief Find all actors in center of screen provided by the player controller
+	 * @param OutActors : the array that will be filled with the actors given by the player controller
+	 * @return true if found something, false otherwise.
+	 * @see ACustomPlayerController
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Julia", meta = (DisplayName = "Get looked at Hackables"))
+		bool SetVisibleHackables_BP() { return  SetVisibleHackables(); }
 		
 private:
 
@@ -158,7 +154,6 @@ private:
 	 */
 	UPROPERTY(Replicated)
 	TArray<AActor*>	Hackables;
-
 
 	/**
  *	@property Hackables

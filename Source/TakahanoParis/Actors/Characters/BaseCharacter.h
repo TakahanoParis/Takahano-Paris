@@ -21,7 +21,6 @@ class UCustomSaveGame;
 UCLASS(ClassGroup = (Character), config=Game)
 
 class TAKAHANOPARIS_API ABaseCharacter : public ACharacter, public ITeamInterface, public ILifeInterface, public ISaveableActorInterface
-
 {
     GENERATED_BODY()
 

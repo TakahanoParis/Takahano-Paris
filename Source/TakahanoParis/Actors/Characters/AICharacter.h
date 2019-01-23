@@ -87,7 +87,7 @@ protected:
 public:
 
 	FORCEINLINE float GetRange() const { return AttackRange; }
-	FORCEINLINE float GetRate() const { return AttackRate; }
+	FORCEINLINE float GetRate() const { return AttackRange; }
 
 	UFUNCTION(BlueprintPure, Category = "AI|Attack", meta = (DisplayName = "Get Attack Range") )
 		FORCEINLINE float GetRange_BP() const { return GetRange(); }

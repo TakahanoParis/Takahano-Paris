@@ -13,7 +13,17 @@ UCLASS()
 class ACymie : public AHero
 {
 	GENERATED_BODY()
-	
+
+public:
+	bool CanRun() override;
+
+	void Run() override;
+
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Run")
+		float RunDrain;
+
+	float GetRunStaminaDrain() override {return RunDrain;}
 	
 	
 	

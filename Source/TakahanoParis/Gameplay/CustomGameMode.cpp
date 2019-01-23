@@ -78,7 +78,6 @@ AActor * ACustomGameMode::ChoosePlayerStart_Implementation(AController * Player)
 	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
-
 void ACustomGameMode::GetAllPlayerControllers(TArray<ACustomPlayerController *>& OutControllers)
 {
 	const auto players = GetNumPlayers();
@@ -104,7 +103,17 @@ void ACustomGameMode::SetGameOver(FString &GameOverMessage, const TEnumAsByte<EG
 {
 	PlayState = EPlayStateEnum::PSE_GameOver;
 	GameOverMessage = TEXT("Game Over");
-	(GameOverReason == EGameOverEnum::GOE_Defeat) ? OnGameOver_BP() : EndGameToMainMenuMap();
+	switch (GameOverReason)
+	{
+	case EGameOverEnum::GOE_Defeat :
+		RestartGameLevel();
+		break;
+	case EGameOverEnum::GOE_StopPlay :
+		EndGameToMainMenuMap();
+	default:
+		break;
+	}
+	OnGameOver_BP();
 }
 
 

@@ -21,7 +21,7 @@ AJulia::AJulia() : Super()
 void AJulia::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	Server_SetVisibleHackables();
+	SetVisibleHackables();
 }
 
 void AJulia::MoveForward(float Value)
@@ -48,23 +48,17 @@ void AJulia::BeginPlay()
 {
 	Super::BeginPlay();
 	Hackables.Empty();
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UHackInterface::StaticClass(), Hackables);
-
 	const auto aPC = Cast<ACustomPlayerController>(GetController());
 	if (!aPC)
 	{
 		UE_LOG(LogTakahanoParis, Error, TEXT("Cannot retrieve a pointer to a ACustomPlayerController"));
 		return;
 	}
-
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UHackInterface::StaticClass(), Hackables);
 }
 
-bool AJulia::Server_SetVisibleHackables_Validate()
-{
-	return true;
-}
 
-void AJulia::Server_SetVisibleHackables_Implementation()
+bool AJulia::SetVisibleHackables()
 {
 	const auto aPC = Cast<APlayerController>(GetController());
 	if(aPC)
@@ -72,7 +66,7 @@ void AJulia::Server_SetVisibleHackables_Implementation()
 		VisibleHackables = Hackables;
 		ACustomPlayerController::GetVisibleActorsInArray(VisibleHackables, aPC);
 	}
-	return;
+	return VisibleHackables.Num() > 0;
 }
 
 

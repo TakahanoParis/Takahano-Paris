@@ -30,9 +30,11 @@ ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitial
 	bAttachToPawn = true;
 	bWantsPlayerState = true;
 
-
+#if 0
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
-	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
+
+	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component"));
+	SetPerceptionComponent(*AIPerception);
 
 	SightConfig->SightRadius = AISightRadius;
 	SightConfig->LoseSightRadius = AILoseSightRadius;
@@ -46,10 +48,10 @@ ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitial
 	GetPerceptionComponent()->SetDominantSense(*SightConfig->GetSenseImplementation());
 	//GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &ACustomAIController::OnPerceptionReceived);
 	//GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &ACustomAIController::OnPerceptionUpdated);
-	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &ACustomAIController::OnPerceptionReceived);
+//	GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &ACustomAIController::OnPerceptionReceived);
 	GetPerceptionComponent()->ConfigureSense(*SightConfig);
 
-
+#endif //0
 }
 
 void ACustomAIController::BeginPlay()
@@ -198,6 +200,123 @@ FTeam ACustomAIController::I_GetTeam() const
 	return 0;
 }
 
+void ACustomAIController::GetHostilesInMap(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam)
+{
+	Out.Empty();
+	if (!WorldContext)
+		return;
+	TArray<AActor*> TeamActors;
+	UGameplayStatics::GetAllActorsWithInterface(WorldContext, UTeamInterface::StaticClass(), TeamActors);
+	for(auto it : TeamActors)
+	{
+		
+		if (FTeam::GetAttitude(it, FriendlyTeam) == ETeamAttitudeEnum::TAE_Hostile)
+			Out.Add(it);
+	}
+}
+
+bool ACustomAIController::ActorIsFullyVisible(const AActor * In)
+{
+	APawn * Pawn = GetPawn();
+
+	// Forget about objects too far
+	if (Pawn->GetDistanceTo(In) > RangeOfView )
+	{
+		return false;
+	}
+	
+	FVector ViewLocation = Pawn->GetActorLocation();
+	FRotator ViewRotator = Pawn->GetActorRotation();
+		
+	const FVector ViewVector = UKismetMathLibrary::GetForwardVector(ViewRotator);
+	FVector ToOtherActor = In->GetActorLocation() - ViewLocation;
+	ToOtherActor.Normalize();
+	
+
+	// Forget about actors not in view cone :
+	if (FVector::DotProduct(ToOtherActor, ViewVector) < FMath::Cos(FieldOfView)) // lets hope FMath is in degrees, not Radians 
+	{
+		return false;
+	}
+
+	// Trace parameters
+	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
+	Params.AddIgnoredActor(Pawn);
+
+	// First trace
+	struct FHitResult OutHit;
+	Params.AddIgnoredActor(In);
+	GetWorld()->LineTraceSingleByChannel(OutHit, ViewLocation, In->GetActorLocation(), ECollisionChannel::ECC_Visibility, Params);
+	if (OutHit.IsValidBlockingHit())
+		return false;
+
+	// Second Trace :
+	// Add visibility trace debug
+	const FName TraceTag("VisibilityTag");
+	GetWorld()->DebugDrawTraceTag = TraceTag;
+	Params.TraceTag = TraceTag;
+
+	FVector Origin, Extend;
+	In->GetActorBounds(false, Origin, Extend);
+	const FCollisionShape BoundingShape = FCollisionShape::MakeBox(Extend);
+	GetWorld()->SweepSingleByChannel(OutHit, ViewLocation, In->GetActorLocation(), In->GetActorQuat(), ECollisionChannel::ECC_Visibility, BoundingShape, Params);
+	if (OutHit.IsValidBlockingHit())
+		return false;
+
+	return true;
+	
+}
+
+TArray<AActor*> ACustomAIController::GetFullyVisibleActorsInArray(const TArray<AActor*>& In)
+{
+	TArray<AActor*> Out;
+	APawn * Pawn = GetPawn();
+
+	// Trace parameters
+	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
+	const FName TraceTag("VisibilityTag");
+	GetWorld()->DebugDrawTraceTag = TraceTag;
+	Params.TraceTag = TraceTag;
+	Params.AddIgnoredActor(Pawn);
+
+	for (auto it : In)
+	{
+		FVector ViewLocation = Pawn->GetActorLocation();
+		FRotator ViewRotator = Pawn->GetActorRotation();
+		
+		const FVector ViewVector = UKismetMathLibrary::GetForwardVector(ViewRotator);
+		FVector ToOtherActor = it->GetActorLocation() - ViewLocation;
+		ToOtherActor.Normalize();
+
+		// Forget about actors not in view cone :
+		if (FVector::DotProduct(ToOtherActor, ViewVector) < FMath::Cos(FieldOfView)) // lets hope FMath is in degrees, not Radians 
+		{
+			continue;
+		}
+
+
+		 // First trace
+		struct FHitResult OutHit;
+		Params.AddIgnoredActor(it);
+		GetWorld()->LineTraceSingleByChannel(OutHit, ViewLocation,  it->GetActorLocation(), ECollisionChannel::ECC_Visibility, Params);
+		if (OutHit.IsValidBlockingHit())
+			continue;
+
+		// Second Trace :
+
+		FVector Origin, Extend;
+		it->GetActorBounds(false, Origin, Extend);
+		const FCollisionShape BoundingShape = FCollisionShape::MakeBox(Extend);
+		GetWorld()->SweepSingleByChannel(OutHit, ViewLocation, it->GetActorLocation(), it->GetActorQuat(), ECollisionChannel::ECC_Visibility,  BoundingShape, Params);
+		if (OutHit.IsValidBlockingHit())
+			continue;
+
+		Out.Add(it);
+
+	}
+	return Out;
+}
+
 bool ACustomAIController::Server_StopAILogic_Validate(bool bStop)
 {
 	return true;
@@ -219,6 +338,15 @@ void ACustomAIController::OnRep_DisableLogic()
 	}
 	BrainComponent->ResumeLogic(FString("Enabled"));
 }
+
+void ACustomAIController::SwitchToDisabledState(const bool &bNewState)
+{
+	if (!GetBlackboardComponent())
+		return;
+	GetBlackboardComponent()->SetValueAsBool(TEXT("Enable"), bNewState);
+}
+
+#if 0
 
 void ACustomAIController::CheckLastPerception()
 {
@@ -261,37 +389,9 @@ void ACustomAIController::CheckLastPerception()
 
 void ACustomAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-#if 0
-	auto it = PerceivedActors[id];
-	FActorPerceptionBlueprintInfo Info;
-	GetPerceptionComponent()->GetActorsPerception(it, Info);
-	const auto Stimulus = Info.LastSensedStimuli[0];
-	if (!Stimulus.IsExpired())
-		continue;
-	UE_LOG(LogTemp, Display, TEXT("stimulus died of age : %f "), Stimulus.GetAge());
 
-	const ETeamAttitudeEnum T = I_GetTeam().GetAttitude(it, this);
-	switch (T)
-	{
-	case ETeamAttitudeEnum::TAE_Hostile:
-		OnHostileSightLost(it, Stimulus.StimulusLocation);
-		break;
+	
 
-	case ETeamAttitudeEnum::TAE_Friendly:
-		OnFriendlySightLost(it, Stimulus.StimulusLocation);
-		break;
-
-	case ETeamAttitudeEnum::TAE_Neutral:
-		break;
-	};
-#endif
-}
-
-void ACustomAIController::SwitchToDisabledState(const bool &bNewState )
-{
-	if (!GetBlackboardComponent())
-		return;
-	GetBlackboardComponent()->SetValueAsBool(TEXT("Enable"), bNewState);
 }
 
 
@@ -391,7 +491,7 @@ void ACustomAIController::OnActorPerceptionUpdated(AActor* Actor, FAIStimulus St
 			GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), nullptr);
 		}
 }
-
+#endif //PERCEPTION_AI
 
 void ACustomAIController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
