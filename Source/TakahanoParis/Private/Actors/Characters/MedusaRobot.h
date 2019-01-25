@@ -28,8 +28,5 @@ public :
 		void SetAIEnable_BP(bool bEnable = false) { SetAIEnable(bEnable); }
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Medusa", meta = (DisplayName = "Damage"))
-		float AttackPoints;
-
-	virtual void Attack(AActor* Target) override;
+	virtual bool CanRun() override;
 };

@@ -3,11 +3,17 @@
 #include "InteractInterface.h"
 #include "GameFramework/Controller.h"
 
-
-bool IInteractInterface::I_Use_BP_Implementation(AController* User)
+EInteractableState IInteractInterface::I_GetInteractState() const
 {
-	return I_Use(User);
+	return EInteractableState::ISE_Off;
 }
+
+bool IInteractInterface::I_Use(AController * User)
+{
+	I_Use_BP(User);
+	return true;
+}
+
 
 bool IInteractInterface::I_Server_Use_Validate(AController * User)
 {

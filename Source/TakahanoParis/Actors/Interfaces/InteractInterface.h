@@ -41,14 +41,14 @@ public:
 	 *	Return a EInteractableState describing the object interaction possibilities.
 	 */
 	UFUNCTION()
-		virtual EInteractableState I_GetInteractState() const = 0;
+		virtual EInteractableState I_GetInteractState() const;
 
 	/**
 	 *	@fn I_Use function
 	 *	@return true if it was activated.
 	 */
 	UFUNCTION()
-		virtual bool I_Use(class AController * User ) = 0;
+		virtual bool I_Use(class AController * User );
 
 
 
@@ -59,9 +59,8 @@ public:
 	 *	@return true if it was activated. false otherwise
 	 *	@note  for Blueprint, no need to implement it in your classes
 	 */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (DisplayName = "Use"))
-		bool I_Use_BP(class AController * User);
-	virtual bool I_Use_BP_Implementation(class AController * User);
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Interact", meta = (DisplayName = "Use"))
+		void I_Use_BP(class AController * UserController);
 
 	/**
 	 *	@fn I_Server_Use()

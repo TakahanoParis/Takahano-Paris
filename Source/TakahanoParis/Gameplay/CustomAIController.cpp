@@ -112,6 +112,19 @@ void ACustomAIController::StartPatrol()
 
 }
 
+void ACustomAIController::Run(bool IsRunning)
+{
+	const auto Pawn = Cast<AAICharacter>(GetPawn());
+	if (!Pawn)
+		return;
+	if (IsRunning)
+	{
+		Pawn->Run();
+		return;
+	}
+	Pawn->StopRunning();
+}
+
 void ACustomAIController::PausePatrol()
 {
 	GetWorldTimerManager().PauseTimer(PatrolTimerHandle);
@@ -167,14 +180,14 @@ void ACustomAIController::Patrol()
 
 }
 
-bool ACustomAIController::AttackActor(AActor* Target)
+bool ACustomAIController::AttackActor(AActor* ActorTarget)
 {
-	if(!Target)
+	if(!ActorTarget)
 		return false;
 	const auto Character = Cast<AAICharacter>(GetCharacter());
 	if (!Character)
 		return false;
-	Character->Attack(Target);
+	Character->Attack(ActorTarget);
 	return true;
 }
 
@@ -200,7 +213,7 @@ FTeam ACustomAIController::I_GetTeam() const
 	return 0;
 }
 
-void ACustomAIController::GetHostilesInMap(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam)
+void ACustomAIController::GetHostilesInMap(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam, TSubclassOf<AActor> ClassFilter) 
 {
 	Out.Empty();
 	if (!WorldContext)
@@ -209,20 +222,19 @@ void ACustomAIController::GetHostilesInMap(TArray<AActor*> &Out, const AActor* W
 	UGameplayStatics::GetAllActorsWithInterface(WorldContext, UTeamInterface::StaticClass(), TeamActors);
 	for(auto it : TeamActors)
 	{
-		
-		if (FTeam::GetAttitude(it, FriendlyTeam) == ETeamAttitudeEnum::TAE_Hostile)
+		if (FTeam::GetAttitude(it, FriendlyTeam) == ETeamAttitudeEnum::TAE_Hostile && it->IsA(ClassFilter))
 			Out.Add(it);
 	}
 }
 
-bool ACustomAIController::ActorIsFullyVisible(const AActor * In)
+EAIVisibilityEnum ACustomAIController::ActorIsVisible(const AActor * In)
 {
 	APawn * Pawn = GetPawn();
 
 	// Forget about objects too far
 	if (Pawn->GetDistanceTo(In) > RangeOfView )
 	{
-		return false;
+		return EAIVisibilityEnum::AIVE_TooFar;
 	}
 	
 	FVector ViewLocation = Pawn->GetActorLocation();
@@ -236,7 +248,7 @@ bool ACustomAIController::ActorIsFullyVisible(const AActor * In)
 	// Forget about actors not in view cone :
 	if (FVector::DotProduct(ToOtherActor, ViewVector) < FMath::Cos(FieldOfView)) // lets hope FMath is in degrees, not Radians 
 	{
-		return false;
+		return EAIVisibilityEnum::AIVE_Hidden;
 	}
 
 	// Trace parameters
@@ -248,7 +260,7 @@ bool ACustomAIController::ActorIsFullyVisible(const AActor * In)
 	Params.AddIgnoredActor(In);
 	GetWorld()->LineTraceSingleByChannel(OutHit, ViewLocation, In->GetActorLocation(), ECollisionChannel::ECC_Visibility, Params);
 	if (OutHit.IsValidBlockingHit())
-		return false;
+		return EAIVisibilityEnum::AIVE_Hidden;
 
 	// Second Trace :
 	// Add visibility trace debug
@@ -261,58 +273,21 @@ bool ACustomAIController::ActorIsFullyVisible(const AActor * In)
 	const FCollisionShape BoundingShape = FCollisionShape::MakeBox(Extend);
 	GetWorld()->SweepSingleByChannel(OutHit, ViewLocation, In->GetActorLocation(), In->GetActorQuat(), ECollisionChannel::ECC_Visibility, BoundingShape, Params);
 	if (OutHit.IsValidBlockingHit())
-		return false;
+		return EAIVisibilityEnum::AIVE_PartiallyVisible;
 
-	return true;
+	return EAIVisibilityEnum::AIVE_Visible;
 	
 }
 
-TArray<AActor*> ACustomAIController::GetFullyVisibleActorsInArray(const TArray<AActor*>& In)
+TArray<AActor*> ACustomAIController::GetVisibleActorsInArray(const TArray<AActor*> &In, EAIVisibilityEnum Visibility)
 {
 	TArray<AActor*> Out;
 	APawn * Pawn = GetPawn();
 
-	// Trace parameters
-	FCollisionQueryParams Params = FCollisionQueryParams::DefaultQueryParam;
-	const FName TraceTag("VisibilityTag");
-	GetWorld()->DebugDrawTraceTag = TraceTag;
-	Params.TraceTag = TraceTag;
-	Params.AddIgnoredActor(Pawn);
-
 	for (auto it : In)
 	{
-		FVector ViewLocation = Pawn->GetActorLocation();
-		FRotator ViewRotator = Pawn->GetActorRotation();
-		
-		const FVector ViewVector = UKismetMathLibrary::GetForwardVector(ViewRotator);
-		FVector ToOtherActor = it->GetActorLocation() - ViewLocation;
-		ToOtherActor.Normalize();
-
-		// Forget about actors not in view cone :
-		if (FVector::DotProduct(ToOtherActor, ViewVector) < FMath::Cos(FieldOfView)) // lets hope FMath is in degrees, not Radians 
-		{
-			continue;
-		}
-
-
-		 // First trace
-		struct FHitResult OutHit;
-		Params.AddIgnoredActor(it);
-		GetWorld()->LineTraceSingleByChannel(OutHit, ViewLocation,  it->GetActorLocation(), ECollisionChannel::ECC_Visibility, Params);
-		if (OutHit.IsValidBlockingHit())
-			continue;
-
-		// Second Trace :
-
-		FVector Origin, Extend;
-		it->GetActorBounds(false, Origin, Extend);
-		const FCollisionShape BoundingShape = FCollisionShape::MakeBox(Extend);
-		GetWorld()->SweepSingleByChannel(OutHit, ViewLocation, it->GetActorLocation(), it->GetActorQuat(), ECollisionChannel::ECC_Visibility,  BoundingShape, Params);
-		if (OutHit.IsValidBlockingHit())
-			continue;
-
-		Out.Add(it);
-
+		if (ActorIsVisible(it) >= Visibility)
+			Out.Add(it);
 	}
 	return Out;
 }

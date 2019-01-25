@@ -2,7 +2,8 @@
 
 #include "AICharacter.h"
 #include "UnrealNetwork.h"
-#include "Perception/AIPerceptionComponent.h"
+#include "Kismet/GameplayStatics.h"
+//#include "Perception/AIPerceptionComponent.h"
 
 
 
@@ -21,21 +22,36 @@ void AAICharacter::BeginPlay()
 		AI->SetPathActor(PatrolPath);
 		//AI->StartPatrol();
 	}
+	AttackCoolDown = AttackRate;
 }
 
-void AAICharacter::Attack(AActor* Target)
+void AAICharacter::Tick(float DeltaSeconds)
 {
-	const auto aAIC = GetCustomAIController();
-	if(Target)
+	Super::Tick(DeltaSeconds);
+	if (AttackCoolDown > 0)
 	{
-		Attack_BP(Target);
+		AttackCoolDown -= DeltaSeconds;
 	}
+}
+
+bool AAICharacter::Attack(AActor* Target)
+{
+	//const auto aAIC = GetCustomAIController();
+	if (Target && AttackCoolDown <= 0)
+	{
+		AttackCoolDown = AttackRate;
+		UGameplayStatics::ApplyDamage(Target, AttackDamage, GetController(), this, UDamageType::StaticClass());
+		Attack_BP(Target);
+		return true;
+	}
+	return false;
 }
 
 void AAICharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AAICharacter, PatrolPath);
+	DOREPLIFETIME(AAICharacter, AttackCoolDown);
 
 
 }

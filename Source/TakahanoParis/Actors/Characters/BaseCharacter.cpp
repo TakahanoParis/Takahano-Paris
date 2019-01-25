@@ -101,7 +101,7 @@ bool ABaseCharacter::CanRun()
 	const auto aPS = Cast<ACustomPlayerState>(PlayerState);
 	if (!aPS)
 		return false;
-	return aPS->GetStamina() >= 0;
+	return aPS->GetStamina() >= 0 ;
 }
 
 void ABaseCharacter::Run()

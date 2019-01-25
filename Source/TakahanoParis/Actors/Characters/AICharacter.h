@@ -27,7 +27,11 @@ public:
 	AAICharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// Called at Spawn or level start
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
+
+	// Called Every Frame
+	virtual void Tick(float DeltaSeconds) override;
+
 
 	/**
 	 *	@property PatrolPath
@@ -56,7 +60,7 @@ public:
 	 *	@brief Attack event for the Character
 	 */
 	UFUNCTION()
-	virtual void Attack(AActor * Target);
+	virtual bool Attack(AActor * Target);
 
 	/**
 	 *	@fn	Attack()
@@ -83,6 +87,16 @@ protected:
 	 */
 	UPROPERTY(EditAnywhere, Category = "AI|Attack")
 		float AttackRate;
+
+	UPROPERTY(Replicated)
+		float AttackCoolDown;
+
+	/**
+	*	@property Range
+	*	@brief Attack Range of the character
+	*/
+	UPROPERTY(EditAnywhere, Category = "AI|Attack")
+		float AttackDamage =100.f;
 
 public:
 

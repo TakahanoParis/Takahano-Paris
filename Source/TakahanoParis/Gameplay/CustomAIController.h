@@ -11,6 +11,15 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskFinished, bool, bSuccess);
 
+UENUM(BlueprintType)
+enum class EAIVisibilityEnum : uint8
+{
+	AIVE_Error				UMETA(DisplayName = "Error"),
+	AIVE_TooFar				UMETA(DisplayName = "TooFar"),
+	AIVE_Hidden				UMETA(DisplayName = "Hidden"),
+	AIVE_PartiallyVisible	UMETA(DisplayName = "Partially Visible"),
+	AIVE_Visible			UMETA(DisplayName = "Fully Visible")
+};
 
 class ASplinePathActor;
 
@@ -70,6 +79,22 @@ public:
 
 
 
+	/**
+	*	@fn Run()
+	*	@brief Set the Running State of the pawn
+	*	@param IsRunning : Boolean Flag
+	*/
+	UFUNCTION()
+		virtual void Run(bool IsRunning);
+
+	/**
+	*	@fn Run()
+	*	@brief Set the Running State of the pawn
+	*	@param IsRunning : Boolean Flag
+	*	@note for blueprints
+	*/
+	UFUNCTION(BlueprintCallable, Category = "AI", meta = (DisplayName = "Run"))
+		void Run_BP(bool IsRunning) { Run(IsRunning); }
 
 
 	/**
@@ -125,7 +150,7 @@ protected:
 		void Patrol();
 
 	UFUNCTION()
-		virtual bool AttackActor(AActor * Target);
+		virtual bool AttackActor(AActor * ActorTarget);
 
 	UPROPERTY(BlueprintReadWrite, BlueprintAssignable, Category = "AI")
 		FTaskFinished OnFinishedAttack;
@@ -136,7 +161,7 @@ protected:
 	 *	@param Target : Who you wanna Attack
 	 */
 	UFUNCTION(BlueprintCallable, Category = "", meta = (DisplayName = "Attack"))
-		void Attack_BP(AActor * Target) { AttackActor(Target); }
+		void Attack_BP(AActor * ActorTarget) { AttackActor(ActorTarget); }
 	
 private:
 	
@@ -361,7 +386,7 @@ protected:
 	 *	@param FriendlyTeam  : the Team that's finding all the enemies
 	 */
 	UFUNCTION()
-	static void GetHostilesInMap(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam ) ;
+	static void GetHostilesInMap(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam, TSubclassOf<AActor> ClassFilter ) ;
 
 	/**
 	 *	@fn GetHostilesInMap_BP()
@@ -370,50 +395,50 @@ protected:
 	 *	@note for blueprint
 	 */
 	UFUNCTION(BlueprintCallable, Category = "AI|Team", meta = (DisplayName = "GetAllHostiles"))
-		static void GetHostilesInMap_BP(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam) { GetHostilesInMap(Out, WorldContext,FriendlyTeam); }
+		static void GetHostilesInMap_BP(TArray<AActor*> &Out, const AActor* WorldContext, const FTeam &FriendlyTeam, TSubclassOf<AActor> ClassFilter) { GetHostilesInMap(Out, WorldContext,FriendlyTeam, ClassFilter); }
 
 
 	/**
-	 *	@fn GetFullyVisibleActorsInArray_BP()
-	 *	@brief Retrun the SubArray of visible actors in Array
-	 *	@param Out  : The Enemies Found
-	 *	@param Controller  : A valid Controller to see from
+	 *	@fn ActorIsVisible()
+	 *	@brief Return the visibility of an Actor
+	 *	@param in  : The Actor to consider
 	 */
 	UFUNCTION()
-		bool ActorIsFullyVisible(const AActor* In);
+		EAIVisibilityEnum ActorIsVisible(const AActor* In);
 
 
 	/**
-	 *	@fn GetFullyVisibleActorsInArray_BP()
-	 *	@brief Retrun the SubArray of visible actors in Array
-	 *	@param Out  : The Enemies Found
-	 *	@param Controller  : A valid Controller to see from
+	 *	@fn ActorIsVisible_BP()
+	 *	@brief Return the visibility of an Actor
+	 *	@param in  : The Actor to consider
 	 *	@note for blueprint
 	 */
-	UFUNCTION(BlueprintCallable, Category = "AI|Vision", meta = (DisplayName = "Actor Is Fully Visible"))
-		bool ActorIsFullyVisible_BP(const AActor* In) { return ActorIsFullyVisible(In); }
+	UFUNCTION(BlueprintCallable, Category = "AI|Vision", meta = (DisplayName = "Actor Is Visible"))
+		EAIVisibilityEnum ActorIsVisible_BP(const AActor* In) { return ActorIsVisible(In); }
 	
 	
 	
 	/**
-	 *	@fn GetFullyVisibleActorsInArray_BP()
-	 *	@brief Retrun the SubArray of visible actors in Array
+	 *	@fn GetVisibleActorsInArray()
+	 *	@brief Returns the SubArray of visible actors in Array
 	 *	@param In  : The Actors we want to check
-	 *	@return Array Of actor
+	 *	@param Visibility  : The type of visibility we're looking for
+	 *	@return Array Of actor visible.
 	 */
 	UFUNCTION()
-		TArray<AActor*> GetFullyVisibleActorsInArray(const TArray<AActor*> &In);
+		TArray<AActor*> GetVisibleActorsInArray(const TArray<AActor*> &In, EAIVisibilityEnum Visibility);
 
 
 	/**
-	 *	@fn GetFullyVisibleActorsInArray_BP()
-	 *	@brief Retrun the SubArray of visible actors in Array
-	 *	@param Out  : The Enemies Found
-	 *	@param Controller  : A valid Controller to see from
+	*	@fn GetVisibleActorsInArray_BP()
+	*	@brief Returns the SubArray of visible actors in Array
+	*	@param In  : The Actors we want to check
+	*	@param Visibility  : The type of visibility we're looking for
+	*	@return Array Of actor visible.
 	 *	@note for blueprint
 	 */
 	UFUNCTION(BlueprintPure, Category = "AI|Vision", meta = (DisplayName = "Get Visible Actors In Array"))
-		TArray<AActor*> GetFullyVisibleActorsInArray_BP(const TArray<AActor*> &In) { return GetFullyVisibleActorsInArray(In); }
+		TArray<AActor*> GetVisibleActorsInArray_BP(const TArray<AActor*> &In, EAIVisibilityEnum Visibility) { return GetVisibleActorsInArray(In, Visibility); }
 
 
 	/**

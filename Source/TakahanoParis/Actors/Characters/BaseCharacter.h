@@ -103,6 +103,16 @@ protected:
 	UFUNCTION()
 	virtual bool CanRun();
 
+
+	/**
+	*	@fn GetRunStaminaDrain
+	*	@return the amount of used stamina
+	*/
+	UFUNCTION()
+		virtual float GetRunStaminaDrain();
+
+
+public :
 	/**
 	 *	@fn Run
 	 *	@brief Apply the necessary changes to be running
@@ -112,14 +122,28 @@ protected:
 
 
 	/**
+	*	@fn Run
+	*	@brief Apply the necessary changes to be running
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Movement", meta = (DisplayName = "Run"))
+		virtual void Run_BP() { Run(); }
+
+
+	/**
 	 *	@fn StopRun
 	 *	@brief Apply the necessary changes to be running
 	 */
 	UFUNCTION()
 		virtual void StopRunning();
 
-	UFUNCTION()
-		virtual float GetRunStaminaDrain();
+
+	/**
+	*	@fn Run
+	*	@brief Apply the necessary changes to be running
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Movement", meta = (DisplayName = "Stop Running"))
+		virtual void StopRunning_BP() { StopRunning(); }
+
 
 
 };

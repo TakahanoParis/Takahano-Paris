@@ -6,7 +6,6 @@
 
 AMedusaRobot::AMedusaRobot() :Super() 
 {
-	AttackPoints = 100;
 }
 
 void AMedusaRobot::SetAIEnable(bool bEnable)
@@ -23,14 +22,9 @@ void AMedusaRobot::SetAIEnable(bool bEnable)
 	}
 }
 
-// @todo Set correct Damage types
-void AMedusaRobot::Attack(AActor* Target)
+
+
+bool AMedusaRobot::CanRun()
 {
-	FDamageEvent Damage;
-	Damage.IsOfType(0);
-
-	if(GetController())
-		Target->TakeDamage(AttackPoints, Damage, GetController(), this);
-
-	Super::Attack(Target);
+	return true;
 }
