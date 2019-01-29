@@ -25,12 +25,9 @@ AHero::AHero() : Super()
 
 	CameraBoom->bEnableCameraLag = true;
 	CameraBoom->CameraLagSpeed = 10.f;
+	SetupCamera(ECameraTypeEnum::CTE_Side);
 
-	// Create a follow camera
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
+	
 	// Just set us a little off the center
 	FollowCamera->SetRelativeLocation(FVector(0.f, -50.f, 0.f), false);
 
@@ -69,6 +66,32 @@ void AHero::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &AHero::Use);
+}
+
+void AHero::SetupCamera(ECameraTypeEnum ViewType)
+{
+	if (!FollowCamera)
+		FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	switch (ViewType)
+	{
+	case ECameraTypeEnum::CTE_ThirdPerson:
+		// Create a follow camera
+		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+		break;
+	case ECameraTypeEnum::CTE_TopDown:
+		// Create a follow camera
+		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+		break;
+	case ECameraTypeEnum::CTE_Side:
+		// Create a follow camera
+		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+		break;
+	default:
+		break;
+	}
 }
 
 bool AHero::TryUse(AActor * Target)

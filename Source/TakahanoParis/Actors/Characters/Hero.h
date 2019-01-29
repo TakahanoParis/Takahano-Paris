@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
 #include "Hero.generated.h"
+#include "Gameplay/CustomGameMode.h"
 
 
 
@@ -52,6 +53,9 @@ protected:
 	/** Follow camera */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
+
+	UFUNCTION()
+		virtual void SetupCamera(ECameraTypeEnum ViewType);
 
 protected:
 

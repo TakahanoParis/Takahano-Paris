@@ -27,7 +27,16 @@ enum class EGameOverEnum : uint8
 	GOE_Defeat		UMETA(DisplayName = "Defeat")
 };
 
-
+/**
+* @enum EPlayStateEnum represents the State of the Game
+*/
+UENUM(BlueprintType, meta = (DisplayName= "Camera Type"))
+enum class ECameraTypeEnum : uint8
+{
+	CTE_ThirdPerson		UMETA(DisplayName = "Third Person View"),
+	CTE_TopDown			UMETA(DisplayName = "TopDown View"),
+	CTE_Side			UMETA(DisplayName = "SideScroller View")
+};
 
 /**
  * @class This is the Base GameMode for all TakahanoParis Game.
@@ -276,6 +285,11 @@ private:
 public :
 	virtual class AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	virtual bool ShouldSpawnAtStartSpot(AController* Player) override { return false; }
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		ECameraTypeEnum CameraMode;
+
+	virtual void SetPlayerDefault(APawn * PlayerPawn) override;
 };
 
 
