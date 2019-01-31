@@ -276,11 +276,6 @@ private:
 	 *	@return true if it successfully called game instance function, false otherwise
 	 */
 		bool EndGameToMainMenuMap();
-public:
-	FORCEINLINE class FTimerManager * GetTimerManager() { return  &MultiPlayerTimerManager; }
-private:
-	class FTimerManager MultiPlayerTimerManager;
-
 
 public :
 	virtual class AActor* ChoosePlayerStart_Implementation(AController* Player) override;
@@ -289,7 +284,9 @@ public :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		ECameraTypeEnum CameraMode;
 
-	virtual void SetPlayerDefault(APawn * PlayerPawn) override;
+	virtual void SetPlayerDefaults(APawn * PlayerPawn) override;
+
+	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 };
 
 
