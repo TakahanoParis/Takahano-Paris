@@ -78,6 +78,25 @@ AActor * ACustomGameMode::ChoosePlayerStart_Implementation(AController * Player)
 	return Super::ChoosePlayerStart_Implementation(Player);
 }
 
+void ACustomGameMode::SetPlayerDefaults(APawn * PlayerPawn)
+{
+	Super::SetPlayerDefaults(PlayerPawn);
+	const auto Hero = Cast<AHero>(PlayerPawn);
+	if (!Hero)
+		return;
+	Hero->SetupCamera(CameraMode);
+}
+
+APawn * ACustomGameMode::SpawnDefaultPawnFor_Implementation(AController * NewPlayer, AActor * StartSpot)
+{
+	auto Pawn =  Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
+	const auto Hero = Cast<AHero>(Pawn);
+	if (!Hero)
+		return Pawn;
+	Hero->SetupCamera(CameraMode);
+	return Hero;
+}
+
 void ACustomGameMode::GetAllPlayerControllers(TArray<ACustomPlayerController *>& OutControllers)
 {
 	const auto players = GetNumPlayers();
