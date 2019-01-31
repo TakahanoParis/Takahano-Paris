@@ -48,13 +48,7 @@ void AJulia::BeginPlay()
 {
 	Super::BeginPlay();
 	Hackables.Empty();
-	const auto aPC = Cast<ACustomPlayerController>(GetController());
-	if (!aPC)
-	{
-		UE_LOG(LogTakahanoParis, Error, TEXT("Cannot retrieve a pointer to a ACustomPlayerController"));
-		return;
-	}
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UHackInterface::StaticClass(), Hackables);
+	UGameplayStatics::GetAllActorsWithInterface(this, UHackInterface::StaticClass(), Hackables);
 }
 
 

@@ -41,13 +41,13 @@ void ACCTVActor::Tick(float DeltaTime)
 
 bool ACCTVActor::I_Use(AController* User)
 {
-	I_Use_BP(User);
+	Execute_I_Use_BP(this, User);
 	return false ;
 }
 
 void ACCTVActor::I_Hack(AController* User)
 {
-	I_Use_BP(User);
+	Execute_I_Use_BP( this, User);
 	//testIfPlayerController
 	const auto aPC = Cast<APlayerController>(User);
 	if(!aPC)
