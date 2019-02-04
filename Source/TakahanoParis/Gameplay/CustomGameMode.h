@@ -298,12 +298,33 @@ public :
 	virtual class AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 	virtual bool ShouldSpawnAtStartSpot(AController* Player) override { return false; }
 
+protected :
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		ECameraTypeEnum CameraMode;
 
 	virtual void SetPlayerDefaults(APawn * PlayerPawn) override;
 
 	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
+
+public :
+
+	/**
+	*	@fn GetCameraType()
+	*	@brief Getter function for the Camera type
+	*	@return the Game Mode Camera Type
+	*/
+	FORCEINLINE ECameraTypeEnum GetCameraType() { return CameraMode; }
+
+
+	/**
+	*	@fn GetCameraType_BP()
+	*	@brief Getter function for the Camera type
+	*	@return the Game Mode Camera Type
+	*	@note For Blueprints
+	*/
+	UFUNCTION(BlueprintPure, Category = Camera, meta = (DisplayName = "Get Camera type"))
+		ECameraTypeEnum GetCameraType_BP() { return GetCameraType(); }
+
 };
 
 

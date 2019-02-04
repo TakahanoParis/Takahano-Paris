@@ -13,8 +13,10 @@
 
 AHero::AHero() : Super()
 {
-
-	SetupCamera(ECameraTypeEnum::CTE_ThirdPerson);
+	const auto GM = UGameplayStatics::GetGameMode(this);
+	const auto CGM = Cast<ACustomGameMode>(GM);
+	if(CGM)
+		SetupCamera(CGM->GetCameraType());
 
 	
 
@@ -67,6 +69,7 @@ void AHero::SetupCamera_Implementation(ECameraTypeEnum ViewType)
 		FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	if (!CameraBoom)
 		CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+
 	switch (ViewType)
 	{
 	case ECameraTypeEnum::CTE_ThirdPerson:
@@ -92,25 +95,30 @@ void AHero::SetupCamera_Implementation(ECameraTypeEnum ViewType)
 
 		break;
 	case ECameraTypeEnum::CTE_TopDown:
-		// Create a follow camera
+
+		// Don't rotate character to camera direction
+		bUseControllerRotationPitch = false;
+		bUseControllerRotationYaw = false;
+		bUseControllerRotationRoll = false;
+
+		// Configure character movement
+		GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
+		GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
+		GetCharacterMovement()->bConstrainToPlane = true;
+		GetCharacterMovement()->bSnapToPlaneAtStart = true;
+
+		// Create a camera boom...
 		CameraBoom->SetupAttachment(RootComponent);
-		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+		CameraBoom->bAbsoluteRotation = true; // Don't want arm to rotate when character does
+		CameraBoom->TargetArmLength = 500.f;
+		CameraBoom->RelativeRotation = FRotator(-60.f, 0.f, 0.f);
+		CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 
-		FollowCamera->SetRelativeLocation(FVector(0.f, -90.f, 0.f), false);
-
+											  // Create a camera...
+		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-		// Just set us a little off the center
 
-		CameraBoom->TargetArmLength = 250.0f; // The camera follows at this distance behind the character	
-		CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
-		CameraBoom->bEnableCameraLag = true;
-		CameraBoom->CameraLagSpeed = 9.f;
-
-		// Inherit rotation
-		//CameraBoom->bInheritPitch = true;
-		//CameraBoom->bInheritRoll = true;
-		//CameraBoom->bInheritYaw = true;
 		break;
 	case ECameraTypeEnum::CTE_Side:
 		// Create a follow camera
