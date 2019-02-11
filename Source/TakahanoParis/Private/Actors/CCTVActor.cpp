@@ -5,6 +5,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
+
 
 
 // Sets default values
@@ -57,6 +59,35 @@ void ACCTVActor::I_Hack(AController* User)
 	aPC->SetControlRotation(this->GetActorRotation());
 	Controller = aPC;
 	//aPC->Possess(this);
+}
+
+void ACCTVActor::GetAllCameraWithID(const UObject * WorldContextObject, TArray<ACCTVActor*>& Cameras, int ID)
+{
+	TArray<AActor*> AllCameras;
+	UGameplayStatics::GetAllActorsOfClass(WorldContextObject, ACCTVActor::StaticClass(), AllCameras);
+	for (auto it : AllCameras)
+	{
+		const auto Cam = Cast<ACCTVActor>(it);
+		if (!Cam)
+			continue;
+		if (Cam->GetCameraID() == ID)
+			Cameras.Add(Cam);
+	}
+}
+
+ACCTVActor * ACCTVActor::GetCameraWithName(const UObject * WorldContextObject, FName SearchName)
+{
+	TArray<AActor*> AllCameras;
+	UGameplayStatics::GetAllActorsOfClass(WorldContextObject, ACCTVActor::StaticClass(), AllCameras);
+	for (auto it : AllCameras)
+	{
+		const auto Cam = Cast<ACCTVActor>(it);
+		if (!Cam)
+			continue;
+		if (Cam->GetCameraName() == SearchName)
+			return Cam;
+	}
+	return nullptr;
 }
 
 

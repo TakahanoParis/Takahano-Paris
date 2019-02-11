@@ -82,6 +82,89 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		float BlendExponent = 1.f;
 
+	////  group and name ;
+protected :
+
+	/**
+	*	@property groupID
+	*	@brief Camera Group. Used to limit the selection for the player. also to get an array of all the Camera in a group
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (DisplayName = "Groupe Index"))
+		int groupID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (DisplayName = "CameraName"))
+		FName CameraName;
+
+public:
+
+	/**
+	 *	@fn GetCameraName
+	 *	@returns Camera Name
+	 */
+	FORCEINLINE FName GetCameraName() const { return CameraName; }
+
+	/**
+	 *	@fn GetCameraName_BP
+	 *	@returns Camera Name
+	 *	@note For blueprints
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Camera", meta = (DisplayName = "Get Camera Name"))
+		FName GetCameraName_BP() const { return GetCameraName(); }
+
+	/**
+	*	@fn GetCameraID
+	*	@returns group ID
+	*/
+	FORCEINLINE int GetCameraID() const { return groupID; }
+
+	/**
+	*	@fn GetCameraID_BP
+	*	@returns group ID
+	*	@note For blueprints
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Camera", meta = (DisplayName = "Get Camera group ID"))
+		int GetCameraID_BP() const { return GetCameraID(); }
+
+
+	/**
+	*	@fn GetAllCameraWithID
+	*	@brief Gets an Array of Camera belonging to the same ID group
+	*	@param Cameras : the resulting Array
+	*	@param ID :the ID to look for
+	*/
+	UFUNCTION()
+		static void GetAllCameraWithID(const UObject * WorldContextObject, TArray<ACCTVActor *> &Cameras, int ID);
+
+
+	/**
+	*	@fn GetAllCameraWithID_BP
+	*	@brief Gets an Array of Camera belonging to the same ID group
+	*	@param Cameras : the resulting Array
+	*	@param ID :the ID to look for
+	*	@note For blueprintsS
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Camera", meta = (DisplayName = "Get All Cameras with ID"))
+		static void GetAllCameraWithID_BP(const UObject * WorldContextObject, TArray<ACCTVActor *> &Cameras, int ID) { GetAllCameraWithID(WorldContextObject, Cameras,ID); }
+
+	/**
+	*	@fn GetCameraWithName_BP
+	*	@brief Get the Camera (or the first one), With a specified name
+	*	@returns the wanted camera
+	*	@param CameraName : the name you're looking for
+	*/
+	UFUNCTION()
+		static ACCTVActor * GetCameraWithName(const UObject * WorldContextObject, FName SearchName);
+
+	/**
+	*	@fn GetCameraWithName_BP
+	*	@brief Get the Camera (or the first one), With a specified name
+	*	@returns the wanted camera
+	*	@param CameraName : the name you're looking for
+	*	@note For blueprints
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Camera", meta = (DisplayName = "Get Camera with Name"))
+		static ACCTVActor * GetCameraWithName_BP(const UObject * WorldContextObject, FName SearchName) {return GetCameraWithName(WorldContextObject, SearchName); }
+
 	
 	
 };
