@@ -9,8 +9,12 @@ public class TakahanoParis : ModuleRules
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "StreamingPauseRendering", "AIModule" });
+
+        PublicDependencyModuleNames.AddRange(new string[] { "TP_ThirdPerson" }); // Third Person Gameplay
+
         PublicDependencyModuleNames.AddRange(new string[] { "OnlineSubsystem", "OnlineSubsystemUtils" }); // multiplayer
         PublicDependencyModuleNames.AddRange(new string[] { "MediaAssets"}); // video support
+
 
 
 

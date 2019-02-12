@@ -10,5 +10,5 @@ public class TakahanoParisTarget : TargetRules
 		Type = TargetType.Game;
 
 		ExtraModuleNames.AddRange( new string[] { "TakahanoParis" } );
-	}
+    }
 }
