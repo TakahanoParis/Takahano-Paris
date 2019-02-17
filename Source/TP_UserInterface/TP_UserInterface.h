@@ -2,9 +2,9 @@
 
 #include "ModuleManager.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(TP_ThirdPerson, All, All);
+DECLARE_LOG_CATEGORY_EXTERN(TP_UserInterface, All, All);
 
-class FTP_ThirdPerson : public IModuleInterface
+class FTP_UserInterface : public IModuleInterface
 {
 public:
 

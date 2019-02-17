@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class TP_ThirdPerson : ModuleRules
+public class TP_TopDown : ModuleRules
 {
-	public TP_ThirdPerson(ReadOnlyTargetRules Target) : base(Target)
+	public TP_TopDown(ReadOnlyTargetRules Target) : base(Target)
 	{
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -26,10 +26,10 @@ public class TP_ThirdPerson : ModuleRules
 
 
         //The path for the header files
-        PublicIncludePaths.AddRange(new string[] { "TP_ThirdPerson/Public" });
+        PublicIncludePaths.AddRange(new string[] { "TP_TopDown/Public" });
 
         //The path for the source files
-        PrivateIncludePaths.AddRange(new string[] { "TP_ThirdPerson/Private" });
+        PrivateIncludePaths.AddRange(new string[] { "TP_TopDown/Private" });
     }
 }
 

@@ -11,7 +11,7 @@
  *  Base Class for the Main Menu, Should be overridden in Blueprints to set the look.
  */
 UCLASS()
-class TAKAHANOPARIS_API UMainMenuWidget : public UCustomWidget
+class TP_USERINTERFACE_API UMainMenuWidget : public UCustomWidget
 {
 	GENERATED_BODY()
 

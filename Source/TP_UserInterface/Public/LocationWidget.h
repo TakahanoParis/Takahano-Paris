@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class TAKAHANOPARIS_API ULocationWidget : public UCustomWidget
+class TP_USERINTERFACE_API ULocationWidget : public UCustomWidget
 {
 	GENERATED_BODY()
 	

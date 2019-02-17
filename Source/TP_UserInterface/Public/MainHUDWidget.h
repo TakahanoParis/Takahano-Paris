@@ -11,7 +11,7 @@
  *	@brief Main class for the HUD
  */
 UCLASS()
-class TAKAHANOPARIS_API UMainHUDWidget : public UCustomWidget
+class TP_USERINTERFACE_API UMainHUDWidget : public UCustomWidget
 {
 	GENERATED_BODY()
 

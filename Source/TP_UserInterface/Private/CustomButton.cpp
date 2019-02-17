@@ -3,7 +3,7 @@
 #include "CustomButton.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
-#include "UserInterface/CustomButtonWidgetStyle.h"
+#include "CustomButtonWidgetStyle.h"
 #include "SlateWidgetStyleAsset.h"
 
 

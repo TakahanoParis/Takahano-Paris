@@ -84,7 +84,7 @@ void ACustomGameMode::SetPlayerDefaults(APawn * PlayerPawn)
 	const auto Hero = Cast<AHero>(PlayerPawn);
 	if (!Hero)
 		return;
-	Hero->SetupCamera(CameraMode);
+	Hero->SetupCamera();
 }
 
 APawn * ACustomGameMode::SpawnDefaultPawnFor_Implementation(AController * NewPlayer, AActor * StartSpot)
@@ -93,7 +93,7 @@ APawn * ACustomGameMode::SpawnDefaultPawnFor_Implementation(AController * NewPla
 	const auto Hero = Cast<AHero>(Pawn);
 	if (!Hero)
 		return Pawn;
-	Hero->SetupCamera(CameraMode);
+	Hero->SetupCamera();
 	return Hero;
 }
 

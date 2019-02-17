@@ -16,7 +16,7 @@
  * describes the basic elements a widget can do. widgets are mostly menus and stuff, but buttons also inherit this class
  */
 UCLASS(Abstract, ClassGroup = (Menu))
-class TAKAHANOPARIS_API UCustomWidget : public UUserWidget
+class TP_USERINTERFACE_API UCustomWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

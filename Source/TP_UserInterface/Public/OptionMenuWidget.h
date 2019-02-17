@@ -10,7 +10,7 @@
  *  @class UOptionMenuWidget Base Class for the Option Menu
  */
 UCLASS()
-class TAKAHANOPARIS_API UOptionMenuWidget : public UCustomWidget
+class TP_USERINTERFACE_API UOptionMenuWidget : public UCustomWidget
 {
 	GENERATED_BODY()
 

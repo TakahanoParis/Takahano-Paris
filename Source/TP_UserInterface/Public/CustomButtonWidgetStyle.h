@@ -10,7 +10,7 @@
  * Represents the appearance of an SButton
  */
 USTRUCT(BlueprintType)
-struct TAKAHANOPARIS_API FCustomButtonStyle : public FButtonStyle
+struct TP_USERINTERFACE_API FCustomButtonStyle : public FButtonStyle
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -73,7 +73,7 @@ struct TAKAHANOPARIS_API FCustomButtonStyle : public FButtonStyle
  * 
  */
 UCLASS()
-class TAKAHANOPARIS_API UCustomButtonWidgetStyle : public USlateWidgetStyleContainerBase
+class TP_USERINTERFACE_API UCustomButtonWidgetStyle : public USlateWidgetStyleContainerBase
 {
 public:
 	GENERATED_BODY()

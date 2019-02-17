@@ -12,7 +12,7 @@
  * A button with an automatically added text Label and styling to go with it.
  */
 UCLASS()
-class TAKAHANOPARIS_API UCustomButton : public UCustomWidget
+class TP_USERINTERFACE_API UCustomButton : public UCustomWidget
 {
 	GENERATED_BODY()
 	

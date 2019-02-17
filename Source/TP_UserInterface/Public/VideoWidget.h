@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UserInterface/CustomWidget.h"
+#include "CustomWidget.h"
 #include "VideoWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FVideoWidgetDelegates);
@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FVideoWidgetDelegates);
  * 
  */
 UCLASS()
-class TAKAHANOPARIS_API UVideoWidget : public UCustomWidget
+class UVideoWidget : public UCustomWidget
 {
 	GENERATED_BODY()
 

@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class TAKAHANOPARIS_API UPlayerStateBar : public UCustomWidget
+class TP_USERINTERFACE_API UPlayerStateBar : public UCustomWidget
 {
 	GENERATED_BODY()
 public:
