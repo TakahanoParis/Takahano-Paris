@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UserInterface/CustomWidget.h"
+#include "CustomWidget.h"
 #include "MainHUDWidget.generated.h"
 
 /**

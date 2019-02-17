@@ -6,12 +6,13 @@ DEFINE_LOG_CATEGORY(TP_UserInterface);
 
 void FTP_UserInterface::StartupModule()
 {
-	UE_LOG(TP_ThirdPerson, Warning, TEXT("TP_TopDown module has started!"));
+	UE_LOG(TP_UserInterface, Warning, TEXT("TP_TopDown module has started!"));
 }
 
 void FTP_UserInterface::ShutdownModule()
 {
-	UE_LOG(TP_ThirdPerson, Warning, TEXT("TP_TopDown module has shut down"));
+
+	UE_LOG(TP_UserInterface, Warning, TEXT("TP_TopDown module has shut down"));
 }
 
 #undef LOCTEXT_NAMESPACE
