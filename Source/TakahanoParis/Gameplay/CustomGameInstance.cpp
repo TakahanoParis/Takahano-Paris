@@ -34,30 +34,40 @@ UCustomGameInstance::UCustomGameInstance(const FObjectInitializer& ObjectInitial
 ///	Menu Functions
 ///
 
-void UCustomGameInstance::ShowMainMenu()
+void UCustomGameInstance::ShowMainMenu_Implementation()
 {
+
 	if (!CreateMainMenu())
 	{
 		UE_LOG(LogSlate, Error, TEXT("Couldn't Create a Main Menu"));
 		return;
 	}
 	APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
-	MainMenu->AddToViewport(0);
+	MainMenu->SetVisibility(ESlateVisibility::Visible);
+
 }
 
-void UCustomGameInstance::ShowHostMenu()
+void UCustomGameInstance::HideMainMenu_Implementation()
+{
+	if(MainMenu)
+		MainMenu->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UCustomGameInstance::ShowHostMenu_Implementation()
 {
 	CreateHostMenu();
 	APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
 }
 
-void UCustomGameInstance::ShowServerMenu()
+
+
+void UCustomGameInstance::ShowServerMenu_Implementation()
 {
 	CreateServerMenu();
 	APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
 }
 
-void UCustomGameInstance::ShowOptionMenu()
+void UCustomGameInstance::ShowOptionMenu_Implementation()
 {
 	if (!CreateOptionMenu())
 		return;
@@ -105,7 +115,6 @@ void UCustomGameInstance::RequestHostGame()
 bool UCustomGameInstance::CreateMainMenu()
 {
 	if(MainMenu)
-		if (MainMenu->GetIsVisible())
 			return true;
 
 	if(!GetWorld())
@@ -120,11 +129,14 @@ bool UCustomGameInstance::CreateMainMenu()
 	if (MainMenuClass)
 		MainMenu = CreateWidget<UMainMenuWidget>(PC, MainMenuClass);
 
-	if (MainMenu)
-		return true;
-
-	UE_LOG(LogSlate, Error, TEXT("CreateWidget Failed"));
+	if (!MainMenu)
+	{
+		UE_LOG(LogSlate, Error, TEXT("CreateWidget Failed"));
 		return false;
+	}
+	MainMenu->AddToViewport(0);
+	return true;
+	
 }
 
 bool UCustomGameInstance::CreateHostMenu()
@@ -187,7 +199,7 @@ void UCustomGameInstance::DestroySessionAndLeaveGame()
 {
 }
 
-void UCustomGameInstance::ShowLoadingScreen()
+void UCustomGameInstance::ShowLoadingScreen_Implementation()
 {
 	ULocalPlayer* const Player = GetFirstGamePlayer();
 	//if(Player)

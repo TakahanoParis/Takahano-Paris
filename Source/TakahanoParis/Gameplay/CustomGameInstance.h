@@ -91,36 +91,35 @@ public:
 	* @brief ShowMainMenu Function
 	* Shows the main menu, for local Player controller
 	*/
-	UFUNCTION()
-		virtual void ShowMainMenu();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+		void ShowMainMenu();
 
 	/**
-	 * @brief ShowMainMenu Function
-	 * Shows the main menu, for local Player controller
-	 */
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Show Main Menu"))
-	void ShowMainMenu_BP() { ShowMainMenu(); }
-
+	* @brief ShowMainMenu Function
+	* Shows the main menu, for local Player controller
+	*/
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+		void HideMainMenu();
 
 	/**
 	* @brief ShowHostMenu Function
 	* Shows the Host menu, for local Player controller
 	*/
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		virtual void ShowHostMenu();
 
 	/**
 	* @brief ShowServerMenu Function
 	* Shows the Host menu, for local Player controller
 	*/
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		virtual void ShowServerMenu();
 
 	/**
 	* @brief ShowOptionMenu Function
 	* Shows the Host menu, for local Player controller
 	*/
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		virtual void ShowOptionMenu();
 
 	/**
@@ -189,10 +188,10 @@ protected:
 		virtual bool CreateOptionMenu();
 
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class UMainMenuWidget * MainMenu;
 	
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class UOptionMenuWidget * OptionMenu;
 
 
@@ -241,7 +240,7 @@ public:
 	 * Shows the LoadingScreen, for local Player controller
 	 * Use that to Hide some time consuming operations
 	 */
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		virtual void ShowLoadingScreen();
 
 	/**
