@@ -56,8 +56,8 @@ protected:
 		class UCameraComponent* FollowCamera;
 
 public:
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Camera")
-		void SetupCamera(ECameraTypeEnum ViewType);
+		
+	virtual void SetupCamera();
 
 protected:
 

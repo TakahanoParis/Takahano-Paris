@@ -9,6 +9,8 @@
 #include "StreamingPauseRendering.h"
 #include "CustomGameInstance.generated.h"
 
+class UOptionMenuWidget;
+class UMainMenuWidget;
 
 USTRUCT(Blueprintable)
 struct FServerSettings
@@ -197,11 +199,11 @@ protected:
 
 	/**	Class to use for creating a Main menu - allows of using a class defined in Blueprint */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-		TSubclassOf<class UMainMenuWidget> MainMenuClass;
+		TSubclassOf<UMainMenuWidget> MainMenuClass;
 
 	/**	Class to use for creating a Option menu - allows of using a class defined in Blueprint */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-		TSubclassOf<class UOptionMenuWidget> OptionMenuClass;
+		TSubclassOf<UOptionMenuWidget> OptionMenuClass;
 	
 	
 private:

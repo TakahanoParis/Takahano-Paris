@@ -9,6 +9,7 @@ public class TakahanoParisEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 
-		ExtraModuleNames.AddRange( new string[] { "TakahanoParis" } );
-	}
+        ExtraModuleNames.AddRange(new string[] { "TakahanoParis"});
+
+    }
 }

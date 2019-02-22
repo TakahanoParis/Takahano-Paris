@@ -13,6 +13,44 @@
 				"AIModule",
 				"Slate"
 			]
+		},
+		{
+			"Name": "TP_TopDown",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule"
+			]
+		},
+		{
+			"Name": "TP_ThirdPerson",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule"
+			]
+		}
+		,
+		{
+			"Name": "TP_SideScroller",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule"
+			]
+		}
+		,		
+		{
+			"Name": "TP_UserInterface",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"Slate"
+			]
 		}
 	],
 	"Plugins": [
