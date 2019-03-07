@@ -4,9 +4,9 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameMapsSettings.h"
-#include "MainMenuWidget.h"
+#include "UserInterface/MainMenuWidget.h"
 #include "Gameplay/CustomGameState.h"
-#include "OptionMenuWidget.h"
+#include "UserInterface/OptionMenuWidget.h"
 
 
 UCustomGameInstance::UCustomGameInstance(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)

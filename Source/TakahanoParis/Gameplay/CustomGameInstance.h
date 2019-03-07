@@ -55,34 +55,6 @@ public :
 	UCustomGameInstance(const FObjectInitializer& ObjectInitializer);
 
 
-protected:
-
-	/**
-	 *	@brief HeroClasses Properties
- 	 *	List the heroes implemented in this version of the game
-	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Heros")
-		TArray<TSubclassOf<class AHero>> HeroClasses;
-
-
-public:
-
-	/**
-	 *	@brief HeroClasses Properties
-	 *	allow accessing the List of heroes implemented in this version of the game
-	 */
-	UFUNCTION()
-		FORCEINLINE TArray<TSubclassOf<class AHero>> GetAllHeroes() const { return HeroClasses; }
-
-	/**
-	 *	@brief HeroClasses Properties
-	 *	allow accessing the List of heroes implemented in this version of the game
-	 *	@note for Bluerint use, do not call in C++
-	 */
-	UFUNCTION(BlueprintPure, Category = "Heroes", meta = (DisplayName = "Get all Implemented Heroes"))
-		FORCEINLINE TArray<TSubclassOf<class AHero>> GetAllHeroes_BP() const { return GetAllHeroes(); }
-
-
 
 public:
 
@@ -108,21 +80,21 @@ public:
 	* Shows the Host menu, for local Player controller
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		virtual void ShowHostMenu();
+		void ShowHostMenu();
 
 	/**
 	* @brief ShowServerMenu Function
 	* Shows the Host menu, for local Player controller
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		virtual void ShowServerMenu();
+		void ShowServerMenu();
 
 	/**
 	* @brief ShowOptionMenu Function
 	* Shows the Host menu, for local Player controller
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		virtual void ShowOptionMenu();
+		void ShowOptionMenu();
 
 	/**
 	* @brief ShowQuitGameConfirmationMessage Function
@@ -243,7 +215,7 @@ public:
 	 * Use that to Hide some time consuming operations
 	 */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		virtual void ShowLoadingScreen();
+		void ShowLoadingScreen();
 
 	/**
 	* @brief ShowPleaseWaitMessage Function

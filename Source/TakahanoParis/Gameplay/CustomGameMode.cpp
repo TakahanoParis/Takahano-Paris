@@ -118,7 +118,7 @@ void ACustomGameMode::RestartGameLevel()
 	
 }
 
-void ACustomGameMode::SetGameOver(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> &GameOverReason)
+void ACustomGameMode::SetGameOver(FString &GameOverMessage, const EGameOverEnum &GameOverReason)
 {
 	PlayState = EPlayStateEnum::PSE_GameOver;
 	GameOverMessage = TEXT("Game Over");

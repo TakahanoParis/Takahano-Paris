@@ -8,15 +8,13 @@ public class TP_SideScroller : ModuleRules
 	{
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "StreamingPauseRendering", "AIModule" });
+        PublicDependencyModuleNames.AddRange(new string[] { "TakahanoParis" }); // BaseCode
+        PrivateDependencyModuleNames.AddRange(new string[] { "TakahanoParis" }); 
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore" });
 
-        PublicDependencyModuleNames.AddRange(new string[] { "TakahanoParis" }); // Third Person Gameplay
-
+        
         PublicDependencyModuleNames.AddRange(new string[] { "OnlineSubsystem", "OnlineSubsystemUtils" }); // multiplayer
         //PublicDependencyModuleNames.AddRange(new string[] { "MediaAssets"}); // video support
-
-        // Uncomment if you are using Slate UI
-        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
         // Uncomment if you are using online features
         PrivateDependencyModuleNames.Add("OnlineSubsystem");

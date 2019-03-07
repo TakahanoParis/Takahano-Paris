@@ -8,7 +8,7 @@ public class TP_TopDown : ModuleRules
 	{
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "StreamingPauseRendering", "AIModule" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "AIModule" });
 
         PublicDependencyModuleNames.AddRange(new string[] { "TakahanoParis" }); // Third Person Gameplay
 
@@ -16,7 +16,7 @@ public class TP_TopDown : ModuleRules
         //PublicDependencyModuleNames.AddRange(new string[] { "MediaAssets"}); // video support
 
         // Uncomment if you are using Slate UI
-        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+        //PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
         // Uncomment if you are using online features
         PrivateDependencyModuleNames.Add("OnlineSubsystem");

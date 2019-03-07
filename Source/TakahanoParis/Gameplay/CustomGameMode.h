@@ -94,7 +94,7 @@ public:
 	 *	@note For Blueprints
 	 */
 	UFUNCTION()
-		virtual void SetGameOver(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> &GameOverReason);
+		virtual void SetGameOver(FString &GameOverMessage, const EGameOverEnum &GameOverReason);
 
 	/**
 	 *	@fn SetGameOver
@@ -102,7 +102,7 @@ public:
 	 *	@note For Blueprints
 	 */
 	UFUNCTION(BlueprintCallable, Category = "PlayState", meta = (DisplayName = "Game Over"))
-		void SetGameOver_BP(FString &GameOverMessage, const TEnumAsByte<EGameOverEnum> GameOverReason){ SetGameOver(GameOverMessage,GameOverReason); }
+		void SetGameOver_BP(FString &GameOverMessage, const EGameOverEnum GameOverReason){ SetGameOver(GameOverMessage,GameOverReason); }
 
 
 	/**
