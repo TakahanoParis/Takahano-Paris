@@ -12,7 +12,7 @@ public class TP_SideScroller : ModuleRules
         PrivateDependencyModuleNames.AddRange(new string[] { "TakahanoParis" }); 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore" });
 
-        
+        PublicDependencyModuleNames.Add("Paper2D");
         PublicDependencyModuleNames.AddRange(new string[] { "OnlineSubsystem", "OnlineSubsystemUtils" }); // multiplayer
         //PublicDependencyModuleNames.AddRange(new string[] { "MediaAssets"}); // video support
 

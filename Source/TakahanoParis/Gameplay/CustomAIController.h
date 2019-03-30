@@ -130,16 +130,9 @@ public:
 	 *	@brief Gets the nex point to reach on the spline
 	 *	@return the nex point to reach on patrol
 	 */
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "AI", meta = (DisplayName = "Get Next point on Patrol"))
 		 FVector GetNextPointOnSpline(const float radius);
 
-	/**
- *	@fn GetNextPointOnSpline()
- *	@brief Gets the nex point to reach on the spline
- *	@return the nex point to reach on patrol
- */
-	UFUNCTION(BlueprintCallable, Category = "AI", meta = (DisplayName = "Get Next point on Patrol"))
-		FVector GetNextPointOnSpline_BP(const float radius) { return GetNextPointOnSpline(radius); }
 
 protected:
 	/**

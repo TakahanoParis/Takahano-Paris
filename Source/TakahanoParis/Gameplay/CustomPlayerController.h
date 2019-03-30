@@ -150,7 +150,7 @@ private:
 	 *	@brief the character originally controlled bty this pawn
 	 */
 	UPROPERTY(Replicated)
-		class ABaseCharacter * InitialCharacter;
+		class ACharacter * InitialCharacter;
 
 public:
 

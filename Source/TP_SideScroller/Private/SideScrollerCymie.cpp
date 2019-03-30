@@ -23,3 +23,15 @@ void ASideScrollerCymie::Run()
 		const auto aPC2= Cast<ACustomPlayerState>(PlayerState);
 		//Super::Run();
 }
+
+bool ASideScrollerCymie::SetCharacter()
+{
+	bool IsValid = false;
+	const auto cymie = UTakahanoParisStatics::GetTakahanoParisCymie(IsValid);
+	if (IsValid)
+	{
+		UTakahanoParisStatics::SetTakahanoParisCharacter(cymie, GetMesh());
+		return true;
+	}
+	return false;
+}

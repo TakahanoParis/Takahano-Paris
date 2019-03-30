@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "SideScrollerCharacter.h"
-#include "Gameplay/CustomGameMode.h"
 #include "SideScrollerHero.generated.h"
 
 

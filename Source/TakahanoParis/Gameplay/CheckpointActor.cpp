@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CheckpointActor.h"
-#include "Actors/Characters/Hero.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/GameModeBase.h"
 #include "Gameplay/CustomGameState.h"
@@ -18,15 +18,17 @@ void ACheckpointActor::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActo
 {
 	//UE_LOG(LogTemp, Warning, TEXT("%s overlapped by %s begin"), *OverlappedActor->GetName(), *OtherActor->GetName());
 	ActorsInside.Add(OtherActor);
-	const auto hero = Cast<AHero>(OtherActor);
-	if(hero)
-	{
-		if(!PlayerPassed.Contains(hero->GetController()))// we assume that the controller will always be valid
-		{
-			PlayerPassed.Add(Cast<APlayerController>(hero->GetController()));
-			OnCheckpointEntered.Broadcast();
-		}
+	const auto hero = Cast<ACharacter>(OtherActor);
+	if (!hero)
+		return;
 
+	auto APC = Cast<APlayerController>(hero->GetController());
+	if (!APC)
+		return;
+	if(!PlayerPassed.Contains(APC))
+	{
+		PlayerPassed.Add(APC);
+		OnCheckpointEntered.Broadcast();
 	}
 }
 

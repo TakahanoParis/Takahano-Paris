@@ -33,6 +33,10 @@ public:
 	virtual void OnCharacterIsClose_Implementation(ACharacter * PlayerPawn);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Climbable")
+		void OnCharacterLeft(ACharacter * PlayerPawn);
+	virtual void OnCharacterLeft_Implementation(ACharacter * PlayerPawn);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Climbable")
 		void OnCharacterClimbed(ACharacter * PlayerPawn);
 	virtual void OnCharacterClimbed_Implementation(ACharacter * PlayerPawn);
 	

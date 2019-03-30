@@ -24,7 +24,8 @@ public:
 		float RunDrain;
 
 	float GetRunStaminaDrain() {return RunDrain;}
-	
-	
-	
+
+
+protected:
+	bool SetCharacter() override;
 };

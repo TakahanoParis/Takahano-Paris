@@ -6,7 +6,6 @@
 #include "Engine/World.h"
 #include "UObject/UObjectIterator.h"
 #include "Kismet/GameplayStatics.h"
-#include "Gameplay/CustomGameMode.h"
 #include "UnrealNetwork.h"
 #include "Gameplay/CustomGameState.h"
 #include "Actors/Interfaces/TeamInterface.h"
@@ -15,6 +14,7 @@
 #include "CustomAIController.h"
 #include "CustomPlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TakahanoParisStatics.h"
 //#include "Components/PrimitiveComponent.h"
 
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super (ObjectInitializer)
@@ -141,10 +141,8 @@ void ACustomPlayerController::ReceivedPlayer()
 void ACustomPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	// Set up team ID
-	const auto aGM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (aGM)
-		ACustomPlayerController::Execute_I_Server_SetTeam(this, FTeam(aGM->GetDefaultPlayerTeamID()));
+	
+	ACustomPlayerController::Execute_I_Server_SetTeam(this, FTeam(UTakahanoParisStatics::GetDefaultPlayerTeamID(this)));
 }
 
 

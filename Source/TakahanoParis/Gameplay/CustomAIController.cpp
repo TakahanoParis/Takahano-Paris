@@ -14,12 +14,11 @@
 #include "CustomPlayerState.h"
 #include "CustomPlayerController.h"
 #include "Kismet/GameplayStatics.h"
-#include "Gameplay/CustomGameMode.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Actors/Characters/AICharacter.h"
 #include "BrainComponent.h"
-#include "Actors/Characters/Hero.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TakahanoParisStatics.h"
 
 
 ACustomAIController::ACustomAIController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -59,12 +58,7 @@ void ACustomAIController::BeginPlay()
 	// call super begin play to have this function to work properly
 	Super::BeginPlay();
 
-	// Set up team ID
-	if (!GetWorld())
-		return;
-	const auto aGM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (aGM)
-		ACustomAIController::Execute_I_Server_SetTeam(this, FTeam(aGM->GetDefaultAITeamID()));
+	ACustomAIController::Execute_I_Server_SetTeam(this, FTeam(UTakahanoParisStatics::GetDefaultAITeamID(this)));
 
 	// Setup blackboard
 	const bool IsBlackboardValid =  UseBlackboard(AIBlackboard, Blackboard);

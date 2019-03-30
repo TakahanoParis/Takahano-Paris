@@ -6,8 +6,9 @@
 #include "UnrealNetwork.h"
 #include "TakahanoParis.h"
 #include "Kismet/GameplayStatics.h"
-#include "InteractInterface.h"
-#include "HackInterface.h"
+#include "Actors/Interfaces/InteractInterface.h"
+#include "Actors/Interfaces/HackInterface.h"
+#include "TakahanoParisStatics.h"
 
 ASideScrollerJulia::ASideScrollerJulia() : Super()
 {
@@ -120,14 +121,26 @@ bool ASideScrollerJulia::Server_Hack_Validate(AActor * target)
 
 void ASideScrollerJulia::Server_Hack_Implementation (AActor * target)
 {
-	const auto AsInterface = Cast<IHackInterface>(target);
-	if (!AsInterface)
-		return;
-	bIsUsingObject = true;
-	UsedActor = target;
-	if (GetController())
-		AsInterface->I_Server_Hack(GetController());
+	if (UTakahanoParisStatics::CallHackInterfaceOnActor(target, GetController()))
+	{
+		bIsUsingObject = true;
+		UsedActor = target;
+	}
 }
+
+bool ASideScrollerJulia::SetCharacter()
+{
+	bool IsValid = false;
+	const auto julia = UTakahanoParisStatics::GetTakahanoParisJulia(IsValid);
+	if (IsValid)
+	{
+		UTakahanoParisStatics::SetTakahanoParisCharacter(julia, GetMesh());
+		return true;
+	}
+	return false;
+}
+
+
 
 void ASideScrollerJulia::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {

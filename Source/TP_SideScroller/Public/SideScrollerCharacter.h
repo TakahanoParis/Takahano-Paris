@@ -10,6 +10,9 @@
 #include "Actors/Interfaces/SaveableActorInterface.h"
 #include "SideScrollerCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartClimbAnimDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClimbAnimFinishedDelegate, const AActor*, ClimbTarget);
+
 UCLASS(config=Game)
 class ASideScrollerCharacter : public ACharacter, public ICharacterTeamInterface, public ICharacterLifeInterface, public ISaveableActorInterface, public IPlayerCharacterInterface
 {
@@ -45,10 +48,14 @@ protected:
 public:
 	ASideScrollerCharacter();
 
+	virtual void OnConstruction(const FTransform& Transform) override;
+
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+	// Jump interaction			-----------------------------------------------------------------
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_bCanJump, Category = Character)
@@ -67,29 +74,38 @@ private:
 protected:
 	void I_GetReadyByRef(bool * IsReadyRef) override { IsReadyRef = &bIsReady; }
 	
-	
-	// Climbable interaction ----------------------------------------
+	// Climbable interaction	-----------------------------------------------------------------
 private:
 
 	UPROPERTY(Transient, Replicated)
 		bool bCanClimb;
 
-	UPROPERTY(Transient, Replicated)
-		AActor * ClimbableActor;
+
+	/** Allow the character to climb by calling the function on a valid ClimbableObject */
+	UFUNCTION(Server, Reliable, WithValidation)
+		void Server_SetCanClimb(bool bNewCanClimb, AActor* NewClimbableActor);
 
 public:
 	UFUNCTION(BlueprintPure, Category = "Climb")
 		bool GetCanClimb() const { return bCanClimb; }
 
+
 	/** Allow the character to climb by calling the function on a valid ClimbableObject */
-	UFUNCTION(Server, Reliable, WithValidation, BlueprintCallable, Category = "Climb")
+	UFUNCTION(BlueprintCallable, Category = "Climb")
 		void SetCanClimb(bool bNewCanClimb, AActor* NewClimbableActor);
+
+	UFUNCTION(BlueprintPure, Category = "Climb")
+		AActor * GetClimbableActor() const { return ClimbableActor; };
+
 
 protected:
 
+	UPROPERTY(Transient, Replicated)
+		AActor * ClimbableActor;
+
 	/** Used for Displaying a message to the player about the fact he can climb something */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		void OnCanClimb(const AActor * Climbable);
+		void OnCanClimb(AActor * Climbable);
 
 	/**
 	*	Used for Doing the actual climbing
@@ -98,4 +114,37 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		bool Climb(const AActor * Climbable);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+		void FinishClimb(const AActor* ClimbTarget);
+
+public :
+	UPROPERTY(BlueprintAssignable, BlueprintReadWrite, VisibleAnywhere)
+		FOnClimbAnimFinishedDelegate OnClimbAnimFinished;
+
+
+	UFUNCTION(BlueprintCallable)
+		void BroadCastFinishClimb();
+
+	UPROPERTY(BlueprintAssignable, BlueprintReadWrite, VisibleAnywhere)
+		FOnStartClimbAnimDelegate StartClimbAnim;
+
+	// Limit Axis Movement		-----------------------------------------------------------------
+private :
+
+	UPROPERTY(Replicated, Transient)
+		bool bCanMoveY;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void Server_SetCanMoveY(bool bNewCanMoveY);
+
+public :
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+		void SetCanMoveY(bool bNewCanMoveY);
+
+
+	TArray<AActor*> InteractableActors;
+
+protected:
+	TArray<AActor*>* I_GetAllInteractableArray() override {	return &InteractableActors;}
+	bool SetCharacter() override;
 };

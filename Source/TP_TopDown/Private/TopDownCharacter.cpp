@@ -11,6 +11,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
+#include "Gameplay/CustomPlayerController.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Components/SkeletalMeshComponent.h"
 
 ATopDownCharacter::ATopDownCharacter()
 {
@@ -56,6 +59,9 @@ ATopDownCharacter::ATopDownCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, - GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
+	GetMesh()->SetRelativeRotationExact(FRotator(0.f, -90.f, 0.f));
 }
 
 void ATopDownCharacter::Tick(float DeltaSeconds)
@@ -85,11 +91,12 @@ void ATopDownCharacter::SetupPlayerInputComponent(UInputComponent * PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	//PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ATopDownCharacter::Run);
 	//PlayerInputComponent->BindAction("Run", IE_Released, this, &ATopDownCharacter::StopRunning);
-
+	PlayerInputComponent->BindAction("SetTarget", IE_Pressed, this, &ATopDownCharacter::MoveToCursor);
+	
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ATopDownCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ATopDownCharacter::MoveRight);
-	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &ATopDownCharacter::Use);
+	//PlayerInputComponent->BindAction("Use", IE_Pressed, this, &ATopDownCharacter::Use);
 }
 
 
@@ -113,9 +120,19 @@ void ATopDownCharacter::MoveRight(float Value)
 	}
 }
 
-void ATopDownCharacter::Use()
+void ATopDownCharacter::Use_Implementation()
 {
-	//SetVisibleInteractableActors();
-	Use_BP();
+
 }
+
+void ATopDownCharacter::MoveToCursor()
+{
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), CursorToWorld->GetComponentToWorld().GetLocation());
+}
+
+bool ATopDownCharacter::SetCharacter()
+{
+	return false;
+}
+
 

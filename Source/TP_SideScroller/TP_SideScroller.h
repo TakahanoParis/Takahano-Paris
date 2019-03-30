@@ -2,7 +2,7 @@
 
 #include "ModuleManager.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(TP_SideScroller, All, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogTP_SideScroller, All, All);
 
 class FTP_SideScroller : public IModuleInterface
 {

@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Add default functionality here for any IGameModeInterface functions that are not pure virtual.
-AController *  IGameModeInterface::AddSplitScreenPlayer()
+AController *  IGameModeInterface::AddSplitScreenPlayer_Implementation()
 {
 	
 	const auto AsGM = Cast<AGameMode>(this);
@@ -23,7 +23,7 @@ AController *  IGameModeInterface::AddSplitScreenPlayer()
 	return UGameplayStatics::GetPlayerController(AsGM, 1);
 }
 
-ACharacter* IGameModeInterface::ReplaceCharacter(AController* InController, TSubclassOf<ACharacter> NewPawnClass)
+ACharacter* IGameModeInterface::ReplaceCharacter_Implementation(AController* InController, TSubclassOf<ACharacter> NewPawnClass)
 {
 	const auto AsGM = Cast<AGameMode>(this);
 	if (!AsGM)
@@ -45,3 +45,14 @@ ACharacter* IGameModeInterface::ReplaceCharacter(AController* InController, TSub
 	InController->Possess(PlayerNewPawn);
 	return PlayerNewPawn;
 }
+
+uint8 IGameModeInterface::GetDefaultPlayerTeamID_Implementation() const
+{
+	return 255;
+}
+
+uint8 IGameModeInterface::GetDefaultAITeamID_Implementation() const
+{
+	return 1;
+}
+

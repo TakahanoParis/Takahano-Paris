@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actors/Characters/BaseCharacter.h"
+#include "GameFramework/Character.h"
 #include "Gameplay/CustomAIController.h"
 #include "AICharacter.generated.h"
 
@@ -18,7 +18,7 @@ class UAIPerceptionComponent;
  *	@todo Use IGenericTeamAgentInterface or replace it all together by a Team Interface of my own
  */
 UCLASS()
-class TAKAHANOPARIS_API AAICharacter : public ABaseCharacter
+class TAKAHANOPARIS_API AAICharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -70,6 +70,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent , Category = "AI|Attack", meta = (DisplayName = "Attack"))
 		void Attack_BP(AActor * Target);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement")
+		void Run();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement")
+		void StopRunning();
 
 protected:
 

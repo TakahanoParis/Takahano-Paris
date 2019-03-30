@@ -25,10 +25,12 @@ public:
 
 
 	/** @brief is the game should be two players side by side ? */
-	UPROPERTY()
-		bool bIsSplitscreen;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Multiplayer)
+		bool bIsSplitscreen = true;
 
 	UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+
+	virtual void BeginPlay() override;
 
 };
 

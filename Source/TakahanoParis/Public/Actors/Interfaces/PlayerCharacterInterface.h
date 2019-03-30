@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "TakahanoParisStatics.h"
 #include "PlayerCharacterInterface.generated.h"
+
 
 
 class AActor;
@@ -59,7 +61,28 @@ private:
 protected:
 		virtual void I_Server_SetCanJump_Implementation(bool NewCanJump);
 
+		// Interact interface ---------------------------------------------------
+
+		/** the most important to implement, the rest should work then */
+		virtual TArray<AActor *> * I_GetAllInteractableArray() = 0;
 
 
+		UFUNCTION(BlueprintCallable, Category = "Interactable", meta = (DisplayName = "Get Closest Interactable"))
+			virtual AActor * I_GetClosestInteractableActor(float &Distance);
 
+
+		UFUNCTION(BlueprintCallable, Category = "Interactable", meta = (DisplayName = "Get Visible Interactables"))
+			virtual TArray<AActor *>  I_GetVisibleInteractableActors();
+
+		UFUNCTION(BlueprintCallable, Category = "Interactable", meta = (DisplayName = "Get Closest Visible Interactable"))
+			virtual AActor * I_GetClosestVisibleInteractableActor(float &Distance);
+
+		UFUNCTION(BlueprintCallable, Category = "Interactable", meta = (DisplayName = "Set All Interactables"), meta = (WorldContext = "WorldContextObject"))
+			virtual void I_SetAllInteractableActors(const UObject* WorldContextObject);
+
+
+		// Character Setup ---------------------------------------------------
+		UFUNCTION(BlueprintCallable, Category = "CharacterSetup", meta = (DisplayName = "Set Character"))
+			virtual bool SetCharacter() = 0;
+		
 };

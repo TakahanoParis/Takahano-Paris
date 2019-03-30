@@ -3,6 +3,7 @@
 #include "AICharacter.h"
 #include "UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "CustomCharacterMovementComponent.h"
 //#include "Perception/AIPerceptionComponent.h"
 
 
@@ -45,6 +46,22 @@ bool AAICharacter::Attack(AActor* Target)
 		return true;
 	}
 	return false;
+}
+
+void AAICharacter::Run_Implementation()
+{
+	UCustomCharacterMovementComponent *  CharacterMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	if (!CharacterMovementComponent)
+		return;
+	CharacterMovementComponent->bIsRunning = true;
+}
+
+void AAICharacter::StopRunning_Implementation()
+{
+	UCustomCharacterMovementComponent *  CharacterMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	if (!CharacterMovementComponent)
+		return;
+	CharacterMovementComponent->bIsRunning = false;
 }
 
 void AAICharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const

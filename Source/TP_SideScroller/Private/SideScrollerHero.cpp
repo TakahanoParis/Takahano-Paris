@@ -9,15 +9,15 @@
 #include "Actors/Interfaces/InteractInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gameplay/CustomPlayerState.h"
+#include "TP_SideScroller.h"
 
 
 ASideScrollerHero::ASideScrollerHero() : Super()
 {
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset (to avoid direct content references in C++)
-
-	// Do not fall
-	GetCharacterMovement()->bCanWalkOffLedges = false;
+	GetCharacterMovement()->bCanWalkOffLedges = true;
+	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
 
 	// Move freely
 	bUseControllerRotationYaw = false;
@@ -39,7 +39,10 @@ void ASideScrollerHero::Tick(float DeltaSeconds)
 void ASideScrollerHero::Use()
 {
 	SetVisibleInteractableActors();
-	Use_BP();
+	UE_LOG(LogTP_SideScroller, Display, TEXT("%s Use"), *GetName());
+	/** Interact with climbable */
+	if (GetCanClimb() && ClimbableActor)
+		Climb(ClimbableActor);
 }
 
 void ASideScrollerHero::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)

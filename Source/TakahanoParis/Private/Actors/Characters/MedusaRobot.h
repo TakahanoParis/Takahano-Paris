@@ -28,5 +28,4 @@ public :
 		void SetAIEnable_BP(bool bEnable = false) { SetAIEnable(bEnable); }
 
 
-	virtual bool CanRun() override;
 };

@@ -11,3 +11,8 @@ void IHackInterface::I_Server_Hack_Implementation(AController* User)
 {
 	I_Hack(User);
 }
+
+void IHackInterface::I_TryHack_Implementation(AController* User)
+{
+	I_Server_Hack(User);
+}

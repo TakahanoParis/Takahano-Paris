@@ -23,8 +23,3 @@ void AMedusaRobot::SetAIEnable(bool bEnable)
 }
 
 
-
-bool AMedusaRobot::CanRun()
-{
-	return true;
-}

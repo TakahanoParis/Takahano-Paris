@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "GenericTeamAgentInterface.h"
+#include "Gameplay/CustomPlayerState.h"
 
 FTeam ICharacterTeamInterface::I_GetTeam() const
 {

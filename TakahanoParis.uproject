@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"Slate"
+				"Slate",
+				"CoreUObject"
 			]
 		},
 		{
@@ -19,8 +20,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine",
-				"AIModule"
+				"Engine"
 			]
 		},
 		{
@@ -31,8 +31,7 @@
 				"Engine",
 				"AIModule"
 			]
-		}
-		,
+		},
 		{
 			"Name": "TP_SideScroller",
 			"Type": "Runtime",
@@ -40,16 +39,6 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule"
-			]
-		}
-		,		
-		{
-			"Name": "TP_UserInterface",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine",
-				"Slate"
 			]
 		}
 	],
@@ -62,6 +51,11 @@
 			"Name": "DialoguePlugin",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/847aa65dc3024a37ae83ed89307524bd"
+		},
+		{
+			"Name": "MixamoAnimationRetargeting",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/7d332d8c59f743f4a068710ab88599f6"
 		}
 	]
 }

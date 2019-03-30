@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "PlayerCharacterInterface.h"
 #include "TopDownCharacter.generated.h"
 
-UCLASS(Blueprintable)
-class ATopDownCharacter : public ACharacter
+UCLASS(Abstract)
+class ATopDownCharacter : public ACharacter, public IPlayerCharacterInterface
 {
 	GENERATED_BODY()
 
@@ -57,14 +58,27 @@ public:
 	*	@fn Use
 	*	@brief thw use action called by keyboard or gamepad action
 	*/
-	UFUNCTION()
-		virtual void Use();
+	UFUNCTION(BlueprintNativeEvent, Category = "Interactable", meta = (DisplayName = "Use"))
+		void Use();
 
 	/**
-	*	@fn Use_BP
-	*	@brief Use Blueprint Event
-	*/
-	UFUNCTION(BlueprintImplementableEvent, Category = "Interactable", meta = (DisplayName = "Use"))
-		void Use_BP();
+	 * @brief shows the cursor 
+	 */
+	UPROPERTY()
+		bool bMoveWithCursor = true;
+
+	UFUNCTION()
+		void MoveToCursor();
+
+private:
+	bool bIsReady;
+
+	mutable TArray<AActor*> Interactables;
+
+protected:
+
+	void I_GetReadyByRef(bool* IsReadyRef) override { IsReadyRef =  &bIsReady; }
+	TArray<AActor*>* I_GetAllInteractableArray() override { return &Interactables; }
+	bool SetCharacter() override;
 };
 

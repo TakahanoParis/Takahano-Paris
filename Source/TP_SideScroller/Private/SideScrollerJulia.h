@@ -59,7 +59,9 @@ protected:
 	UFUNCTION()
 		bool TryHack(AActor * target);
 
-		/**
+	bool SetCharacter() override;
+
+	/**
 	 *	@fn TryHack_BP()
 	 *	@brief Attempt to hack an actor ( must implement IHackInterface)
  	 *	@param target : the object you want to hack

@@ -25,7 +25,7 @@ class IHackInterface : public IInteractInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 
-protected:
+public:
 	/**
 	 *	@fn I_Hack()
 	 *	@brief function to Hack into an interact-able object
@@ -46,5 +46,9 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 		virtual void I_Server_Hack(AController * User);
 		virtual void I_Server_Hack_Implementation(AController * User);
-	
+
+
+		UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interact", meta = (DisplayName = "Use"))
+			void I_TryHack(AController * User);
+		virtual void I_TryHack_Implementation(AController* User);
 };
