@@ -5,6 +5,23 @@
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/CustomGameState.h"
 #include "GameModeInterface.h"
+#include "HackInterface.h"
+#include "ConstructorHelpers.h"
+#include "Animation/AnimBlueprintGeneratedClass.h"
+#include "Animation/AnimBlueprint.h"
+#include "TakahanoParisSingleton.h"
+#include "Components/SkeletalMeshComponent.h"
+
+
+bool FCharacterStruct::SetSkeletalMesh(USkeletalMeshComponent* Comp) const
+{
+	if (!Comp || !Mesh || !AnimInstance)
+		return false;
+	Comp->SetSkeletalMesh(Mesh);
+	Comp->SetAnimInstanceClass(AnimInstance);
+	return true;
+
+}
 
 
 bool UTakahanoParisStatics::EndGameToMainMenuMap(const UObject* WorldContextObject)
@@ -60,16 +77,88 @@ void UTakahanoParisStatics::LoadLastSave(const UObject* WorldContextObject)
 
 uint8 UTakahanoParisStatics::GetDefaultAITeamID(const UObject* WorldContextObject)
 {
-	const auto aGM = Cast<IGameModeInterface>(UGameplayStatics::GetGameMode(WorldContextObject));
+	const auto aGM = UGameplayStatics::GetGameMode(WorldContextObject);
 	if (aGM)
-		return  aGM->GetDefaultAITeamID();
+		return  IGameModeInterface::Execute_GetDefaultAITeamID(aGM);
 	return 1;	
 }
 
 uint8 UTakahanoParisStatics::GetDefaultPlayerTeamID(const UObject* WorldContextObject)
 {
-	const auto aGM = Cast<IGameModeInterface>(UGameplayStatics::GetGameMode(WorldContextObject));
+	const auto aGM = UGameplayStatics::GetGameMode(WorldContextObject);
 	if (aGM)
-		return  aGM->GetDefaultPlayerTeamID();
+		return  IGameModeInterface::Execute_GetDefaultPlayerTeamID(aGM);
 	return 255;
 }
+
+bool UTakahanoParisStatics::CallHackInterfaceOnActor(AActor * Target, class AController * Instigator)
+{
+	const auto AsInterface = Cast<IHackInterface>(Target);
+	if (!AsInterface)
+		return false;
+	if (Instigator)
+		IHackInterface::Execute_I_Server_Hack(Target, Instigator);
+	return true;
+}
+
+bool UTakahanoParisStatics::CallInteractInterfaceOnActor(AActor* Target, AController* Instigator)
+{
+	const auto AsInterface = Cast<IInteractInterface>(Target);
+	if (!AsInterface)
+		return false;
+	if (Instigator)
+		IHackInterface::Execute_I_Server_Use(Target, Instigator);
+	return true;
+}
+
+UTakahanoParisSingleton* UTakahanoParisStatics::GetTakahanoParisData(bool& DataIsValid)
+{
+	DataIsValid = false;
+	UTakahanoParisSingleton* DataInstance = Cast<UTakahanoParisSingleton>(GEngine->GameSingleton);
+	if (!DataInstance) return nullptr;
+	if (!DataInstance->IsValidLowLevel()) return nullptr;
+	DataIsValid = true;
+	return DataInstance;
+}
+
+FCharacterStruct UTakahanoParisStatics::GetTakahanoParisCymie(bool& IsValid)
+{
+	IsValid = false;
+	const auto Singleton = GetTakahanoParisData(IsValid);
+	if (!IsValid)
+		return FCharacterStruct();
+	return Singleton->Cymie;
+}
+
+FCharacterStruct UTakahanoParisStatics::GetTakahanoParisJulia(bool& IsValid)
+{
+	IsValid = false;
+	const auto Singleton = GetTakahanoParisData(IsValid);
+	if (!IsValid)
+		return FCharacterStruct();
+	return Singleton->Julia;
+}
+
+FCharacterStruct UTakahanoParisStatics::GetTakahanoParisCharacterByName(const FName& CharName, bool& IsValid)
+{
+	IsValid = false;
+	const auto Singleton = GetTakahanoParisData(IsValid);
+	if (!IsValid)
+		return FCharacterStruct();
+	IsValid = false;
+	for(auto it : Singleton->OtherCharacters)
+	{
+		if (it.CharaterName == CharName)
+		{
+			IsValid = true;
+			return it;
+		}
+	}
+	return FCharacterStruct();
+}
+
+void UTakahanoParisStatics::SetTakahanoParisCharacter(const FCharacterStruct& Char, USkeletalMeshComponent * Comp)
+{
+	Char.SetSkeletalMesh(Comp);
+}
+

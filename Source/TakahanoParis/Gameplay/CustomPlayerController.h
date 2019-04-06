@@ -88,18 +88,8 @@ public:
 	 * @param Interface :the interface you want to use
 	 * @return true if array is valid, false otherwise
 	 */
-	virtual bool GetVisibleActorsWithInterface(TArray<AActor*> &OutActors,const TSubclassOf<UInterface> Interface) const;
-
-	/**
-	 * @fn Get GetVisibleActorsInArray()
-	 * @brief Get the actors implementing interface in Zone
-	 * @param OutActors : an array containing valid scene actors
-	 * @param Interface :the interface you want to use
-	 * @return true if array is valid, false otherwise
-	 * @note for blueprints
-	 */
 	UFUNCTION(BlueprintCallable, Category = "Actors", meta = (DisplayName = "Get Visible Actors With Interface"))
-		virtual bool GetVisibleActorsWithInterface_BP(TArray<AActor*> &OutActors, const TSubclassOf<UInterface> Interface) const { return GetVisibleActorsWithInterface(OutActors, Interface); }
+	virtual bool GetVisibleActorsWithInterface(TArray<AActor*> &OutActors,const TSubclassOf<UInterface> Interface) const;
 
 
 	/**

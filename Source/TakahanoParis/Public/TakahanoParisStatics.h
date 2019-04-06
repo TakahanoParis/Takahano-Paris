@@ -4,8 +4,66 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Animation/AnimBlueprintGeneratedClass.h"
 #include "TakahanoParisStatics.generated.h"
+//#include "TakahanoParisSingleton.h"
 
+
+class UTakahanoParisStatics;
+class USkeletalMesh;
+class UAnimInstance;
+class UTakahanoParisSingleton;
+
+
+USTRUCT(BlueprintType, meta = (DisplayName= "Character Data"))
+struct FCharacterStruct
+{
+	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		USkeletalMesh * Mesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		UAnimBlueprintGeneratedClass * AnimInstance;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		FName CharaterName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		FName ExtendedName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		FText Description;
+
+	UPROPERTY()
+
+private:
+
+	bool bIsValid;
+
+public:
+	FCharacterStruct(FName NewName = TEXT("Name Not Invalid"), USkeletalMesh* NewMesh = nullptr,
+	                 UAnimBlueprintGeneratedClass* NewAnim = nullptr) : CharaterName(NewName), Mesh(NewMesh),
+	                                                                    AnimInstance(NewAnim)
+	{
+		bIsValid = (Mesh && AnimInstance);
+	}
+
+	bool SetSkeletalMesh(USkeletalMeshComponent * Comp) const;
+
+	bool IsValid()
+	{
+		bIsValid = (Mesh && AnimInstance);
+		return bIsValid;
+	}
+
+private:
+
+	friend UTakahanoParisSingleton;
+	friend UTakahanoParisStatics;
+};
 
 /**
 * @enum EPlayStateEnum represents the State of the Game
@@ -28,6 +86,7 @@ enum class EGameOverEnum : uint8
 	GOE_Defeat		UMETA(DisplayName = "Defeat"),
 	GOE_StopPlay	UMETA(DisplayName = "End Of Play")
 };
+
 
 
 /**
@@ -74,5 +133,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
 		static uint8 GetDefaultPlayerTeamID(const UObject * WorldContextObject);
 
+	/**	This is a way to call interface function for other modules	*/
+	UFUNCTION(BlueprintCallable)
+		static bool CallHackInterfaceOnActor(AActor * Target, class AController * Instigator);
 
+	/**	This is a way to call interface function for other modules	*/
+	UFUNCTION(BlueprintCallable)
+		static bool CallInteractInterfaceOnActor(AActor * Target, class AController * Instigator);
+
+	UFUNCTION(BlueprintPure, Category = "Takahano-Paris")
+		static UTakahanoParisSingleton* GetTakahanoParisData(bool &DataIsValid);
+
+	UFUNCTION(BlueprintPure, Category = "Takahano-Paris|Character")
+		static FCharacterStruct GetTakahanoParisCymie(bool &IsValid);
+
+	UFUNCTION(BlueprintPure, Category = "Takahano-Paris|Character")
+		static FCharacterStruct GetTakahanoParisJulia(bool &IsValid);
+
+	UFUNCTION(BlueprintPure, Category = "Takahano-Paris|Character")
+		static FCharacterStruct GetTakahanoParisCharacterByName(const FName &CharName, bool &IsValid);
+
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris|Character")
+		static void SetTakahanoParisCharacter(const FCharacterStruct &Char, USkeletalMeshComponent * Comp);
 };

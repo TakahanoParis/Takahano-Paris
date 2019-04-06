@@ -52,6 +52,7 @@ ASideScrollerCharacter::ASideScrollerCharacter()
 	GetCharacterMovement()->MaxFlySpeed = 600.f;
 	GetCharacterMovement()->bCanWalkOffLedges = true;
 	GetCharacterMovement()->bCanWalkOffLedgesWhenCrouching = true;
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset (to avoid direct content references in C++)
 

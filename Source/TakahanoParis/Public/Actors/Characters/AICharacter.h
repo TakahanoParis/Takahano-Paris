@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Gameplay/CustomAIController.h"
+#include "SaveableActorInterface.h"
+#include "LifeInterface.h"
+#include "CharacterTeamInterface.h"
 #include "AICharacter.generated.h"
+
 
 class UAIPerceptionComponent;
 
@@ -17,8 +21,8 @@ class UAIPerceptionComponent;
  *	@brief Base class for AI character
  *	@todo Use IGenericTeamAgentInterface or replace it all together by a Team Interface of my own
  */
-UCLASS()
-class TAKAHANOPARIS_API AAICharacter : public ACharacter
+UCLASS(ClassGroup = (Character), config = Game)
+class TAKAHANOPARIS_API AAICharacter : public ACharacter, public ICharacterTeamInterface, public ILifeInterface, public ISaveableActorInterface
 {
 	GENERATED_BODY()
 
@@ -44,31 +48,23 @@ public:
 	 *	@fn	GetAIController()
 	 *	@return The CustomAIController for this actor
 	 */
-	UFUNCTION()
+	UFUNCTION(BlueprintPure, Category = "AI", meta = (DisplayName = "Get Custom AI Controller"))
 		ACustomAIController * GetCustomAIController() const {return Cast<ACustomAIController>(GetController());}
 
-	/**
-	 *	@fn	GetAIController_BP()
-	 *	@return The CustomAIController for this actor
-	 *	@note For blueprints
-	 */
-	UFUNCTION(BlueprintPure, Category="AI", meta = (DisplayName = "Get Custom AI Controller"))
-		ACustomAIController * GetCustomAIController_BP() const {return GetCustomAIController();}
 
 	/**
 	 *	@fn	Attack()
 	 *	@brief Attack event for the Character
 	 */
-	UFUNCTION()
-	virtual bool Attack(AActor * Target);
+	UFUNCTION(BlueprintNativeEvent, Category = "AI|Attack", meta = (DisplayName = "Attack"))
+		void Attack(AActor * Target);
 
 	/**
-	 *	@fn	Attack()
-	 *	@brief Attack event for the Character
-	 *	@note For blueprints
-	 */
-	UFUNCTION(BlueprintImplementableEvent , Category = "AI|Attack", meta = (DisplayName = "Attack"))
-		void Attack_BP(AActor * Target);
+	*	@fn	StopAttack()
+	*	@brief Stop Attack event for the Character
+	*/
+	UFUNCTION(BlueprintNativeEvent, Category = "AI|Attack", meta = (DisplayName = "Stop Attack"))
+		void StopAttack(AActor * Target);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Movement")
 		void Run();
@@ -105,14 +101,19 @@ protected:
 
 public:
 
-	FORCEINLINE float GetRange() const { return AttackRange; }
-	FORCEINLINE float GetRate() const { return AttackRange; }
-
-	UFUNCTION(BlueprintPure, Category = "AI|Attack", meta = (DisplayName = "Get Attack Range") )
-		FORCEINLINE float GetRange_BP() const { return GetRange(); }
+	UFUNCTION(BlueprintPure, Category = "AI|Attack", meta = (DisplayName = "Get Attack Range"))
+		float GetRange() const { return AttackRange; }
 
 	UFUNCTION(BlueprintPure, Category = "AI|Attack", meta = (DisplayName = "Get Attack Rate"))
-		FORCEINLINE float GetRate_BP() const { return GetRate(); }
+		float GetRate() const { return AttackRange; }
 
+public:
+
+	float I_GetLifePoints() const override { return LifePoints; }
+	bool I_TakeDamage(const float& DamageAmount, AActor* Instigator) override;
+
+private:
+
+	float LifePoints;
 
 };

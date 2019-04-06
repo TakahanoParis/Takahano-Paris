@@ -133,7 +133,8 @@ void ACustomAIController::EndPatrol()
 FVector ACustomAIController::GetNextPointOnSpline(const float radius) 
 {
 	if (!PatrolPath)
-		return FVector();
+		return FVector(0.f);
+
 	FVector GoalLocation = PatrolPath->GetWorldLocationAlongSpline(PathDistanceDelta);
 	
 	if (GetPawn()->GetActorLocation().Equals(GoalLocation, radius))

@@ -9,9 +9,16 @@
 
 
 
-AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer) , AttackRate(1.f), AttackRange(100.f)
+AAICharacter::AAICharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(ACharacter::CharacterMovementComponentName)), AttackRate(1.f), AttackRange(100.f), LifePoints(100.f)
 {
 	AIControllerClass = ACustomAIController::StaticClass();
+
+	// Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->JumpZVelocity = 400.f;
+	GetCharacterMovement()->AirControl = 0.2f;
+
 }
 
 void AAICharacter::BeginPlay()
@@ -35,17 +42,27 @@ void AAICharacter::Tick(float DeltaSeconds)
 	}
 }
 
-bool AAICharacter::Attack(AActor* Target)
+void AAICharacter::Attack_Implementation(AActor* Target)
 {
 	//const auto aAIC = GetCustomAIController();
 	if (Target && AttackCoolDown <= 0)
 	{
 		AttackCoolDown = AttackRate;
 		UGameplayStatics::ApplyDamage(Target, AttackDamage, GetController(), this, UDamageType::StaticClass());
-		Attack_BP(Target);
-		return true;
 	}
-	return false;
+}
+
+
+void AAICharacter::StopAttack_Implementation(AActor* Target)
+{
+
+}
+
+
+bool AAICharacter::I_TakeDamage(const float& DamageAmount, AActor* Instigator)
+{
+	LifePoints -= DamageAmount;
+	return true;
 }
 
 void AAICharacter::Run_Implementation()
