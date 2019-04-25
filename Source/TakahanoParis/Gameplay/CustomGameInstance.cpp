@@ -7,6 +7,7 @@
 #include "UserInterface/MainMenuWidget.h"
 #include "Gameplay/CustomGameState.h"
 #include "UserInterface/OptionMenuWidget.h"
+#include "TakahanoParisStatics.h"
 
 
 UCustomGameInstance::UCustomGameInstance(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
@@ -36,7 +37,7 @@ UCustomGameInstance::UCustomGameInstance(const FObjectInitializer& ObjectInitial
 
 void UCustomGameInstance::ShowMainMenu_Implementation()
 {
-
+#if 0
 	if (!CreateMainMenu())
 	{
 		UE_LOG(LogSlate, Error, TEXT("Couldn't Create a Main Menu"));
@@ -44,18 +45,15 @@ void UCustomGameInstance::ShowMainMenu_Implementation()
 	}
 	APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
 	MainMenu->SetVisibility(ESlateVisibility::Visible);
-
+#endif
 }
 
 void UCustomGameInstance::HideMainMenu_Implementation()
 {
-	if(MainMenu)
-		MainMenu->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UCustomGameInstance::ShowHostMenu_Implementation()
 {
-	CreateHostMenu();
 	APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
 }
 
@@ -63,14 +61,12 @@ void UCustomGameInstance::ShowHostMenu_Implementation()
 
 void UCustomGameInstance::ShowServerMenu_Implementation()
 {
-	CreateServerMenu();
 	APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
 }
 
 void UCustomGameInstance::ShowOptionMenu_Implementation()
 {
-	if (!CreateOptionMenu())
-		return;
+	
 	//APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
 	//OptionMenu->AddToViewport(0);
 
@@ -110,63 +106,6 @@ void UCustomGameInstance::RequestHostGame()
 {
 	// For now just host with default Options
 	HostGame();
-}
-
-bool UCustomGameInstance::CreateMainMenu()
-{
-	if(MainMenu)
-			return true;
-
-	if(!GetWorld())
-		UE_LOG(LogLevel, Error, TEXT("GetWorld failed"));
-
-	APlayerController * PC = UGameplayStatics::GetPlayerController(GetWorld(),0);
-	if (!PC)
-	{
-		UE_LOG(LogSlate, Error, TEXT("No Valid Player Controller"));
-		return false;
-	}
-	if (MainMenuClass)
-		MainMenu = CreateWidget<UMainMenuWidget>(PC, MainMenuClass);
-
-	if (!MainMenu)
-	{
-		UE_LOG(LogSlate, Error, TEXT("CreateWidget Failed"));
-		return false;
-	}
-	MainMenu->AddToViewport(0);
-	return true;
-	
-}
-
-bool UCustomGameInstance::CreateHostMenu()
-{
-	return false;
-}
-
-
-bool UCustomGameInstance::CreateServerMenu()
-{
-	return false;
-}
-
-
-bool UCustomGameInstance::CreateOptionMenu()
-{
-	if (OptionMenu)
-		return true;
-
-	APlayerController * PC = UGameplayStatics::GetPlayerController(this, 0);
-	if (!PC)
-		return false;
-
-	if (OptionMenuClass)
-		OptionMenu = CreateWidget<UOptionMenuWidget>(PC, OptionMenuClass);
-
-	if (OptionMenu)
-		return true;
-
-	return false;
 }
 
 ///

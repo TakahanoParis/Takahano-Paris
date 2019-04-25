@@ -111,8 +111,8 @@ protected:
 	*	Used for Doing the actual climbing
 	*	@return false if it failed to climb
 	*/
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-		bool Climb(const AActor * Climbable);
+	UFUNCTION()
+		void Climb();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		void FinishClimb(const AActor* ClimbTarget);

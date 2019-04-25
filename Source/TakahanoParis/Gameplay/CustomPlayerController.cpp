@@ -44,6 +44,7 @@ void ACustomPlayerController::SetupInputComponent()
 	InputComponent->BindAxis("TurnRate", this, &ACustomPlayerController::TurnAtRate);
 	InputComponent->BindAxis("LookUp", this, &ACustomPlayerController::LookUp);
 	InputComponent->BindAxis("LookUpRate", this, &ACustomPlayerController::LookUpAtRate);
+	InputComponent->BindAction("Use", IE_Pressed, this, &ACustomPlayerController::Use);
 }
 
 void ACustomPlayerController::TurnAtRate(float Rate)
@@ -245,6 +246,11 @@ bool ACustomPlayerController::SetMainHUD(UMainHUDWidget* HUD)
 		HUDWidget = HUD;
 	}
 	return false;
+}
+
+void ACustomPlayerController::Use_Implementation()
+{
+
 }
 
 FTeam ACustomPlayerController::I_GetTeam() const

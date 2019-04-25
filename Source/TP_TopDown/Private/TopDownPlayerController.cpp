@@ -10,31 +10,69 @@ ATopDownPlayerController::ATopDownPlayerController()
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
+	bIsUsingGamepad = false;
+	bResetGamepadDetectionAfterNoInput = true;
+	GamepadTimeout = 5.f;
+
+	bool DataIsValid;
+	const auto Material = UTakahanoParisStatics::GetCursorToWorldMaterial(DataIsValid);
+	if(DataIsValid && Material)
+	{
+		CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
+		CursorToWorld->SetupAttachment(RootComponent);
+		CursorToWorld->SetDecalMaterial(Material);
+		CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
+		CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
+	}
+	// Create a decal in the world to show the cursor's location
+	
 }
 
 void ATopDownPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
+	if (bIsUsingGamepad)
+	{
+		bMoveToMouseCursor = false;
+		bShowMouseCursor = false;
+	}
+
 	// keep updating the destination every tick while desired
 	if (bMoveToMouseCursor)
 	{
 		MoveToMouseCursor();
 	}
+
+	if (IsLocalController() && bResetGamepadDetectionAfterNoInput && bIsUsingGamepad)
+	{
+		float now = GetWorld()->TimeSeconds;
+		if (now > LastGamepadInputTime + GamepadTimeout)
+		{
+			bIsUsingGamepad = false;
+		}
+	}
 }
 
-void ATopDownPlayerController::SetupInputComponent()
+void ATopDownPlayerController::
+SetupInputComponent()
 {
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("SetDestination", IE_Pressed, this, &ATopDownPlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &ATopDownPlayerController::OnSetDestinationReleased);
+	InputComponent->BindAction(UTakahanoParisStatics::Select, IE_Pressed, this, &ATopDownPlayerController::OnSetDestinationPressed);
+	InputComponent->BindAction(UTakahanoParisStatics::Select, IE_Released, this, &ATopDownPlayerController::OnSetDestinationReleased);
+	InputComponent->BindAction(UTakahanoParisStatics::PauseMenu, IE_Pressed, this, &ATopDownPlayerController::PauseMenu);
+}
 
-	// support touch devices 
-	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &ATopDownPlayerController::MoveToTouchLocation);
-	InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ATopDownPlayerController::MoveToTouchLocation);
-
+void ATopDownPlayerController::PauseMenu()
+{
+	static bool toggle = false;
+	if(toggle)
+		UTakahanoParisStatics::OpenPauseMenu(this, this);
+	else
+		UTakahanoParisStatics::ClosePauseMenu(this, this);
+	toggle = toggle ? false : true;
 }
 
 void ATopDownPlayerController::MoveToMouseCursor()
@@ -50,19 +88,6 @@ void ATopDownPlayerController::MoveToMouseCursor()
 		}
 }
 
-void ATopDownPlayerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	FVector2D ScreenSpaceLocation(Location);
-
-	// Trace to see what is under the touch location
-	FHitResult HitResult;
-	GetHitResultAtScreenPosition(ScreenSpaceLocation, CurrentClickTraceChannel, true, HitResult);
-	if (HitResult.bBlockingHit)
-	{
-		// We hit something, move there
-		SetNewMoveDestination(HitResult.ImpactPoint);
-	}
-}
 
 void ATopDownPlayerController::SetNewMoveDestination(const FVector DestLocation)
 {
@@ -90,3 +115,38 @@ void ATopDownPlayerController::OnSetDestinationReleased()
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;
 }
+
+bool ATopDownPlayerController::InputAxis(FKey Key, float Delta, float DeltaTime, int32 NumSamples, bool bGamepad)
+{
+	UpdateGamepad(bGamepad);
+	return Super::InputAxis(Key, Delta, DeltaTime, NumSamples, bGamepad);
+}
+
+bool ATopDownPlayerController::InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad)
+{
+	UpdateGamepad(bGamepad);
+	return Super::InputKey(Key, EventType, AmountDepressed, bGamepad);
+}
+
+void ATopDownPlayerController::UpdateGamepad(const bool &bGamepad) const
+{
+	bIsUsingGamepad = bGamepad;
+	if (bGamepad)
+		LastGamepadInputTime = GetWorld()->TimeSeconds;
+}
+
+void ATopDownPlayerController::SetCursorLocation()
+{
+	if (!CursorToWorld)
+		return;
+	
+	FHitResult TraceHitResult;
+	GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
+	const FVector Location = TraceHitResult.Location;
+	const FVector CursorFV = TraceHitResult.ImpactNormal;
+	const FRotator CursorR = CursorFV.Rotation();
+	CursorToWorld->SetWorldLocation(Location);
+	CursorToWorld->SetWorldRotation(CursorR);
+	CursorLocation = Location;
+}
+

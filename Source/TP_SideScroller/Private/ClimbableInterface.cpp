@@ -13,7 +13,7 @@ FVector IClimbableInterface::GetClimbTopTarget_Implementation() const
 
 void IClimbableInterface::OnCharacterIsClose_Implementation(ACharacter * PlayerPawn)
 {
-	const auto PlayerSCCharacter = Cast<ASideScrollerHero>(PlayerPawn);
+	const auto PlayerSCCharacter = Cast<ASideScrollerCharacter>(PlayerPawn);
 	const auto AsActor = Cast<AActor>(this);
 	if (!AsActor)
 		UE_LOG(LogTP_SideScroller, Error, TEXT("Casting Climbable Interface into AActor failed"));
@@ -23,7 +23,7 @@ void IClimbableInterface::OnCharacterIsClose_Implementation(ACharacter * PlayerP
 
 void IClimbableInterface::OnCharacterLeft_Implementation(ACharacter * PlayerPawn)
 {
-	const auto PlayerSCCharacter = Cast<ASideScrollerHero>(PlayerPawn);
+	const auto PlayerSCCharacter = Cast<ASideScrollerCharacter>(PlayerPawn);
 	PlayerSCCharacter->SetCanClimb(false, nullptr);
 }
 

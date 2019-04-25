@@ -15,6 +15,10 @@ class ATopDownCharacter : public ACharacter, public IPlayerCharacterInterface
 public:
 	ATopDownCharacter();
 
+	void OnConstruction(const FTransform& Transform) override;
+
+	void BeginPlay() override;
+
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -22,8 +26,7 @@ public:
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns CursorToWorld subobject **/
-	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
+
 
 	void SetupPlayerInputComponent(UInputComponent * PlayerInputComponent) override;
 
@@ -35,14 +38,6 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
-
-	/** A decal that projects to the cursor location. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-
-	class UDecalComponent* CursorToWorld;
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)
-		class UMaterial * DecalMaterial;
 
 
 protected:
@@ -67,13 +62,11 @@ public:
 	UPROPERTY()
 		bool bMoveWithCursor = true;
 
-	UFUNCTION()
-		void MoveToCursor();
-
 private:
 	bool bIsReady;
 
 	mutable TArray<AActor*> Interactables;
+
 
 protected:
 

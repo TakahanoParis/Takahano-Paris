@@ -47,8 +47,5 @@ protected:
 
 	virtual void BindDelegates() override;
 	
-
-private:
-	class UCustomGameInstance * GetCustomGameInstance()const;
 	
 };

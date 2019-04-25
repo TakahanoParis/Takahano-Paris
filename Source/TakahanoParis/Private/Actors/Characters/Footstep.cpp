@@ -85,8 +85,12 @@ FTraceHandle UFootstep::RequestTrace(USkeletalMeshComponent *Creator)
 
 void UFootstep::OnTraceCompleted(const FTraceHandle & Handle, FTraceDatum & Data)
 {
-	ensure(Handle == LastFootTrace);
-	UseTraceResults(Data);
+	if(Handle == LastFootTrace)
+	{
+		UseTraceResults(Data);
+		LastFootTrace._Data.FrameNumber = 0; // reset it
+	}
+	// Are we supposed to do this anyway ?
 	LastFootTrace._Data.FrameNumber = 0; // reset it
 }
 

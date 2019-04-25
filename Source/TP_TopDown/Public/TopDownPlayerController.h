@@ -18,19 +18,17 @@ protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
 
+
+
 	// Begin PlayerController interface
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
-	// End PlayerController interface
 
-	/** Resets HMD orientation in VR. */
-	void OnResetVR();
+	virtual void PauseMenu();
+	// End PlayerController interface
 
 	/** Navigate player to the current mouse cursor location. */
 	void MoveToMouseCursor();
-
-	/** Navigate player to the current touch location. */
-	void MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location);
 	
 	/** Navigate player to the given world location. */
 	void SetNewMoveDestination(const FVector DestLocation);
@@ -38,6 +36,56 @@ protected:
 	/** Input handlers for SetDestination action. */
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
+
+
+public :
+
+	UFUNCTION(BlueprintPure, Category = "Gamepad")
+		FORCEINLINE bool IsGamepadInput() const { return bIsUsingGamepad; }
+
+
+
+private:
+
+	UPROPERTY(Transient)
+		mutable bool bIsUsingGamepad;
+
+
+
+
+public :
+	bool InputAxis(FKey Key, float Delta, float DeltaTime, int32 NumSamples, bool bGamepad) override; 
+	bool InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad) override;
+
+protected:
+
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "Gamepad")
+		mutable float LastGamepadInputTime;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gamepad")
+		bool bResetGamepadDetectionAfterNoInput;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gamepad")
+	float GamepadTimeout;
+
+	/** Common logic needed in both `InputAxis()` and `InputKey()` */
+	void UpdateGamepad(const bool &bGamepad) const;
+
+
+
+private:
+	/** Returns CursorToWorld subobject **/
+	FORCEINLINE class UDecalComponent* GetCursorToWorld() { return CursorToWorld; }
+
+	void SetCursorLocation();
+
+	/** A decal that projects to the cursor location. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+		class UDecalComponent* CursorToWorld;
+
+	UPROPERTY(Transient)
+		mutable FVector CursorLocation;
+
 };
 
 

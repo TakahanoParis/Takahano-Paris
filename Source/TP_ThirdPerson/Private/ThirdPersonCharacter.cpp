@@ -52,18 +52,18 @@ void AThirdPersonCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &AThirdPersonCharacter::Run);
-	PlayerInputComponent->BindAction("Run", IE_Released, this, &AThirdPersonCharacter::StopRunning);
+	PlayerInputComponent->BindAction(UTakahanoParisStatics::Jump, IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(UTakahanoParisStatics::Jump, IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction(UTakahanoParisStatics::Sprint, IE_Pressed, this, &AThirdPersonCharacter::Run);
+	PlayerInputComponent->BindAction(UTakahanoParisStatics::Sprint, IE_Released, this, &AThirdPersonCharacter::StopRunning);
 
 	// Hero Abilities
 	//PlayerInputComponent->BindAction("Attack",			IE_Pressed, this, &AThirdPersonCharacter::Attack);
 	//PlayerInputComponent->BindAction("FirstAbility",	IE_Pressed, this, &AThirdPersonCharacter::Ability);
 
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &AThirdPersonCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AThirdPersonCharacter::MoveRight);
+	PlayerInputComponent->BindAxis(UTakahanoParisStatics::Forward, this, &AThirdPersonCharacter::MoveForward);
+	PlayerInputComponent->BindAxis(UTakahanoParisStatics::Right, this, &AThirdPersonCharacter::MoveRight);
 
 }
 

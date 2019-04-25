@@ -8,12 +8,12 @@
 #include "TakahanoParisStatics.generated.h"
 //#include "TakahanoParisSingleton.h"
 
-
+class UCustomGameInstance;
 class UTakahanoParisStatics;
 class USkeletalMesh;
 class UAnimInstance;
 class UTakahanoParisSingleton;
-
+class UUserWidget;
 
 USTRUCT(BlueprintType, meta = (DisplayName= "Character Data"))
 struct FCharacterStruct
@@ -37,7 +37,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		FText Description;
 
-	UPROPERTY()
 
 private:
 
@@ -97,6 +96,14 @@ class TAKAHANOPARIS_API UTakahanoParisStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
+
+	/**
+	*	@fn GetCustomGameInstance()
+	*	@brief Retrieve a pointer to the Game instance if it is a CustomGameInstance
+	*/
+	UFUNCTION(BlueprintPure, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
+		static UCustomGameInstance* GetCustomGameInstance(const UObject* WorldContextObject);
+
 	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext= "WorldContextObject"))
 		static bool EndGameToMainMenuMap(const UObject* WorldContextObject);
 
@@ -124,6 +131,58 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
 		static EPlayStateEnum SetGameOver(const UObject* WorldContextObject, FString &GameOverMessage, const EGameOverEnum &GameOverReason);
 
+	// Menus				-----------------------------------------------------------------------------------------
+
+
+
+	/**
+	* @brief OpenMainMenu()
+	* Spawns a main menu if necessary (none exists)
+	* @return  true if it created a menu or one ealready existed.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
+		static UUserWidget * OpenMainMenu(const UObject* WorldContextObject, APlayerController * Controller);
+
+	/**
+	* @brief CreateOptionMenu()
+	* Closes all instances of  Main Menus
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
+		static void CloseMainMenu(const UObject* WorldContextObject, APlayerController * Controller);
+
+
+	/**
+	* @brief OpenOptionMenu()
+	* Spawns an Option menu if necessary (none exists)
+	* @return  true if it created a menu or one ealready existed.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
+		static UUserWidget * OpenOptionMenu(const UObject* WorldContextObject, APlayerController * Controller);
+
+	/**
+	* @brief CreateOptionMenu Function
+	* Closes all instances of  Option Menus
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
+		static void CloseOptionMenu(const UObject* WorldContextObject, APlayerController * Controller);
+	
+	/**
+	*	@fn OpenPauseMenu
+	*	@brief Open the pause Menu during Gameplay
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
+		static UUserWidget * OpenPauseMenu(const UObject* WorldContextObject, APlayerController * Controller);
+
+	/**
+	*	@fn ClosePauseMenu
+	*	@brief Close all instances of Pause Menues
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
+		static void ClosePauseMenu(const UObject* WorldContextObject, APlayerController * Controller);
+
+
+
+
 	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris", meta = (WorldContext = "WorldContextObject"))
 		static void LoadLastSave(const UObject* WorldContextObject);
 
@@ -141,6 +200,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		static bool CallInteractInterfaceOnActor(AActor * Target, class AController * Instigator);
 
+	// Singleton			-----------------------------------------------------------------------------------------
+
 	UFUNCTION(BlueprintPure, Category = "Takahano-Paris")
 		static UTakahanoParisSingleton* GetTakahanoParisData(bool &DataIsValid);
 
@@ -154,5 +215,68 @@ public:
 		static FCharacterStruct GetTakahanoParisCharacterByName(const FName &CharName, bool &IsValid);
 
 	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris|Character")
-		static void SetTakahanoParisCharacter(const FCharacterStruct &Char, USkeletalMeshComponent * Comp);
+		static bool SetTakahanoParisCharacter(const FCharacterStruct &Char, USkeletalMeshComponent * Comp);
+
+
+	// Dialogue			-----------------------------------------------------------------------------------------
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris|UI|Dialogue")
+		static TSubclassOf<UUserWidget> GetDialogueWidgetClass(bool &bIsValid);
+
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris|UI")
+		static TSubclassOf<UUserWidget> GetMainMenuWidgetClass(bool &bIsValid);
+
+	UFUNCTION(BlueprintCallable, Category = "Takahano-Paris|UI")
+		static TSubclassOf<UUserWidget> GetOptionMenuWidgetClass(bool &bIsValid);
+
+	UFUNCTION(BlueprintCallable, Category ="Takahano-Paris|UI")
+		static TSubclassOf<UUserWidget> GetPauseWidgetClass(bool &bIsValid);
+
+	// Cursor			-----------------------------------------------------------------------------------------
+
+	UFUNCTION(BlueprintCallable, Category = "Cursor")
+		static class UMaterialInterface  * GetCursorToWorldMaterial(bool &bIsValid);
+
+
+	// Input Bindings	-----------------------------------------------------------------------------------------
+	static FName Forward;
+	static FName Right;
+	static FName NextCamera;
+	static FName PreviousCamera;
+	static FName Use;
+	static FName Sprint;
+	static FName Climb;
+	static FName Jump;
+	static FName PauseMenu;
+	static FName Select;
+
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetForwardBinding() { return Forward; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetRightBinding() { return Right; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetNextCameraBinding() { return NextCamera; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetPreviousCameraBinding() { return PreviousCamera; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetUseBinding() { return Use; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetSprintBinding() { return Sprint; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetClimbBinding() { return Climb; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetJumpBinding() { return Jump; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetPauseBinding() { return PauseMenu; }
+
+	UFUNCTION(BlueprintPure, Category = "Binding")
+		static FName GetSelectBinding() { return Select; }
 };

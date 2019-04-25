@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "TakahanoParisStatics.h"
+#include "DialogueUserWidget.h"
 #include "TakahanoParisSingleton.generated.h"
 
 
@@ -12,7 +13,6 @@
 class USkeletalMesh;
 class UAnimBlueprintGeneratedClass;
 class USkeletalMeshComponent;
-
 
 
 /**
@@ -34,7 +34,24 @@ public :
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character")
 		TArray<FCharacterStruct> OtherCharacters;
 
+	
 
-	
-	
+	/**	Class to use for creating a Main menu - allows of using a class defined in Blueprint */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+		TSubclassOf<UUserWidget> MainMenuClass;
+
+	/**	Class to use for creating a Option menu - allows of using a class defined in Blueprint */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+		TSubclassOf<UUserWidget> OptionMenuClass;
+
+	/**	Class to use for creating a Main menu - allows of using a class defined in Blueprint */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+		TSubclassOf<UUserWidget> PauseMenuClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI|Dialogue")
+		TSubclassOf<UDialogueUserWidget> DialogueWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cursor")
+		class UMaterialInterface * CursorToWorldMaterial;
+
 };

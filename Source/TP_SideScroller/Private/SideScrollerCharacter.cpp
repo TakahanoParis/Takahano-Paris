@@ -80,12 +80,17 @@ void ASideScrollerCharacter::OnRep_bCanJump()
 void ASideScrollerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// set up gameplay key bindings
-	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ASideScrollerCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("MoveForward", this, &ASideScrollerCharacter::MoveForward);
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &ASideScrollerCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &ASideScrollerCharacter::TouchStopped);
+	PlayerInputComponent->BindAxis(UTakahanoParisStatics::Right, this, &ASideScrollerCharacter::MoveRight);
+	PlayerInputComponent->BindAxis(UTakahanoParisStatics::Forward, this, &ASideScrollerCharacter::MoveForward);
+	PlayerInputComponent->BindAction(UTakahanoParisStatics::Climb, IE_Pressed, this, &ASideScrollerCharacter::Climb);
+
+
+	
+	//disable touch inputs for touchscreen
+	//PlayerInputComponent->BindTouch(IE_Pressed, this, &ASideScrollerCharacter::TouchStarted);
+	//PlayerInputComponent->BindTouch(IE_Released, this, &ASideScrollerCharacter::TouchStopped);
 }
 
 void ASideScrollerCharacter::MoveRight(float Value)
@@ -117,52 +122,70 @@ void ASideScrollerCharacter::OnCanClimb_Implementation(AActor * Climbable)
 		ClimbableActor = Climbable;
 }
 
-bool ASideScrollerCharacter::Climb_Implementation(const AActor * Climbable)
+void ASideScrollerCharacter::Climb()
 {
-	if (!Climbable)
-	{
-		UE_LOG(LogTP_SideScroller, Warning, TEXT("%s Cannot Find Climbable Actor"), *GetName())
-			return false;
-	}
-	const auto AsInterface = Cast<IClimbableInterface>(Climbable);
-	if (!Climbable->Implements<UClimbableInterface>())
-	{
-		UE_LOG(LogTP_SideScroller, Warning, TEXT("%s does not implements Climb interface" ), *Climbable->GetName())
-			return false;
-	}
-	OnClimbAnimFinished.Clear();
-	OnClimbAnimFinished.AddDynamic(this, &ASideScrollerCharacter::FinishClimb);
-	StartClimbAnim.Broadcast();
-	DisableInput(Cast<APlayerController>(GetController()));
-	return true;
-}
 
-void ASideScrollerCharacter::FinishClimb_Implementation(const AActor* Climbable)
-{
-	EnableInput(Cast<APlayerController>(GetController()));
-
-	if (!Climbable)
-		return;
-
-	if (!Climbable->Implements<UClimbableInterface>())
+	if (!GetCanClimb() || !ClimbableActor)
 	{
-		UE_LOG(LogTP_SideScroller, Warning, TEXT(" %s is not a climbable interface"),  *Climbable->GetName())
+#if WITH_EDITOR
+		if (GetCanClimb())
+			UE_LOG(LogTP_SideScroller, Error, TEXT("Climb : Climbable Actor not set"));
+		if (ClimbableActor)
+			UE_LOG(LogTP_SideScroller, Error, TEXT("Climb : GetCanClimb returned false"));
+#endif //WITH_EDITOR
 		return;
 	}
-		
-
-	const FVector Target = Climbable->GetActorLocation() + IClimbableInterface::Execute_GetClimbTopTarget(Climbable);
 	
+
+	// prevent retriggering
+	bCanClimb = false;
+
+
+	const auto AsInterface = Cast<IClimbableInterface>(ClimbableActor);
+	// Safety first
+
+	if (!ClimbableActor || !AsInterface ) //!Climbable->Implements<UClimbableInterface>())
+			return;
+
+#if WITH_EDITOR
+	UE_LOG(LogTP_SideScroller, Display, TEXT("%s about to climb on %s"), *GetName(), *ClimbableActor->GetName());
+#endif //WITH_EDITOR
+
+	const FVector Target = ClimbableActor->GetActorLocation() + IClimbableInterface::Execute_GetClimbTopTarget(ClimbableActor);
+
+	// Testing teleportation target
 	FHitResult result;
 	GetWorld()->SweepSingleByChannel(result, Target, Target, GetActorQuat(), ECollisionChannel::ECC_Visibility, GetCapsuleComponent()->GetCollisionShape(), FCollisionQueryParams::DefaultQueryParam);
 	if (result.IsValidBlockingHit())
 	{
-		UE_LOG(LogTP_SideScroller, Warning, TEXT("%s can't find place to climb on %s"), *GetName(), *Climbable->GetName())
+		UE_LOG(LogTP_SideScroller, Warning, TEXT("%s can't find place to climb on %s"), *GetName(), *ClimbableActor->GetName());
 			return;
 	}
-	UE_LOG(LogTP_SideScroller, Display, TEXT("%s Climbing on %s"), *GetName(), *Climbable->GetName())
-	SetActorLocation(Target, false, nullptr, ETeleportType::ResetPhysics);
-	
+
+	UE_LOG(LogTP_SideScroller, Display, TEXT("%s Climbing on %s"), *GetName(), *ClimbableActor->GetName());
+
+	// teleporting
+	const bool teleport = SetActorLocation(Target, false, nullptr, ETeleportType::ResetPhysics);
+#if WITH_EDITOR
+	if(!teleport)
+		UE_LOG(LogTP_SideScroller, Error, TEXT("%s Failed to climb on %s"), *GetName(), *ClimbableActor->GetName());
+#endif //WITH_EDITOR
+
+
+	// Setting callbacks
+	OnClimbAnimFinished.Clear();
+	OnClimbAnimFinished.AddDynamic(this, &ASideScrollerCharacter::FinishClimb);
+	StartClimbAnim.Broadcast();
+
+	// Preventing any movement from player
+	DisableInput(Cast<APlayerController>(GetController()));
+	return;
+}
+
+void ASideScrollerCharacter::FinishClimb_Implementation(const AActor* Climbable)
+{
+	// You climbed successfully
+	EnableInput(Cast<APlayerController>(GetController()));
 	return;
 }
 

@@ -4,8 +4,7 @@
 #include "CustomButton.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gameplay/CustomGameInstance.h"
-
-
+#include "TakahanoParisStatics.h"
 
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -18,13 +17,13 @@ UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : 
 
 void UMainMenuWidget::QuitButtonCliqued()
 {
-	GetCustomGameInstance()->ShowQuitGameConfirmationMessage();
+	UTakahanoParisStatics::GetCustomGameInstance(GetOwningPlayer())->ShowQuitGameConfirmationMessage();
 }
 
 void UMainMenuWidget::HostButtonCliqued_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Host Button Has been Clicked"));
-	GetCustomGameInstance()->RequestHostGame();
+	UTakahanoParisStatics::GetCustomGameInstance(GetOwningPlayer())->RequestHostGame();
 }
 
 void UMainMenuWidget::JoinButtonCliqued_Implementation()
@@ -63,9 +62,3 @@ void UMainMenuWidget::BindDelegates()
 	}
 }
 
-UCustomGameInstance* UMainMenuWidget::GetCustomGameInstance() const
-{
-	auto PC = UGameplayStatics::GetPlayerController(GetWorld(), 0); // Should be the correct one ...
-	auto GI = PC->GetGameInstance();
-	return Cast<UCustomGameInstance>(GI);
-}

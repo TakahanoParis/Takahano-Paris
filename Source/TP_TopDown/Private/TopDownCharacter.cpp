@@ -1,6 +1,7 @@
 // Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
 
 #include "TopDownCharacter.h"
+#include "TP_TopDown.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
@@ -14,6 +15,7 @@
 #include "Gameplay/CustomPlayerController.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Components/SkeletalMeshComponent.h"
+
 
 ATopDownCharacter::ATopDownCharacter()
 {
@@ -44,17 +46,7 @@ ATopDownCharacter::ATopDownCharacter()
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Create a decal in the world to show the cursor's location
-	CursorToWorld = CreateDefaultSubobject<UDecalComponent>("CursorToWorld");
-	CursorToWorld->SetupAttachment(RootComponent);
 
-	if (DecalMaterial)
-	{
-		CursorToWorld->SetDecalMaterial(DecalMaterial);
-	}
-
-	CursorToWorld->DecalSize = FVector(16.0f, 32.0f, 32.0f);
-	CursorToWorld->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f).Quaternion());
 
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
@@ -64,22 +56,22 @@ ATopDownCharacter::ATopDownCharacter()
 	GetMesh()->SetRelativeRotationExact(FRotator(0.f, -90.f, 0.f));
 }
 
+void ATopDownCharacter::OnConstruction(const FTransform& Transform)
+{
+	SetCharacter();
+	Super::OnConstruction(Transform);
+}
+
+void ATopDownCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	I_SetAllInteractableActors(this);
+}
+
 void ATopDownCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-	if (CursorToWorld != nullptr)
-	{
-		 if (APlayerController* PC = Cast<APlayerController>(GetController()))
-		{
-			FHitResult TraceHitResult;
-			PC->GetHitResultUnderCursor(ECC_Visibility, true, TraceHitResult);
-			FVector CursorFV = TraceHitResult.ImpactNormal;
-			FRotator CursorR = CursorFV.Rotation();
-			CursorToWorld->SetWorldLocation(TraceHitResult.Location);
-			CursorToWorld->SetWorldRotation(CursorR);
-		}
-	}
 }
 
 void ATopDownCharacter::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
@@ -87,16 +79,15 @@ void ATopDownCharacter::SetupPlayerInputComponent(UInputComponent * PlayerInputC
 	check(PlayerInputComponent);
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	//PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ATopDownCharacter::Run);
-	//PlayerInputComponent->BindAction("Run", IE_Released, this, &ATopDownCharacter::StopRunning);
-	PlayerInputComponent->BindAction("SetTarget", IE_Pressed, this, &ATopDownCharacter::MoveToCursor);
-	
+	PlayerInputComponent->BindAction(UTakahanoParisStatics::Jump, IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(UTakahanoParisStatics::Jump, IE_Released, this, &ACharacter::StopJumping);
+	//PlayerInputComponent->BindAction(UTakahanoParisStatics::Sprint, IE_Pressed, this, &ATopDownCharacter::Run);
+	//PlayerInputComponent->BindAction(UTakahanoParisStatics::Sprint, IE_Released, this, &ATopDownCharacter::StopRunning);
+	//PlayerInputComponent->BindAction(UTakahanoParisStatics::Sprint, IE_Pressed, this, &ATopDownCharacter::MoveToCursor);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &ATopDownCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ATopDownCharacter::MoveRight);
-	//PlayerInputComponent->BindAction("Use", IE_Pressed, this, &ATopDownCharacter::Use);
+	PlayerInputComponent->BindAxis(UTakahanoParisStatics::Forward, this, &ATopDownCharacter::MoveForward);
+	PlayerInputComponent->BindAxis(UTakahanoParisStatics::Right, this, &ATopDownCharacter::MoveRight);
+
 }
 
 
@@ -122,13 +113,9 @@ void ATopDownCharacter::MoveRight(float Value)
 
 void ATopDownCharacter::Use_Implementation()
 {
-
+	UE_LOG(LogTP_TopDown, Display, TEXT("Use Function called on %s"), *GetName());
 }
 
-void ATopDownCharacter::MoveToCursor()
-{
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(GetController(), CursorToWorld->GetComponentToWorld().GetLocation());
-}
 
 bool ATopDownCharacter::SetCharacter()
 {

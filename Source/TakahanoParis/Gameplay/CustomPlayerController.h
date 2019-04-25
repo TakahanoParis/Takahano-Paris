@@ -290,6 +290,10 @@ protected:
 		bool SetMainHUD_BP(UMainHUDWidget * HUD) { return SetMainHUD(HUD); }
 
 
+protected:
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Use")
+	void Use();
+
 public:
 	FTeam I_GetTeam() const override;
 protected:

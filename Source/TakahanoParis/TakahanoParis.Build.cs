@@ -18,7 +18,7 @@ public class TakahanoParis : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[] { "OnlineSubsystem", "OnlineSubsystemUtils" }); // multiplayer
         PublicDependencyModuleNames.AddRange(new string[] { "MediaAssets"}); // video support
 
-
+        PublicDependencyModuleNames.AddRange(new string[] { "DialoguePlugin" }); // video support
 
 
         PrivateDependencyModuleNames.AddRange(new string[] { });

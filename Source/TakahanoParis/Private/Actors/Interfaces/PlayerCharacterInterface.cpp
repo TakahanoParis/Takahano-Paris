@@ -78,7 +78,12 @@ AActor* IPlayerCharacterInterface::I_GetClosestInteractableActor(float& Distance
 	const auto location = asPawn->GetActorLocation();
 
 	TArray<AActor *> AllInteractableActors = *I_GetAllInteractableArray();
-
+	if(!AllInteractableActors.IsValidIndex(0))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("IPlayerCharacterInterface : I_GetClosestInteractableActor() : AllInteractableActors is empty"));
+		return nullptr;
+	}
+		
 	Distance = FVector::Distance(location, AllInteractableActors[0]->GetActorLocation());
 	auto OutActor = AllInteractableActors[0];
 	for (auto it : AllInteractableActors)

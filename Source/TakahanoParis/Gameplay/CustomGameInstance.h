@@ -126,58 +126,6 @@ public:
 		virtual void RequestHostGame();
 
 
-
-protected:
-
-	/**	
-	 * @brief CreateMainMenu Function
-	 * Spawns a main menu if necessary (none exists)
-	 * @return true if it created a menu or one ealready existed.
-	 */
-	UFUNCTION()
-		virtual bool CreateMainMenu();
-
-	/**
-	* @brief CreateHostMenu Function
-	* Spawns a Host menu if necessary (none exists)
-	* @return  true if it created a menu or one ealready existed.
-	*/
-	UFUNCTION()
-		virtual bool CreateHostMenu();
-
-	/**
-	* @brief CreateServerMenu Function
-	* Spawns a Server menu if necessary (none exists)
-	* @return  true if it created a menu or one ealready existed.
-	*/
-	UFUNCTION()
-		virtual bool CreateServerMenu();
-
-	/**
-	* @brief CreateOptionMenu Function
-	* Spawns a Option menu if necessary (none exists)
-	* @return  true if it created a menu or one ealready existed.
-	*/
-	UFUNCTION()
-		virtual bool CreateOptionMenu();
-
-
-	UPROPERTY(BlueprintReadOnly)
-	class UMainMenuWidget * MainMenu;
-	
-	UPROPERTY(BlueprintReadOnly)
-	class UOptionMenuWidget * OptionMenu;
-
-
-	/**	Class to use for creating a Main menu - allows of using a class defined in Blueprint */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-		TSubclassOf<UMainMenuWidget> MainMenuClass;
-
-	/**	Class to use for creating a Option menu - allows of using a class defined in Blueprint */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-		TSubclassOf<UOptionMenuWidget> OptionMenuClass;
-	
-	
 private:
 
 	UPROPERTY(Replicated)

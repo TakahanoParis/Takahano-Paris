@@ -40,9 +40,6 @@ void ASideScrollerHero::Use()
 {
 	SetVisibleInteractableActors();
 	UE_LOG(LogTP_SideScroller, Display, TEXT("%s Use"), *GetName());
-	/** Interact with climbable */
-	if (GetCanClimb() && ClimbableActor)
-		Climb(ClimbableActor);
 }
 
 void ASideScrollerHero::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
