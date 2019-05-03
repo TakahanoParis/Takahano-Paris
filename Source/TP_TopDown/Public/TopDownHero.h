@@ -14,6 +14,7 @@ class TP_TOPDOWN_API ATopDownHero : public ATopDownCharacter
 {
 	GENERATED_BODY()
 
-	
+public:
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 };

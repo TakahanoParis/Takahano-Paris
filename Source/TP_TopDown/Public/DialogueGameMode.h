@@ -36,7 +36,10 @@ public:
 		bool HasTalkedToAllNPC() const { return NPCTalkedTo.Num() == NPCNumToTalkTo; }
 
 	UFUNCTION(BlueprintPure, Category = "Dialogue")
-		int	NumberOfNPCTalkedTo() const { return NPCTalkedTo.Num(); }
+		int	GetNumberOfNPCTalkedTo() const { return NPCTalkedTo.Num(); }
+
+	UFUNCTION(BlueprintPure, Category = "Dialogue")
+		int GetNPCNumToTalkTo() const { return NPCNumToTalkTo; }
 
 
 	

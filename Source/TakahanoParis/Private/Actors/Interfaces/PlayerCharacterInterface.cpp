@@ -8,6 +8,8 @@
 #include "InteractInterface.h"
 #include "Kismet/GameplayStatics.h"
 
+
+#if 0
 void IPlayerCharacterInterface::I_SetReady(bool NewReady)
 {
 	const auto AsCharacter = Cast<ACharacter>(this);
@@ -150,3 +152,4 @@ void IPlayerCharacterInterface::I_SetAllInteractableActors(const UObject* WorldC
 	UGameplayStatics::GetAllActorsWithInterface(WorldContextObject, UInteractInterface::StaticClass(), AllInteractableActors);
 }
 
+#endif

@@ -37,5 +37,9 @@ void ATopDownGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	if (bIsSplitscreen)
+	{
 		UGameplayStatics::CreatePlayer(this, 1, true);
+		UTakahanoParisStatics::CreateMainHUDWidget(this);
+	}
+	
 }

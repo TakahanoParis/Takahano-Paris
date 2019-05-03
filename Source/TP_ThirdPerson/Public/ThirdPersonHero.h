@@ -7,8 +7,7 @@
 #include "ThirdPersonGameMode.h"
 #include "ThirdPersonHero.generated.h"
 
-
-
+class AActivableActor;
 
 /**
  *	ThirdPersonHero class - it handle all the ability and the more gameplay focused dynamics.
@@ -25,45 +24,12 @@ public:
 	 * @brief Default Constructor
 	 */
 	AThirdPersonHero();
-
 	virtual void BeginPlay() override;
-
 	virtual void Tick(float DeltaSeconds) override;
 
-	/**
-	 *	@fn Use
-	 *	@brief thw use action called by keyboard or gamepad action
-	 */
-	UFUNCTION(BlueprintNativeEvent, Category = "Interactable", meta = (DisplayName = "Use"))
-	void Use();
-
-
-
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
-protected:
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)// meta = (AllowPrivateAccess = "true"))
-		class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* FollowCamera;
-
-public:
-		
-	virtual void SetupCamera();
-
-protected:
-
-	/**
-	 * @fn TryUse()
-	 * @brief Julia can control certain electronic objects
-	 * @param Target : An Actor that implements InteractInterface
-	 * @return true if it succeed
-	 */
-	UFUNCTION()
-		bool TryUse(AActor * Target);
+	virtual void Use() override;
+	virtual void IncrementTarget() override { TargetIndex < uint32(UsableActors.Num()) ? TargetIndex++ : TargetIndex = 0; }
+	virtual void DecrementTarget() override { TargetIndex > uint32(0) ? TargetIndex-- : UsableActors.Num(); }
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -75,29 +41,52 @@ public:
 	virtual bool I_TakeDamage(const float& DamageAmount, AActor* Instigator) override;
 
 
-public :
-
-	UFUNCTION(BlueprintPure, Category = "Interactable", meta = (DisplayName = "GetVisibleInteractables"))
-	FORCEINLINE TArray<AActor *>  GetVisibleInteractableActors() const { return VisibleInteractableActors; }
-
-	UFUNCTION(BlueprintPure, Category = "Interactable", meta = (DisplayName = "GetAllInteractables"))
-	FORCEINLINE TArray<AActor *>  GetAllInteractableActors() const { return InteractableActors; }
-
-	UFUNCTION(BlueprintPure, Category = "Interactable", meta = (DisplayName = "Get Closest Interactable"))
-		AActor * GetClosestInteractableActor(float &Distance) const;
-
-
 private :
 
-	UPROPERTY()
-		TArray<AActor *> InteractableActors;
+	UPROPERTY(Replicated)
+		TArray<AActivableActor *> InteractableActors;
+	
 
 	UFUNCTION()
 		void SetInteractableActors();
 
 	UPROPERTY()
-		TArray<AActor *> VisibleInteractableActors;
+		TArray<AActivableActor *> VisibleInteractableActors;
 
 	UFUNCTION()
 		void SetVisibleInteractableActors();
+
+protected:
+	UPROPERTY(Replicated)
+	bool bIsUsingObject;
+
+
+	UPROPERTY(Replicated)
+		uint32 TargetIndex;
+
+	
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Use")
+	TArray<AActivableActor*> UsableActors;
+
+
+protected :
+	UFUNCTION()
+	virtual void SetUsableActors();
+
+public:
+
+	UFUNCTION(BlueprintPure, Category = "Use")
+		FORCEINLINE TArray<AActivableActor*> GetUsableActors() const { return UsableActors; }
+
+
+	UFUNCTION(BlueprintPure, Category = "Use")
+		int GetTargetIndex() const { return TargetIndex; }
+
+
+
+protected:
+	void MoveForward(float Value) override;
+	void MoveRight(float Value) override;
 };

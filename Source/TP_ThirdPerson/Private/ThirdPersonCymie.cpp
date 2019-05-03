@@ -4,6 +4,11 @@
 #include "Gameplay/CustomPlayerState.h"
 
 
+AThirdPersonCymie::AThirdPersonCymie() : Super()
+{
+
+}
+
 bool AThirdPersonCymie::CanRun()
 {
 	const auto aPC = Cast<ACustomPlayerState>(PlayerState);

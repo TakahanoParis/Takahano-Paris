@@ -61,21 +61,12 @@ public:
 	UPROPERTY(Replicated, Category = "Character Movement: Walking|curve", EditAnywhere, BlueprintReadOnly)
 		float RunInterpolationSpeed = 1.0;
 
-
-	/**
-	 *	@fn GetSpeedDelta_BP()
-	 *	@brief For blueprint to implement the calculus behind the SpeedDelta
-	 *	@note for blueprints only. no native implementation. remember to enable the bDeltaCalculatedInBlueprint flag.
-	 */
-	UFUNCTION(Category = "Character Movement: Walking", BlueprintImplementableEvent, meta =(DisplayName = "GetSpeedDelta"))
-		float GetSpeedDelta_BP() const;
-
 	/**
 	 *	@fn GetSpeedDelta()
 	 *	@brief implements the calculus behind the SpeedDelta
 	 */
-	UFUNCTION()
-		virtual float GetSpeedDelta() const;
+	UFUNCTION(Category = "Character Movement: Walking", BlueprintNativeEvent, meta = (DisplayName = "GetSpeedDelta"))
+		float GetSpeedDelta() const;
 
 	//overriden from CharacterMovementComponent
 	virtual float GetMaxSpeed() const override;

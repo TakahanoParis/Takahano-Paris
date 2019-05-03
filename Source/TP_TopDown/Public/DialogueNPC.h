@@ -11,6 +11,7 @@
 class ADialoguePlayerController;
 class UBoxComponent;
 class UDialogue;
+class UPaperSpriteComponent;
 
 UCLASS(hidecategories = ("Collision"))
 class TP_TOPDOWN_API ADialogueNPC : public ACharacter
@@ -33,15 +34,24 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Dialogue", meta = (AllowPrivateAccess = true))
 		UBoxComponent * DialogueTrigger;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Dialogue", meta = (AllowPrivateAccess = true))
+		UPaperSpriteComponent * DialogueNoticeSprite;
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+		FName NPCName;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 		UDialogue * DialogueClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 		uint8 MinimumCharactersInZone;
 
-	UPROPERTY(EditDefaultsOnly, blueprintReadOnly, Category = "Dialogue")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dialogue")
 		bool  bCanTalk;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dialogue")
+		mutable bool bIsInDialog;
 
 public:
 
@@ -49,7 +59,7 @@ public:
 		FVector  BoxExtent;
 
 	UFUNCTION(BlueprintPure, Category = "Dialogue")
-		UDialogue * GetNPCDialogue() const { return DialogueClass; }
+		UDialogue * GetNPCDialogue() const { bIsInDialog = true; return DialogueClass; }
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Dialogue")
 		bool DialogueConditionFulfilled();

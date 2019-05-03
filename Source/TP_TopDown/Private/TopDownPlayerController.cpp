@@ -9,7 +9,7 @@
 ATopDownPlayerController::ATopDownPlayerController()
 {
 	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Crosshairs;
+	DefaultMouseCursor = EMouseCursor::CardinalCross;
 	bIsUsingGamepad = false;
 	bResetGamepadDetectionAfterNoInput = true;
 	GamepadTimeout = 5.f;
@@ -27,6 +27,8 @@ ATopDownPlayerController::ATopDownPlayerController()
 	// Create a decal in the world to show the cursor's location
 	
 }
+
+
 
 void ATopDownPlayerController::PlayerTick(float DeltaTime)
 {
@@ -114,6 +116,11 @@ void ATopDownPlayerController::OnSetDestinationReleased()
 {
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;
+}
+
+void ATopDownPlayerController::CancelMoveToLocation()
+{
+	StopMovement();
 }
 
 bool ATopDownPlayerController::InputAxis(FKey Key, float Delta, float DeltaTime, int32 NumSamples, bool bGamepad)

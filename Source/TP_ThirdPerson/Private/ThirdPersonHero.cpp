@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ThirdPersonHero.h"
+#include "TP_ThirdPerson.h"
 #include "UnrealNetwork.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -10,22 +11,15 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gameplay/CustomPlayerState.h"
 #include "Kismet/GameplayStatics.h"
+#include "ActivableActor.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Engine/World.h"
 
-AThirdPersonHero::AThirdPersonHero() : Super()
+
+AThirdPersonHero::AThirdPersonHero() : Super(), TargetIndex(0)
 {
-	const auto GM = UGameplayStatics::GetGameMode(this);
-	const auto CGM = Cast<AThirdPersonGameMode>(GM);
-	if(CGM)
-		SetupCamera();
-
-	
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset (to avoid direct content references in C++)
-
 	// Do not fall
 	GetCharacterMovement()->bCanWalkOffLedges = false;
-
 	// Move freely
 	bUseControllerRotationYaw = false;
 }
@@ -40,128 +34,33 @@ void AThirdPersonHero::BeginPlay()
 void AThirdPersonHero::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	//SetVisibleInteractableActors();
-}
-
-void AThirdPersonHero::Use_Implementation()
-{
-	SetVisibleInteractableActors();
-}
-
-void AThirdPersonHero::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
-{
-	check(PlayerInputComponent);
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction("Use", IE_Pressed, this, &AThirdPersonHero::Use);
-}
-
-void AThirdPersonHero::SetupCamera()
-{
-
-	if (!FollowCamera)
-		FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	if (!CameraBoom)
-		CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-
-	CameraBoom->SetupAttachment(RootComponent);
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-
-	FollowCamera->SetRelativeLocation(FVector(0.f, -50.f, 0.f), false);
-
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-												   // Just set us a little off the center
-
-	CameraBoom->TargetArmLength = 250.0f; // The camera follows at this distance behind the character	
-	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
-	CameraBoom->bEnableCameraLag = true;
-	CameraBoom->CameraLagSpeed = 10.f;
-
-	// Inherit rotation
-	//CameraBoom->bInheritPitch = true;
-	//CameraBoom->bInheritRoll = true;
-	//CameraBoom->bInheritYaw = true;
-	/*
-	// Create a camera boom (pulls in towards the player if there is a collision)
-
-	//CameraBoom->bInheritPitch = true;
-	//CameraBoom->bInheritRoll = true;
-	//CameraBoom->bInheritYaw = true;
-
-	
-	switch (ViewType)
+	SetUsableActors();
+	if (GetUsableActors().IsValidIndex(TargetIndex))
 	{
-	case ECameraTypeEnum::CTE_ThirdPerson:
-
-
-
-		break;
-	case ECameraTypeEnum::CTE_TopDown:
-
-		// Don't rotate character to camera direction
-		bUseControllerRotationPitch = false;
-		bUseControllerRotationYaw = false;
-		bUseControllerRotationRoll = false;
-
-		// Configure character movement
-		GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
-		GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
-		GetCharacterMovement()->bConstrainToPlane = true;
-		GetCharacterMovement()->bSnapToPlaneAtStart = true;
-
-		// Create a camera boom...
-		CameraBoom->SetupAttachment(RootComponent);
-		CameraBoom->bAbsoluteRotation = true; // Don't want arm to rotate when character does
-		CameraBoom->TargetArmLength = 500.f;
-		CameraBoom->RelativeRotation = FRotator(-60.f, 0.f, 0.f);
-		CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
-
-											  // Create a camera...
-		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
-
-		break;
-	case ECameraTypeEnum::CTE_Side:
-		// Create a follow camera
-		FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-		FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-		break;
-	default:
-		break;
+		const auto target = GetUsableActors()[TargetIndex];
+		UTakahanoParisStatics::SetPlayerTarget(this, target->GetUsableName(), target);
+		UTakahanoParisStatics::SetPlayerHelp(this, UTakahanoParisStatics::GetUseHelpText(), target);
 	}
-	*/
+	else
+	{
+		UTakahanoParisStatics::SetPlayerTarget(this, FName(), nullptr);
+
+		UTakahanoParisStatics::SetPlayerHelp(this, FText(), nullptr);
+	}
 }
 
-bool AThirdPersonHero::TryUse(AActor * Target)
+void AThirdPersonHero::Use()
 {
-	auto AsInterface = Cast<IInteractInterface>(Target);
-	if(!AsInterface)
-		return false;
-	switch(AsInterface->I_GetInteractState()) 
-	{ 
-	case EInteractableState::ISE_Off: 
-		return false;
-	case EInteractableState::ISE_Locked: 
-		return false;
-	case EInteractableState::ISE_Used: 	
-		return false;
-	case EInteractableState::ISE_Useable:
-		if (GetController()->Role == ROLE_AutonomousProxy)
-		{
-			AsInterface->I_Server_Use(GetController());
-			return true;
-		}
-		if (GetController()->Role == ROLE_Authority)
-		{
-			AsInterface->I_Server_Use_Implementation(GetController()); // We're already server, no need for confirmation
-			return true;
-		}
-	default: 
-		return false;
+	Super::Use();
+	if (GetUsableActors().IsValidIndex(TargetIndex))
+	{
+		GetUsableActors()[TargetIndex]->Use(this, bIsUsingObject);
+#if WITH_EDITOR
+		UE_LOG(LogTP_ThirdPerson, Warning, TEXT("%s is using %s"), *GetName(), *GetUsableActors()[TargetIndex]->GetName());
+#endif
 	}
 }
+
 
 bool AThirdPersonHero::I_TakeDamage(const float& DamageAmount, AActor* Instigator)
 {
@@ -172,45 +71,79 @@ bool AThirdPersonHero::I_TakeDamage(const float& DamageAmount, AActor* Instigato
 	return true;
 }
 
-AActor * AThirdPersonHero::GetClosestInteractableActor(float &Distance) const
-{
-	const auto Actors = GetAllInteractableActors();
-	Distance = FVector::Distance(GetActorLocation(), Actors[0]->GetActorLocation());
-	auto OutActor = Actors[0];
-	for (auto it : Actors)
-	{
-		const auto T = FVector::Distance(GetActorLocation(), it->GetActorLocation());
-		if (T < Distance)
-		{
-			Distance = T;
-			OutActor = it;
-		}
-		
-	}
-	return OutActor;
-}
-
 void AThirdPersonHero::SetInteractableActors()
 {
-	UGameplayStatics::GetAllActorsWithInterface(this, UInteractInterface::StaticClass(), InteractableActors);
+	UGameplayStatics::GetAllActorsOfClass(this, AActivableActor::StaticClass(), reinterpret_cast<TArray<AActor*>&>(InteractableActors));
 }
 
 void AThirdPersonHero::SetVisibleInteractableActors()
 {
-	const auto aPC = Cast<ACustomPlayerController>(GetController());
-	if(aPC)
+	if (!GetController()) return;
+	VisibleInteractableActors = InteractableActors;
+	FCollisionQueryParams CollisionParams = FCollisionQueryParams::DefaultQueryParam;
+	CollisionParams.AddIgnoredActor(this);
+	for (int32 id = VisibleInteractableActors.Num() - 1; id >= 0; --id)
 	{
-		VisibleInteractableActors.Empty();
-		VisibleInteractableActors = InteractableActors;
-		ACustomPlayerController::GetVisibleActorsInArray(VisibleInteractableActors, aPC);
-	}
+		const auto it = VisibleInteractableActors[id];
 
+		FVector ViewLocation;	FRotator ViewRotator;
+		GetController()->GetPlayerViewPoint(ViewLocation, ViewRotator);
+		const FVector ViewVector = UKismetMathLibrary::GetForwardVector(ViewRotator);
+		FVector ToOtherActor = it->GetActorLocation() - ViewLocation;
+		ToOtherActor.Normalize();
+
+		// Forget about actors behind us :
+		if (FVector::DotProduct(ToOtherActor, ViewVector) < 0)
+		{
+			VisibleInteractableActors.RemoveAt(id, 1, false);
+			continue;
+		}
+
+		struct FHitResult OutHit;
+		CollisionParams.AddIgnoredActor(it);
+
+		GetWorld()->LineTraceSingleByChannel(OutHit, it->GetActorLocation(), ViewLocation,ECC_Visibility , CollisionParams);
+		if (OutHit.IsValidBlockingHit())
+			VisibleInteractableActors.RemoveAt(id, 1, false);
+	}
+	if (VisibleInteractableActors.Num()>0)	VisibleInteractableActors.Shrink();
 }
 
-#if 0
+void AThirdPersonHero::SetUsableActors()
+{
+	//SetInteractableActors(); // in case anything changed
+	SetVisibleInteractableActors(); // let's figure out which we see
+	UsableActors.Empty();
+	for (auto it : VisibleInteractableActors)
+	{
+		if (it)
+			if (it->CanUse(this))
+			{
+				UsableActors.Add(it);
+			}
+	}
+}
+
+void AThirdPersonHero::MoveForward(float Value)
+{
+	if (bIsUsingObject)
+			return;
+	Super::MoveForward(Value);
+}
+
+void AThirdPersonHero::MoveRight(float Value)
+{
+	if (bIsUsingObject)
+			return;
+	Super::MoveRight(Value);
+}
+
+
 // nothing is replicated in AThirdPersonHero
 void AThirdPersonHero::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AThirdPersonHero, bIsUsingObject);
+	DOREPLIFETIME(AThirdPersonHero, InteractableActors);
 }
-#endif 
+

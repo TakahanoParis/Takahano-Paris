@@ -62,17 +62,6 @@ void ATopDownCharacter::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 }
 
-void ATopDownCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	I_SetAllInteractableActors(this);
-}
-
-void ATopDownCharacter::Tick(float DeltaSeconds)
-{
-    Super::Tick(DeltaSeconds);
-
-}
 
 void ATopDownCharacter::SetupPlayerInputComponent(UInputComponent * PlayerInputComponent)
 {
@@ -95,6 +84,7 @@ void ATopDownCharacter::MoveForward(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
+		Controller->StopMovement();
 		const auto Rotation = FRotator(0.f, GetControlRotation().Yaw, 0.f);
 		const FVector Direction = UKismetMathLibrary::GetForwardVector(Rotation);
 		AddMovementInput(Direction, Value);
@@ -105,6 +95,7 @@ void ATopDownCharacter::MoveRight(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
+		Controller->StopMovement();
 		const auto Rotation = FRotator(0.f, GetControlRotation().Yaw, 0.f);
 		const FVector Direction = UKismetMathLibrary::GetRightVector(Rotation);
 		AddMovementInput(Direction, Value);

@@ -65,14 +65,6 @@ private :
 	UFUNCTION()
 		void OnRep_bCanJump();
 
-
-private:
-
-	UPROPERTY(Replicated) //ReplicatedUsing = OnRep_IsReady)
-		bool bIsReady;
-
-protected:
-	void I_GetReadyByRef(bool * IsReadyRef) override { IsReadyRef = &bIsReady; }
 	
 	// Climbable interaction	-----------------------------------------------------------------
 private:
@@ -142,9 +134,6 @@ public :
 		void SetCanMoveY(bool bNewCanMoveY);
 
 
-	TArray<AActor*> InteractableActors;
-
 protected:
-	TArray<AActor*>* I_GetAllInteractableArray() override {	return &InteractableActors;}
 	bool SetCharacter() override;
 };

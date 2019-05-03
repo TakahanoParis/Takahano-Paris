@@ -34,7 +34,7 @@ ASideScrollerCharacter::ASideScrollerCharacter()
 	CameraBoom->bDoCollisionTest = false;
 	CameraBoom->TargetArmLength = 500.f;
 	CameraBoom->SocketOffset = FVector(0.f,0.f,75.f);
-	CameraBoom->RelativeRotation = FRotator(-5.f,185.f,0.f);
+	CameraBoom->RelativeRotation = FRotator(-12.f,185.f,0.f);
 
 	// Create a camera and attach to boom
 	SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
@@ -70,7 +70,7 @@ void ASideScrollerCharacter::OnConstruction(const FTransform& Transform)
 
 void ASideScrollerCharacter::OnRep_bCanJump()
 {
-	I_SetCanJump(bCanJump);
+
 }
 
 
@@ -256,7 +256,6 @@ void ASideScrollerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimePropert
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	//DOREPLIFETIME(ABaseCharacter, bIsReady);
-	DOREPLIFETIME_CONDITION(ASideScrollerCharacter, bIsReady, COND_None);
 	DOREPLIFETIME_CONDITION(ASideScrollerCharacter, bCanClimb, COND_None);
 	DOREPLIFETIME_CONDITION(ASideScrollerCharacter, ClimbableActor, COND_None);
 	DOREPLIFETIME_CONDITION(ASideScrollerCharacter, bCanMoveY, COND_None);

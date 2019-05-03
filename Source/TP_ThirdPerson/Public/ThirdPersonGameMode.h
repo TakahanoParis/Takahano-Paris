@@ -25,6 +25,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Classes)
 		TArray<TSubclassOf<AThirdPersonHero>> HeroClasses;
 
+	void BeginPlay() override;
 
 
 protected:

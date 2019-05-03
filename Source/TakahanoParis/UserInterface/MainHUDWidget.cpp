@@ -1,54 +1,62 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MainHUDWidget.h"
-#include "Gameplay/CustomPlayerController.h"
-#include "LocationWidget.h"
+#include "HelpWidget.h"
+#include "TargetWidget.h"
+#include "ObjectiveWidget.h"
 
 UMainHUDWidget::UMainHUDWidget() : Super()
 {
 }
 
-void UMainHUDWidget::SetLocationWidget()
+void UMainHUDWidget::OnWidgetRebuilt()
 {
-	FVector2D Direction;
-	bDrawLocationWidget = false;
-	const auto Controller = GetOwningPlayer();
-	const auto PC = Cast<ACustomPlayerController>(Controller);
-
-	if (!PC)
-		return;
-
-	if (!LocationWidget)
-		return;
-
-	const auto OtherPawn = PC->GetOtherPlayerPawn(0);
-	if (!OtherPawn)
-		return;
-
-
-	bDrawLocationWidget = PC->Direction2DToActor(OtherPawn, Direction);
-	float x, y;
-	const auto cosTheta = FVector2D::DotProduct(FVector2D(1.f,0.f), Direction);
-	const auto sinTheta = FVector2D::DotProduct(FVector2D(0.f,1.f), Direction);
-	if (FMath::Abs(cosTheta) > FMath::Abs(sinTheta))
+	Super::OnWidgetRebuilt();
+	if (HelpWidget && TargetWidget && ObjectiveWidget)
 	{
-		x = FMath::Sign(cosTheta);
-		y = sinTheta / cosTheta;
+		HelpWidget->SetVisibility(ESlateVisibility::Hidden);
+		TargetWidget->SetVisibility(ESlateVisibility::Hidden);
+		ObjectiveWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
-	else
+}
+
+
+void UMainHUDWidget::SetHelpByBinding(const FName& BindingName, bool IsActive)
+{
+	if (HelpWidget)
 	{
-		if (sinTheta == 0)
-			return;
-		y = FMath::Sign(sinTheta);
-		x = cosTheta / sinTheta;
+		HelpWidget->SetActiveHelpMessageByBinding(BindingName, IsActive);
+		HelpWidget->SetIsEnabled(IsActive);
+		HelpWidget->SetVisibility(IsActive ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	}
+}
 
-	const FVector2D AbsoluteWidgetLocation = FVector2D(x, y);
-	LocationWidget->SetVisibility(bDrawLocationWidget? ESlateVisibility::Visible: ESlateVisibility::Hidden);
-	LocationWidget->SetPositionInViewport(AbsoluteWidgetLocation);
+void UMainHUDWidget::SetHelp(const FText& Message, bool IsActive)
+{
+	if (HelpWidget)
+	{
+		HelpWidget->SetActiveHelpMessage(Message, IsActive);
+		HelpWidget->SetIsEnabled(IsActive);
+		HelpWidget->SetVisibility(IsActive ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	}
+}
 
-	// first get the angle between the 
-	// if x  = 1 , y = tan
-	// if y = 1 ,x = 1/tan
+void UMainHUDWidget::SetTarget(const FName& TargetName, const AActor* Target, bool IsActive)
+{
+	if (!TargetWidget)
+		return;
+	TargetWidget->SetIsEnabled(IsActive);
+	TargetWidget->SetVisibility(IsActive ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	if (IsActive)
+		TargetWidget->SetTargetName(TargetName);
+}
 
+void UMainHUDWidget::SetObjective(const FText& Objective, bool IsActive)
+{
+	if (!ObjectiveWidget)
+		return;
+	ObjectiveWidget->SetIsEnabled(IsActive);
+	ObjectiveWidget->SetVisibility(IsActive ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	if (IsActive)
+		ObjectiveWidget->SetObjectiveMessage(Objective, IsActive);
 }

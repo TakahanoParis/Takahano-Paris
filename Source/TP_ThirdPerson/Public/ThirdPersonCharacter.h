@@ -11,6 +11,8 @@
 #include "ThirdPersonCharacter.generated.h"
 
 
+ class AHackCameraActor;
+ class AFloorActor;
 //forward declaration
 class UCustomSaveGame;
 
@@ -29,12 +31,6 @@ public:
 	AThirdPersonCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
     void OnConstruction(const FTransform& Transform) override;
 
-private:
-
-    UPROPERTY(Replicated) //ReplicatedUsing = OnRep_IsReady)
-    bool bIsReady;
-protected :
-	void I_GetReadyByRef(bool * IsReadyRef) override { IsReadyRef = &bIsReady; }
 
 protected:
     /** Called for forwards/backward input */
@@ -43,6 +39,24 @@ protected:
     /** Called for side to side input */
 	virtual void MoveRight(float Value);
 
+	/** Called for X Rotation input on Gamepad */
+	virtual void TurnAtRate(float Rate);
+
+	/** Called for Y Rotation input on Gamepad */
+	virtual void LookUpAtRate(float Rate);
+
+	/** Called for X Rotation input */
+	virtual void Turn(float Value);
+
+	/** Called for Y Rotation input */
+	virtual void LookUp(float Value);
+
+public :
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Camera")
+    float BaseTurnRate;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	float BaseLookUpRate;
 
 protected:
 
@@ -56,6 +70,48 @@ protected:
 public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const & DamageEvent, class AController * EventInstigator, AActor * DamageCauser) override;
+
+
+
+protected:
+	/** Camera boom positioning the camera behind the character */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Camera)// meta = (AllowPrivateAccess = "true"))
+		class USpringArmComponent* CameraBoom;
+
+	/** Follow camera */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+		class UCameraComponent* FollowCamera;
+  
+
+
+    /**
+	*	@fn Use
+	*	@brief the use action called by keyboard or gamepad action
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Interactable")
+    virtual void Use();
+
+	/**
+	*	@fn Cancel()
+	*	@brief the cancel use action called by keyboard or gamepad action
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Interactable")
+	virtual void Cancel();
+
+
+	/**
+	*	@fn Cancel()
+	*	@brief the cancel use action called by keyboard or gamepad action
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Interactable")
+	virtual void IncrementTarget();
+
+	/**
+	*	@fn Cancel()
+	*	@brief the cancel use action called by keyboard or gamepad action
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Interactable")
+	virtual void DecrementTarget();
 
 
 protected:
@@ -80,41 +136,29 @@ public :
 	 *	@fn Run
 	 *	@brief Apply the necessary changes to be running
 	 */
-	UFUNCTION()
-		virtual void Run();
-
-
-	/**
-	*	@fn Run
-	*	@brief Apply the necessary changes to be running
-	*/
 	UFUNCTION(BlueprintCallable, Category = "Movement", meta = (DisplayName = "Run"))
-		virtual void Run_BP() { Run(); }
-
+		virtual void Run();
 
 	/**
 	 *	@fn StopRun
 	 *	@brief Apply the necessary changes to be running
 	 */
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Movement", meta = (DisplayName = "Stop Running"))
 		virtual void StopRunning();
 
-
-	/**
-	*	@fn Run
-	*	@brief Apply the necessary changes to be running
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Movement", meta = (DisplayName = "Stop Running"))
-		virtual void StopRunning_BP() { StopRunning(); }
-
-private:
-	TArray<AActor *> InteractableActors;
-
-public:
-
-	virtual TArray<AActor *> * I_GetAllInteractableArray()  override { return &InteractableActors; }
 
 
 protected:
     bool SetCharacter() override;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Floor")
+		uint8 FloorIndex;
+
+public:
+	UFUNCTION(BlueprintPure, Category = "Floor")
+		FORCEINLINE uint8 GetFloorIndex() const	{return FloorIndex;	}
+
+
+	friend AFloorActor;
+	friend AHackCameraActor;
 };

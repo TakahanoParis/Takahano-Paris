@@ -8,7 +8,7 @@ public class TP_TopDown : ModuleRules
 	{
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "AIModule" });
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "EngineSettings", "InputCore", "UMG", "AIModule", "Paper2D" });
 
         PublicDependencyModuleNames.AddRange(new string[] { "TakahanoParis" }); // Third Person Gameplay
 

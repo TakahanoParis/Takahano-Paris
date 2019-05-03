@@ -2,7 +2,7 @@
 
 #include "ModuleManager.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(TP_ThirdPerson, All, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogTP_ThirdPerson, All, All);
 
 class FTP_ThirdPerson : public IModuleInterface
 {

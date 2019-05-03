@@ -14,6 +14,8 @@ class AThirdPersonCymie : public AThirdPersonHero
 {
 	GENERATED_BODY()
 
+	AThirdPersonCymie();
+
 public:
 	bool CanRun() override;
 

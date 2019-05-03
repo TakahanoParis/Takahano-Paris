@@ -13,13 +13,11 @@ class ATopDownPlayerController : public APlayerController
 
 public:
 	ATopDownPlayerController();
-
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
 
-
-
+	
 	// Begin PlayerController interface
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
@@ -38,12 +36,15 @@ protected:
 	void OnSetDestinationReleased();
 
 
+
+
 public :
 
 	UFUNCTION(BlueprintPure, Category = "Gamepad")
 		FORCEINLINE bool IsGamepadInput() const { return bIsUsingGamepad; }
 
-
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+		void CancelMoveToLocation();
 
 private:
 

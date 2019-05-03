@@ -1,7 +1,7 @@
 
 #include "ThirdPersonGameMode.h"
 #include "GameFramework/Character.h"
-#include "Gameplay/CustomPlayerController.h"
+//#include "Gameplay/CustomPlayerController.h"
 #include "Gameplay/CustomHUD.h"
 #include "Gameplay/CustomGameInstance.h"
 #include "Gameplay/CustomGameState.h"
@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "ThirdPersonCymie.h"
 #include "ThirdPersonJulia.h"
+#include "ThirdPersonPlayerController.h"
 
 
 AThirdPersonGameMode::AThirdPersonGameMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer),
@@ -20,7 +21,7 @@ AThirdPersonGameMode::AThirdPersonGameMode(const FObjectInitializer& ObjectIniti
 {
 
 	DefaultPawnClass = AThirdPersonHero::StaticClass();
-	PlayerControllerClass = ACustomPlayerController::StaticClass();
+	PlayerControllerClass = AThirdPersonPlayerController::StaticClass();
 	PlayerStateClass = ACustomPlayerState::StaticClass();
 	HUDClass = ACustomHUD::StaticClass();
 	GameStateClass = ACustomGameState::StaticClass();
@@ -29,6 +30,11 @@ AThirdPersonGameMode::AThirdPersonGameMode(const FObjectInitializer& ObjectIniti
 	HeroClasses.Emplace(AThirdPersonJulia::StaticClass());
 }
 
+void AThirdPersonGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	UTakahanoParisStatics::CreateMainHUDWidget(this);
+}
 
 
 UClass* AThirdPersonGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)

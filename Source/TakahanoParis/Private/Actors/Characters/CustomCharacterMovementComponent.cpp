@@ -14,10 +14,8 @@ UCustomCharacterMovementComponent::UCustomCharacterMovementComponent(const FObje
 	bOrientRotationToMovement = true;
 }
 
-float UCustomCharacterMovementComponent::GetSpeedDelta() const
+float UCustomCharacterMovementComponent::GetSpeedDelta_Implementation() const
 {
-	if(bDeltaCalculatedInBlueprint)
-		return GetSpeedDelta_BP();
 	if (IsFalling())
 		return 1.0;
 	FFindFloorResult Floor;

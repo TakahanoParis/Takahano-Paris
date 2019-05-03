@@ -17,11 +17,6 @@ public:
 
 	void OnConstruction(const FTransform& Transform) override;
 
-	void BeginPlay() override;
-
-	// Called every frame.
-	virtual void Tick(float DeltaSeconds) override;
-
 	/** Returns TopDownCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent; }
 	/** Returns CameraBoom subobject **/
@@ -62,16 +57,8 @@ public:
 	UPROPERTY()
 		bool bMoveWithCursor = true;
 
-private:
-	bool bIsReady;
-
-	mutable TArray<AActor*> Interactables;
-
 
 protected:
-
-	void I_GetReadyByRef(bool* IsReadyRef) override { IsReadyRef =  &bIsReady; }
-	TArray<AActor*>* I_GetAllInteractableArray() override { return &Interactables; }
 	bool SetCharacter() override;
 };
 

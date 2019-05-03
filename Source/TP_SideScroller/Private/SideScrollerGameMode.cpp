@@ -14,8 +14,8 @@ ASideScrollerGameMode::ASideScrollerGameMode()
 
 UClass* ASideScrollerGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
-	HeroClasses.Emplace(ASideScrollerJulia::StaticClass());
 	HeroClasses.Emplace(ASideScrollerCymie::StaticClass());
+	HeroClasses.Emplace(ASideScrollerJulia::StaticClass());
 
 	APlayerController  * aPC = Cast<APlayerController>(InController);
 	if (!aPC)
@@ -32,6 +32,9 @@ UClass* ASideScrollerGameMode::GetDefaultPawnClassForController_Implementation(A
 void ASideScrollerGameMode::BeginPlay()
 {
 	if (bIsSplitscreen)
+	{
 		UGameplayStatics::CreatePlayer(this, 1);
+		UTakahanoParisStatics::CreateMainHUDWidget(this);
+	}
 }
 
